@@ -1,7 +1,3 @@
-# Tauri + React + Typescript
+# TanStack Start + shadcn/ui
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+This is a template for a new TanStack Start project with React, TypeScript, and shadcn/ui.
