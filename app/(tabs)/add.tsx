@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import {
   View,
-  StyleSheet,
   TouchableOpacity,
   SafeAreaView, // Importar o componente
 } from "react-native";
@@ -21,36 +20,24 @@ export default function AddTabScreen() {
   const { addDebtor } = useDebtors(); // Usando o contexto de devedores
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.tabContainer}>
+    <SafeAreaView className="flex-1">
+      <View className="flex-row">
         <TouchableOpacity
-          style={[
-            styles.tabButton,
-            activeTab === "product" && styles.activeTabButton,
-          ]}
+          className={`flex-1 py-3 items-center ${activeTab === "product" ? "border-b-4 border-[#F5A689]" : ""}`}
           onPress={() => setActiveTab("product")}
         >
           <ThemedText
-            style={[
-              styles.tabButtonText,
-              activeTab === "product" && styles.activeTabButtonText,
-            ]}
+            className={`text-base ${activeTab === "product" ? "text-[#F5A689] font-bold" : ""}`}
           >
             Produto
           </ThemedText>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[
-            styles.tabButton,
-            activeTab === "debtor" && styles.activeTabButton,
-          ]}
+          className={`flex-1 py-3 items-center ${activeTab === "debtor" ? "border-b-4 border-[#F5A689]" : ""}`}
           onPress={() => setActiveTab("debtor")}
         >
           <ThemedText
-            style={[
-              styles.tabButtonText,
-              activeTab === "debtor" && styles.activeTabButtonText,
-            ]}
+            className={`text-base ${activeTab === "debtor" ? "text-[#F5A689] font-bold" : ""}`}
           >
             Devedor
           </ThemedText>
@@ -64,73 +51,3 @@ export default function AddTabScreen() {
     </SafeAreaView>
   );
 }
-
-// Estilos
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  tabContainer: {
-    flexDirection: "row",
-  },
-  tabButton: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  activeTabButton: {
-    borderBottomWidth: 3,
-    borderBottomColor: "#F5A689",
-  },
-  tabButtonText: {
-    fontSize: 16,
-  },
-  activeTabButtonText: {
-    color: "#F5A689",
-    fontWeight: "bold",
-  },
-  container: {
-    padding: 16,
-    gap: 10,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  label: {
-    marginBottom: 8,
-    fontSize: 16,
-    fontWeight: "500",
-  },
-
-  saveButton: {
-    backgroundColor: "#F5A689",
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginTop: 16,
-  },
-  saveButtonText: {
-    color: "#fff",
-    textAlign: "center",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-  suggestionsContainer: {
-    maxHeight: 150,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginTop: -8,
-    marginBottom: 16,
-    zIndex: 1,
-  },
-  suggestionItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  suggestionText: {
-    fontSize: 16,
-  },
-});

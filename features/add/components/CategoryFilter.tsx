@@ -23,10 +23,10 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
   };
 
   return (
-    <View style={styles.filterContainer}>
+    <View className="mb-1">
       <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <Card style={styles.cardButton}>
-          <ThemedText style={styles.categoryButtonText}>
+        <Card className="p-1.5 w-full flex-row items-center justify-center rounded-[30px]">
+          <ThemedText className="text-sm font-semibold">
             {selectedCategory || "Categoria"}
           </ThemedText>
         </Card>
@@ -37,35 +37,35 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <ThemedView style={styles.modalContainer}>
-            <ThemedText style={styles.modalTitle}>
+        <View className="flex-1 bg-black/50 justify-center items-center">
+          <ThemedView className="p-5 rounded-lg w-[90%]">
+            <ThemedText className="font-bold text-lg mb-2.5">
               Selecione uma Categoria
             </ThemedText>
             <TouchableOpacity
-              style={styles.modalOption}
+              className="p-2.5 border-b border-[#EEE]"
               onPress={() => handleSelectCategory("")}
             >
-              <ThemedText style={styles.modalOptionText}>
+              <ThemedText className="text-base">
                 Todas as Categorias
               </ThemedText>
             </TouchableOpacity>
             {categories.map((category, index) => (
               <TouchableOpacity
                 key={index}
-                style={styles.modalOption}
+                className="p-2.5 border-b border-[#EEE]"
                 onPress={() => handleSelectCategory(category)}
               >
-                <ThemedText style={styles.modalOptionText}>
+                <ThemedText className="text-base">
                   {category}
                 </ThemedText>
               </TouchableOpacity>
             ))}
             <TouchableOpacity
-              style={[styles.mainButton, styles.exitButton]}
+              className="p-2.5 rounded-md items-center mt-2.5 bg-[#A3D977] bg-[#808080]"
               onPress={() => setModalVisible(false)}
             >
-              <ThemedText style={styles.buttonText}>Fechar</ThemedText>
+              <ThemedText className="text-white font-bold">Fechar</ThemedText>
             </TouchableOpacity>
           </ThemedView>
         </View>
@@ -73,35 +73,3 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  filterContainer: { marginBottom: 5 },
-  cardButton: {
-    padding: 6,
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 30,
-  },
-  categoryButtonText: { fontSize: 14, fontWeight: "600" },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: { padding: 20, borderRadius: 10, width: "90%" },
-  modalTitle: { fontWeight: "bold", fontSize: 18, marginBottom: 10 },
-  modalOption: { padding: 10, borderBottomWidth: 1, borderBottomColor: "#EEE" },
-  modalOptionText: { fontSize: 16 },
-  mainButton: {
-    padding: 10,
-    borderRadius: 6,
-    alignItems: "center",
-    marginTop: 10,
-    backgroundColor: "#A3D977",
-  },
-  exitButton: { backgroundColor: "#808080" },
-  buttonText: { color: "#FFFFFF", fontWeight: "bold" },
-});

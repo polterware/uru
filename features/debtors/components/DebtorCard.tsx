@@ -22,70 +22,39 @@ export const DebtorCard: React.FC<DebtorCardProps> = ({
   onMarkAsPaid,
   onDelete,
 }) => (
-  <Card style={styles.debtorCard}>
-    <View style={styles.debtorInfo}>
-      <ThemedText style={styles.debtorName}>{debtor.name}</ThemedText>
-      <ThemedText style={styles.debtorAmount}>
+  <Card className="flex-col justify-between items-start gap-3 p-4">
+    <View className="flex-1">
+      <ThemedText className="text-base font-semibold">{debtor.name}</ThemedText>
+      <ThemedText className="text-sm my-1">
         Valor: R$ {debtor.amount.toFixed(2)}
       </ThemedText>
-      <ThemedText style={styles.debtorStatus}>
+      <ThemedText className="text-sm font-bold">
         Início: {debtor.startDate ? debtor.startDate.substring(0, 10) : "-"}
       </ThemedText>
-      <ThemedText style={styles.debtorStatus}>
+      <ThemedText className="text-sm font-bold">
         Prazo: {debtor.dueDate ? debtor.dueDate.substring(0, 10) : "-"}
       </ThemedText>
       {debtor.status === "paid" && (
-        <ThemedText style={styles.debtorStatus}>
+        <ThemedText className="text-sm font-bold">
           Pago em: {debtor.paidDate ? debtor.paidDate.substring(0, 10) : "-"}
         </ThemedText>
       )}
     </View>
-    <View style={styles.actions}>
+    <View className="flex-row w-full justify-between">
       {debtor.status === "open" && (
         <TouchableOpacity
-          style={[styles.actionButton, styles.markPaidButton]}
+          className="py-2 px-3 rounded-md items-center w-[48%] bg-[#A3D977]"
           onPress={() => onMarkAsPaid(debtor.id)}
         >
-          <ThemedText style={styles.actionButtonText}>Marcar Pago</ThemedText>
+          <ThemedText className="text-white font-semibold text-sm">Marcar Pago</ThemedText>
         </TouchableOpacity>
       )}
       <TouchableOpacity
-        style={[styles.actionButton, styles.deleteButton]}
+        className="py-2 px-3 rounded-md items-center w-[48%] bg-[#FF6347]"
         onPress={() => onDelete(debtor.id)}
       >
-        <ThemedText style={styles.actionButtonText}>Excluir</ThemedText>
+        <ThemedText className="text-white font-semibold text-sm">Excluir</ThemedText>
       </TouchableOpacity>
     </View>
   </Card>
 );
-
-const styles = StyleSheet.create({
-  debtorCard: {
-    flexDirection: "column",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 12,
-    padding: 16,
-  },
-  debtorInfo: { flex: 1 },
-  debtorName: { fontSize: 16, fontWeight: "600" },
-  debtorAmount: { fontSize: 14, marginVertical: 4 },
-  debtorStatus: { fontSize: 14, fontWeight: "bold" },
-  statusOpen: { color: "#FF6347" },
-  statusPaid: { color: "#32CD32" },
-  actions: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
-  },
-  actionButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    alignItems: "center",
-    width: "48%",
-  },
-  markPaidButton: { backgroundColor: "#A3D977" },
-  deleteButton: { backgroundColor: "#FF6347" },
-  actionButtonText: { color: "#fff", fontWeight: "600", fontSize: 14 },
-});

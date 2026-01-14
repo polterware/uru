@@ -4,7 +4,6 @@ import React, { useMemo } from "react";
 import {
   View,
   SafeAreaView,
-  StyleSheet,
   ScrollView,
   Image,
 } from "react-native";
@@ -100,23 +99,14 @@ export default function HomeScreen() {
   }, [debtors]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View
-          style={{
-            alignItems: "center",
-            display: "flex",
-            flexDirection: "row",
-            paddingBottom: 20,
-          }}
-        >
+    <SafeAreaView className="flex-1">
+      <ScrollView contentContainerClassName="grow px-4 pb-[60px]">
+        <View className="items-center flex flex-row pb-5">
           <Image
             source={require("../../assets/images/logo.png")}
-            style={{ width: 100, height: 100 }}
+            className="w-[100px] h-[100px]"
           />
-          <ThemedText
-            style={[styles.title, { flexShrink: 1, textAlign: "left" }]}
-          >
+          <ThemedText className="text-xl font-bold text-left shrink">
             Bem-vindo(a) ao Inventy!
           </ThemedText>
         </View>
@@ -146,111 +136,3 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    paddingHorizontal: 16,
-    paddingBottom: 60,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "left",
-  },
-  summaryContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 24,
-  },
-  summaryCard: {
-    flex: 1,
-    padding: 16,
-    marginHorizontal: 4,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  summaryValue: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#F5A689",
-  },
-  summaryLabel: {
-    fontSize: 14,
-  },
-  lowStockSection: {
-    marginBottom: 24,
-    paddingVertical: 24,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 24,
-    marginTop: 4,
-  },
-  lowStockContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  lowStockCard: {
-    flexBasis: "48%",
-    padding: 16,
-    marginBottom: 12,
-    alignItems: "center",
-  },
-  lowStockName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  lowStockQuantity: {
-    fontSize: 14,
-    textAlign: "center",
-  },
-  emptyList: {
-    fontSize: 14,
-    marginTop: 8,
-    fontStyle: "italic",
-    textAlign: "center",
-  },
-  buttonsContainer: {
-    marginTop: 24,
-  },
-  button: {
-    backgroundColor: "#F5A689",
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginTop: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  buttonText: {
-    color: "#fff",
-    textAlign: "center",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-  chartContainer: {
-    marginBottom: 24,
-    padding: 16,
-    borderRadius: 8,
-
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  chart: {
-    marginVertical: 8,
-    borderRadius: 8,
-  },
-});

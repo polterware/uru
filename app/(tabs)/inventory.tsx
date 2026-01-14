@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  StyleSheet,
   View,
   Keyboard,
   TouchableWithoutFeedback,
@@ -107,10 +106,10 @@ export default function InventoryScreen() {
     });
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+    <SafeAreaView className="flex-1" edges={["top"]}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={[styles.container, { paddingBottom: 0 }]}>
-          <ThemedView style={styles.header}>
+        <View className="flex-1 pt-6 px-4 pb-0">
+          <ThemedView className="flex-row gap-2 bg-transparent mb-2.5">
             <ThemedText type="title">Inventário</ThemedText>
           </ThemedView>
 
@@ -119,15 +118,15 @@ export default function InventoryScreen() {
             setSearchQuery={setSearchQuery}
           />
 
-          <View style={{ flexDirection: "row", gap: 10 }}>
-            <View style={{ flex: 1 }}>
+          <View className="flex-row gap-2.5">
+            <View className="flex-1">
               <CategoryFilter
                 selectedCategory={selectedCategory}
                 setSelectedCategory={setSelectedCategory}
                 categories={categories}
               />
             </View>
-            <View style={{ flex: 1 }}>
+            <View className="flex-1">
               <InventorySortOptions
                 sortType={sortType}
                 setSortType={setSortType}
@@ -136,15 +135,15 @@ export default function InventoryScreen() {
           </View>
 
           <FlatList
-            style={{ flex: 1 }}
+            className="flex-1"
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
             data={filteredItems}
             keyExtractor={(item) => item.id.toString()}
-            ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-            contentContainerStyle={{ paddingBottom: 32 }}
+            ItemSeparatorComponent={() => <View className="h-2.5" />}
+            contentContainerClassName="pb-8"
             ListEmptyComponent={
-              <ThemedText style={styles.emptyList}>
+              <ThemedText className="text-center mt-5 text-[#999] text-base italic">
                 Nenhum item encontrado.
               </ThemedText>
             }
@@ -186,92 +185,3 @@ export default function InventoryScreen() {
     </SafeAreaView>
   );
 }
-
-// Styles
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    gap: 8,
-    backgroundColor: "transparent",
-    marginBottom: 10,
-  },
-  container: {
-    flex: 1,
-    paddingTop: 24,
-    paddingHorizontal: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  searchBar: {
-    backgroundColor: "transparent",
-  },
-  filterContainer: {
-    marginBottom: 10,
-  },
-  categoryButton: {
-    borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 10,
-    padding: 10,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-  },
-  categoryButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    padding: 20,
-    borderRadius: 10,
-    width: "90%",
-  },
-  modalTitle: {
-    fontWeight: "bold",
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  modalOption: {
-    padding: 10,
-    borderBottomWidth: 1,
-  },
-  modalOptionText: {
-    fontSize: 16,
-  },
-  mainButton: {
-    padding: 10,
-    borderRadius: 6,
-    alignItems: "center",
-    marginTop: 10,
-    backgroundColor: "#A3D977",
-  },
-  exitButton: {
-    backgroundColor: "#808080",
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
-  listContainer: {
-    paddingBottom: 16,
-  },
-  emptyList: {
-    textAlign: "center",
-    marginTop: 20,
-    color: "#999",
-    fontSize: 16,
-    fontStyle: "italic",
-  },
-});

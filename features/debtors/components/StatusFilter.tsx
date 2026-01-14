@@ -21,15 +21,15 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({
   };
 
   return (
-    <View style={styles.filterContainer}>
+    <View className="mb-2.5">
       <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <Card style={styles.cardButton}>
-          <ThemedText style={styles.categoryButtonText}>
+        <Card className="p-1.5 w-full flex-row items-center justify-center rounded-[30px]">
+          <ThemedText className="text-sm font-semibold">
             {statusFilter === "open"
               ? "Em Aberto"
               : statusFilter === "paid"
-              ? "Pagos"
-              : "Filtrar Status"}
+                ? "Pagos"
+                : "Filtrar Status"}
           </ThemedText>
         </Card>
       </TouchableOpacity>
@@ -39,34 +39,34 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <ThemedView style={styles.modalContainer}>
-            <ThemedText style={styles.modalTitle}>
+        <View className="flex-1 bg-black/50 justify-center items-center">
+          <ThemedView className="p-5 rounded-lg w-[90%]">
+            <ThemedText className="font-bold text-lg mb-2.5">
               Filtrar por Status:
             </ThemedText>
             <TouchableOpacity
-              style={styles.modalOption}
+              className="p-2.5 border-b"
               onPress={() => handleSelectStatus("open")}
             >
-              <ThemedText style={styles.modalOptionText}>Em Aberto</ThemedText>
+              <ThemedText className="text-base">Em Aberto</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.modalOption}
+              className="p-2.5 border-b"
               onPress={() => handleSelectStatus("paid")}
             >
-              <ThemedText style={styles.modalOptionText}>Pagos</ThemedText>
+              <ThemedText className="text-base">Pagos</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.modalOption}
+              className="p-2.5 border-b"
               onPress={() => handleSelectStatus("")}
             >
-              <ThemedText style={styles.modalOptionText}>Todos</ThemedText>
+              <ThemedText className="text-base">Todos</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.mainButton, styles.exitButton]}
+              className="p-2.5 rounded-md items-center mt-2.5 bg-[#A3D977] bg-[#808080]"
               onPress={() => setModalVisible(false)}
             >
-              <ThemedText style={styles.buttonText}>Fechar</ThemedText>
+              <ThemedText className="text-white font-bold">Fechar</ThemedText>
             </TouchableOpacity>
           </ThemedView>
         </View>
@@ -74,35 +74,3 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  filterContainer: { marginBottom: 10 },
-  cardButton: {
-    padding: 6,
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 30,
-  },
-  categoryButtonText: { fontSize: 14, fontWeight: "600" },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: { padding: 20, borderRadius: 10, width: "90%" },
-  modalTitle: { fontWeight: "bold", fontSize: 18, marginBottom: 10 },
-  modalOption: { padding: 10, borderBottomWidth: 1 },
-  modalOptionText: { fontSize: 16 },
-  mainButton: {
-    padding: 10,
-    borderRadius: 6,
-    alignItems: "center",
-    marginTop: 10,
-    backgroundColor: "#A3D977",
-  },
-  exitButton: { backgroundColor: "#808080" },
-  buttonText: { color: "#FFFFFF", fontWeight: "bold" },
-});

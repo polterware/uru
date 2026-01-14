@@ -77,11 +77,11 @@ export const AddProductForm: React.FC<AddProductFormProps> = ({
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
-        style={styles.container}
+        className="p-4 gap-2.5"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <View>
-          <ThemedText style={styles.label}>Nome do Produto</ThemedText>
+          <ThemedText className="mb-2 text-base font-medium">Nome do Produto</ThemedText>
           <ThemedInput
             value={name}
             onChangeText={setName}
@@ -89,7 +89,7 @@ export const AddProductForm: React.FC<AddProductFormProps> = ({
           />
         </View>
         <View>
-          <ThemedText style={styles.label}>Categoria</ThemedText>
+          <ThemedText className="mb-2 text-base font-medium">Categoria</ThemedText>
           <ThemedInput
             placeholderTextColor={textColor}
             value={category}
@@ -102,20 +102,20 @@ export const AddProductForm: React.FC<AddProductFormProps> = ({
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => handleSelectCategory(item)}>
-                  <Card style={styles.suggestionCard}>
-                    <ThemedText style={styles.suggestionText}>
+                  <Card className="mb-2.5 p-2.5 flex-row items-center rounded-lg">
+                    <ThemedText className="text-base">
                       {item}
                     </ThemedText>
                   </Card>
                 </TouchableOpacity>
               )}
-              style={styles.suggestionsContainer}
+              className="max-h-[150px] border rounded-lg -mt-2 mb-4 z-10"
               keyboardShouldPersistTaps="handled"
             />
           )}
         </View>
         <View>
-          <ThemedText style={styles.label}>Quantidade</ThemedText>
+          <ThemedText className="mb-2 text-base font-medium">Quantidade</ThemedText>
           <ThemedInput
             placeholderTextColor={textColor}
             value={quantity !== null ? quantity.toString() : ""}
@@ -128,7 +128,7 @@ export const AddProductForm: React.FC<AddProductFormProps> = ({
           />
         </View>
         <View>
-          <ThemedText style={styles.label}>Preço (opcional)</ThemedText>
+          <ThemedText className="mb-2 text-base font-medium">Preço (opcional)</ThemedText>
           <ThemedInput
             placeholderTextColor={textColor}
             value={price}
@@ -138,7 +138,7 @@ export const AddProductForm: React.FC<AddProductFormProps> = ({
           />
         </View>
         <View>
-          <ThemedText style={styles.label}>Localização (opcional)</ThemedText>
+          <ThemedText className="mb-2 text-base font-medium">Localização (opcional)</ThemedText>
           <ThemedInput
             placeholderTextColor={textColor}
             value={location}
@@ -146,43 +146,10 @@ export const AddProductForm: React.FC<AddProductFormProps> = ({
             placeholder="Ex: Prateleira 2"
           />
         </View>
-        <TouchableOpacity onPress={handleSaveProduct} style={styles.saveButton}>
-          <ThemedText style={styles.saveButtonText}>Salvar Produto</ThemedText>
+        <TouchableOpacity onPress={handleSaveProduct} className="bg-[#F5A689] py-2.5 rounded-lg mt-4">
+          <ThemedText className="text-white text-center font-semibold text-base">Salvar Produto</ThemedText>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { padding: 16, gap: 10 },
-  label: { marginBottom: 8, fontSize: 16, fontWeight: "500" },
-  saveButton: {
-    backgroundColor: "#F5A689",
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginTop: 16,
-  },
-  saveButtonText: {
-    color: "#fff",
-    textAlign: "center",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-  suggestionsContainer: {
-    maxHeight: 150,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginTop: -8,
-    marginBottom: 16,
-    zIndex: 1,
-  },
-  suggestionCard: {
-    marginBottom: 10,
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 8,
-  },
-  suggestionText: { fontSize: 16 },
-});

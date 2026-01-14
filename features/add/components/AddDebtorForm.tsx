@@ -68,9 +68,9 @@ export const AddDebtorForm: React.FC<AddDebtorFormProps> = ({ addDebtor }) => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerClassName="p-4 gap-2.5">
         <View>
-          <ThemedText style={styles.label}>Nome do Devedor</ThemedText>
+          <ThemedText className="mb-2 text-base font-medium">Nome do Devedor</ThemedText>
           <ThemedInput
             placeholderTextColor={textColor}
             value={name}
@@ -79,7 +79,7 @@ export const AddDebtorForm: React.FC<AddDebtorFormProps> = ({ addDebtor }) => {
           />
         </View>
         <View>
-          <ThemedText style={styles.label}>Valor Devido</ThemedText>
+          <ThemedText className="mb-2 text-base font-medium">Valor Devido</ThemedText>
           <ThemedInput
             placeholderTextColor={textColor}
             value={amount}
@@ -89,7 +89,7 @@ export const AddDebtorForm: React.FC<AddDebtorFormProps> = ({ addDebtor }) => {
           />
         </View>
         <View>
-          <ThemedText style={styles.label}>Data de Início</ThemedText>
+          <ThemedText className="mb-2 text-base font-medium">Data de Início</ThemedText>
           <TouchableOpacity onPress={() => setStartDatePickerVisible(true)}>
             <ThemedInput
               placeholderTextColor={textColor}
@@ -107,7 +107,7 @@ export const AddDebtorForm: React.FC<AddDebtorFormProps> = ({ addDebtor }) => {
           />
         </View>
         <View>
-          <ThemedText style={styles.label}>Prazo para Pagamento</ThemedText>
+          <ThemedText className="mb-2 text-base font-medium">Prazo para Pagamento</ThemedText>
           <TouchableOpacity onPress={() => setDueDatePickerVisible(true)}>
             <ThemedInput
               placeholderTextColor={textColor}
@@ -124,27 +124,10 @@ export const AddDebtorForm: React.FC<AddDebtorFormProps> = ({ addDebtor }) => {
             onCancel={() => setDueDatePickerVisible(false)}
           />
         </View>
-        <TouchableOpacity onPress={handleSaveDebtor} style={styles.saveButton}>
-          <ThemedText style={styles.saveButtonText}>Salvar Devedor</ThemedText>
+        <TouchableOpacity onPress={handleSaveDebtor} className="bg-[#F5A689] py-2.5 rounded-lg mt-4">
+          <ThemedText className="text-white text-center font-semibold text-base">Salvar Devedor</ThemedText>
         </TouchableOpacity>
       </ScrollView>
     </TouchableWithoutFeedback>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { padding: 16, gap: 10 },
-  label: { marginBottom: 8, fontSize: 16, fontWeight: "500" },
-  saveButton: {
-    backgroundColor: "#F5A689",
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginTop: 16,
-  },
-  saveButtonText: {
-    color: "#fff",
-    textAlign: "center",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-});

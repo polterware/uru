@@ -32,15 +32,15 @@ export const SortOptions: React.FC<SortOptionsProps> = ({
   }, [sortType]);
 
   return (
-    <View style={styles.filterContainer}>
+    <View className="mb-2.5">
       <TouchableOpacity onPress={openModal}>
-        <Card style={styles.cardButton}>
-          <ThemedText style={styles.categoryButtonText}>
+        <Card className="p-1.5 w-full flex-row items-center justify-center rounded-[30px]">
+          <ThemedText className="text-sm font-semibold">
             {sortType === "amountAsc"
               ? "Menos Devendo"
               : sortType === "amountDesc"
-              ? "Mais Devendo"
-              : "Ordenar"}
+                ? "Mais Devendo"
+                : "Ordenar"}
           </ThemedText>
         </Card>
       </TouchableOpacity>
@@ -51,30 +51,30 @@ export const SortOptions: React.FC<SortOptionsProps> = ({
         onRequestClose={closeModal}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.modalOverlay}>
-            <ThemedView style={styles.modalContainer}>
-              <ThemedText style={styles.modalTitle}>Ordenar por:</ThemedText>
+          <View className="flex-1 bg-black/50 justify-center items-center">
+            <ThemedView className="p-5 rounded-lg w-[90%]">
+              <ThemedText className="font-bold text-lg mb-2.5 text-[#F5A689]">Ordenar por:</ThemedText>
               <TouchableOpacity
-                style={styles.modalOption}
+                className="p-2.5 border-b border-[#EEE]"
                 onPress={() => selectSort("amountAsc")}
               >
-                <ThemedText style={styles.modalOptionText}>
+                <ThemedText className="text-base">
                   Menos Devendo
                 </ThemedText>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.modalOption}
+                className="p-2.5 border-b border-[#EEE]"
                 onPress={() => selectSort("amountDesc")}
               >
-                <ThemedText style={styles.modalOptionText}>
+                <ThemedText className="text-base">
                   Mais Devendo
                 </ThemedText>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.mainButton, styles.exitButton]}
+                className="p-2.5 rounded-md items-center mt-2.5 bg-[#A3D977] bg-[#808080]"
                 onPress={closeModal}
               >
-                <ThemedText style={styles.buttonText}>Fechar</ThemedText>
+                <ThemedText className="text-white font-bold">Fechar</ThemedText>
               </TouchableOpacity>
             </ThemedView>
           </View>
@@ -83,35 +83,3 @@ export const SortOptions: React.FC<SortOptionsProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  filterContainer: { marginBottom: 10 },
-  cardButton: {
-    padding: 6,
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 30,
-  },
-  categoryButtonText: { fontSize: 14, fontWeight: "600" },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: { padding: 20, borderRadius: 10, width: "90%" },
-  modalTitle: { fontWeight: "bold", fontSize: 18, marginBottom: 10 },
-  modalOption: { padding: 10, borderBottomWidth: 1 },
-  modalOptionText: { fontSize: 16 },
-  mainButton: {
-    padding: 10,
-    borderRadius: 6,
-    alignItems: "center",
-    marginTop: 10,
-    backgroundColor: "#A3D977",
-  },
-  exitButton: { backgroundColor: "#808080" },
-  buttonText: { color: "#FFFFFF", fontWeight: "bold" },
-});

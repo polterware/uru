@@ -26,19 +26,19 @@ export const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
   onDecrement,
 }) => (
   <Pressable onPress={() => onEdit(item.id)}>
-    <Card style={styles.listItem}>
-      <View style={styles.listItemDetails}>
-        <ThemedText style={styles.listItemTexBold}>{item.name}</ThemedText>
+    <Card className="flex-row justify-between items-center">
+      <View className="flex-col items-start gap-1">
+        <ThemedText className="font-bold text-lg">{item.name}</ThemedText>
         <ThemedText>
           Quantidade:{" "}
-          <ThemedText style={styles.listItemTexBold}>
+          <ThemedText className="font-bold">
             {item.quantity}
           </ThemedText>
         </ThemedText>
         {item.category && (
           <ThemedText>
             Categoria:{" "}
-            <ThemedText style={styles.listItemTexBold}>
+            <ThemedText className="font-bold">
               {item.category}
             </ThemedText>
           </ThemedText>
@@ -46,7 +46,7 @@ export const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
         {item.price !== undefined && (
           <ThemedText>
             Preço:{" "}
-            <ThemedText style={styles.listItemTexBold}>
+            <ThemedText className="font-bold">
               R$ {item.price.toFixed(2)}
             </ThemedText>
           </ThemedText>
@@ -54,7 +54,7 @@ export const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
         {item.location && (
           <ThemedText>
             Localização:{" "}
-            <ThemedText style={styles.listItemTexBold}>
+            <ThemedText className="font-bold">
               {item.location}
             </ThemedText>
           </ThemedText>
@@ -62,7 +62,7 @@ export const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
         {item.lastRemovedAt && (
           <ThemedText>
             Última retirada:{" "}
-            <ThemedText style={styles.listItemTexBold}>
+            <ThemedText className="font-bold">
               {item.lastRemovedAt.substring(0, 16).replace("T", " ")}
             </ThemedText>
           </ThemedText>
@@ -70,66 +70,26 @@ export const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
         {item.createdAt && (
           <ThemedText>
             Criado em:{" "}
-            <ThemedText style={styles.listItemTexBold}>
+            <ThemedText className="font-bold">
               {item.createdAt.substring(0, 16).replace("T", " ")}
             </ThemedText>
           </ThemedText>
         )}
       </View>
-      <View style={styles.actionsContainer}>
+      <View className="flex-row items-center gap-1.5">
         <TouchableOpacity
-          style={styles.plusButton}
+          className="bg-[#A3D977] rounded-full w-[35px] h-[35px] justify-center items-center"
           onPress={() => onIncrement(item.id)}
         >
-          <ThemedText style={styles.buttonText}>+</ThemedText>
+          <ThemedText className="text-white font-bold">+</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.minusButton}
+          className="bg-[#FF364E] rounded-full w-[35px] h-[35px] justify-center items-center"
           onPress={() => onDecrement(item.id)}
         >
-          <ThemedText style={styles.buttonText}>-</ThemedText>
+          <ThemedText className="text-white font-bold">-</ThemedText>
         </TouchableOpacity>
       </View>
     </Card>
   </Pressable>
 );
-
-const styles = StyleSheet.create({
-  listItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  listItemDetails: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
-  listItemTexBold: {
-    fontWeight: "bold",
-  },
-  actionsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  plusButton: {
-    backgroundColor: "#A3D977",
-    borderRadius: 200,
-    width: 35,
-    height: 35,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  minusButton: {
-    backgroundColor: "#FF364E",
-    borderRadius: 200,
-    width: 35,
-    height: 35,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
-});

@@ -15,7 +15,7 @@ export const SearchBarDebtors: React.FC<SearchBarDebtorsProps> = ({
 }) => {
   const textColor = useThemeColor({ light: "#222", dark: "#999" }, "text");
   return (
-    <Card style={styles.card}>
+    <Card className="mb-2.5 p-2.5 flex-row items-center rounded-[20px]">
       <Ionicons
         name="search"
         size={20}
@@ -23,7 +23,8 @@ export const SearchBarDebtors: React.FC<SearchBarDebtorsProps> = ({
         style={{ marginRight: 8 }}
       />
       <TextInput
-        style={[styles.input, { color: textColor }]}
+        className="bg-transparent flex-1"
+        style={{ color: textColor }}
         placeholder="Pesquisar devedores..."
         placeholderTextColor={textColor}
         value={searchQuery}
@@ -32,17 +33,3 @@ export const SearchBarDebtors: React.FC<SearchBarDebtorsProps> = ({
     </Card>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    marginBottom: 10,
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 20,
-  },
-  input: {
-    backgroundColor: "transparent",
-    flex: 1,
-  },
-});

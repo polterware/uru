@@ -29,8 +29,14 @@ export const ThemedInput = ({
 
   return (
     <TextInput
+      className="rounded-lg p-2.5 border shadow-sm"
       style={[
-        styles.inputStyle,
+        {
+          shadowOffset: { width: 1, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 3,
+          elevation: 5,
+        },
         style,
         { shadowColor, borderColor, backgroundColor, color: textColor },
       ]}
@@ -40,15 +46,3 @@ export const ThemedInput = ({
     />
   );
 };
-
-const styles = StyleSheet.create({
-  inputStyle: {
-    borderRadius: 8,
-    padding: 10,
-    shadowOffset: { width: 1, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 5,
-    borderWidth: 1,
-  },
-});

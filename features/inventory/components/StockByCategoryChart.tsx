@@ -20,8 +20,9 @@ export const StockByCategoryChart: React.FC<StockByCategoryChartProps> = ({
   backgroundColor,
   color,
 }) => (
-  <Card style={styles.chartContainer}>
-    <ThemedText style={styles.sectionTitle}>Estoque por Categoria</ThemedText>
+
+  <Card className="mb-6 p-4 rounded-lg shadow-sm">
+    <ThemedText className="text-xl font-bold mb-6 mt-1">Estoque por Categoria</ThemedText>
     {stockByCategory.datasets[0].data.length > 0 ? (
       <BarChart
         data={stockByCategory}
@@ -43,41 +44,12 @@ export const StockByCategoryChart: React.FC<StockByCategoryChartProps> = ({
             stroke: "#ffa726",
           },
         }}
-        style={styles.chart}
+        style={{ marginVertical: 8, borderRadius: 8 }}
       />
     ) : (
-      <ThemedText style={styles.emptyList}>
+      <ThemedText className="text-sm mt-2 italic text-center">
         Nenhum dado disponível para o gráfico.
       </ThemedText>
     )}
   </Card>
 );
-
-const styles = StyleSheet.create({
-  chartContainer: {
-    marginBottom: 24,
-    padding: 16,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 24,
-    marginTop: 4,
-  },
-  chart: {
-    marginVertical: 8,
-    borderRadius: 8,
-  },
-  emptyList: {
-    fontSize: 14,
-    marginTop: 8,
-    fontStyle: "italic",
-    textAlign: "center",
-  },
-});

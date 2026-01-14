@@ -15,41 +15,19 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({
   totalCategories,
   lowStockCount,
 }) => (
-  <View style={styles.summaryContainer}>
-    <Card style={styles.summaryCard}>
-      <ThemedText style={styles.summaryValue}>{totalProducts}</ThemedText>
-      <ThemedText style={styles.summaryLabel}>Produtos</ThemedText>
+
+  <View className="flex-row justify-between mb-6">
+    <Card className="flex-1 p-4 mx-1 rounded-lg items-center">
+      <ThemedText className="text-xl font-bold text-[#F5A689]">{totalProducts}</ThemedText>
+      <ThemedText className="text-sm">Produtos</ThemedText>
     </Card>
-    <Card style={styles.summaryCard}>
-      <ThemedText style={styles.summaryValue}>{totalCategories}</ThemedText>
-      <ThemedText style={styles.summaryLabel}>Categorias</ThemedText>
+    <Card className="flex-1 p-4 mx-1 rounded-lg items-center">
+      <ThemedText className="text-xl font-bold text-[#F5A689]">{totalCategories}</ThemedText>
+      <ThemedText className="text-sm">Categorias</ThemedText>
     </Card>
-    <Card style={styles.summaryCard}>
-      <ThemedText style={styles.summaryValue}>{lowStockCount}</ThemedText>
-      <ThemedText style={styles.summaryLabel}>Em Falta</ThemedText>
+    <Card className="flex-1 p-4 mx-1 rounded-lg items-center">
+      <ThemedText className="text-xl font-bold text-[#F5A689]">{lowStockCount}</ThemedText>
+      <ThemedText className="text-sm">Em Falta</ThemedText>
     </Card>
   </View>
 );
-
-const styles = StyleSheet.create({
-  summaryContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 24,
-  },
-  summaryCard: {
-    flex: 1,
-    padding: 16,
-    marginHorizontal: 4,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  summaryValue: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#F5A689",
-  },
-  summaryLabel: {
-    fontSize: 14,
-  },
-});

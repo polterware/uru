@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   Switch,
   SafeAreaView,
   ScrollView,
@@ -25,24 +24,24 @@ export default function SettingsScreen() {
     setIsNotificationsEnabled((prev) => !prev);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <ThemedText style={styles.title}>Configurações</ThemedText>
+    <SafeAreaView className="flex-1">
+      <ScrollView contentContainerClassName="p-4">
+        <ThemedText className="text-2xl font-bold mb-6 text-center">Configurações</ThemedText>
 
         {/* Seção de Tema */}
-        <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Aparência</ThemedText>
-          <View style={styles.item}>
-            <ThemedText style={styles.itemLabel}>Tema Escuro</ThemedText>
+        <View className="mb-6">
+          <ThemedText className="text-lg font-semibold mb-3">Aparência</ThemedText>
+          <View className="py-3 px-4 rounded-lg mb-2 flex-row justify-between items-center">
+            <ThemedText className="text-base">Tema Escuro</ThemedText>
             <Switch value={isDarkTheme} onValueChange={toggleTheme} />
           </View>
         </View>
 
         {/* Seção de Notificações */}
-        <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Notificações</ThemedText>
-          <View style={styles.item}>
-            <ThemedText style={styles.itemLabel}>
+        <View className="mb-6">
+          <ThemedText className="text-lg font-semibold mb-3">Notificações</ThemedText>
+          <View className="py-3 px-4 rounded-lg mb-2 flex-row justify-between items-center">
+            <ThemedText className="text-base">
               Ativar Notificações
             </ThemedText>
             <Switch
@@ -53,21 +52,21 @@ export default function SettingsScreen() {
         </View>
 
         {/* Seção de Exportação */}
-        <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Backup</ThemedText>
+        <View className="mb-6">
+          <ThemedText className="text-lg font-semibold mb-3">Backup</ThemedText>
           <TouchableOpacity
-            style={styles.exportButton}
+            className="bg-[#F5A689] py-3 rounded-lg items-center mt-2"
             onPress={exportDatabaseToExcel}
           >
-            <ThemedText style={styles.exportButtonText}>
+            <ThemedText className="text-white font-bold text-base">
               Exportar Base de Dados (Excel)
             </ThemedText>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.exportButton, { backgroundColor: "#A3D977" }]}
+            className="bg-[#A3D977] py-3 rounded-lg items-center mt-2"
             onPress={importDatabaseFromExcel}
           >
-            <ThemedText style={styles.exportButtonText}>
+            <ThemedText className="text-white font-bold text-base">
               Importar Base de Dados (Excel)
             </ThemedText>
           </TouchableOpacity>
@@ -76,51 +75,3 @@ export default function SettingsScreen() {
     </SafeAreaView>
   );
 }
-
-// Estilos
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 24,
-    textAlign: "center",
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 12,
-  },
-  item: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginBottom: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  itemLabel: {
-    fontSize: 16,
-  },
-  exportButton: {
-    backgroundColor: "#F5A689",
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  exportButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-});

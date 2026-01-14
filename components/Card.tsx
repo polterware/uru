@@ -14,20 +14,20 @@ export const Card = ({ children, style }: ViewProps) => {
   );
 
   return (
-    <ThemedView style={[styles.cardStyle, style, { shadowColor, borderColor }]}>
+    <ThemedView
+      className="rounded-lg p-4 border shadow-sm"
+      style={[
+        {
+          shadowOffset: { width: 1, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 3,
+          elevation: 5,
+        },
+        style,
+        { shadowColor, borderColor },
+      ]}
+    >
       {children}
     </ThemedView>
   );
 };
-
-const styles = StyleSheet.create({
-  cardStyle: {
-    borderRadius: 8,
-    padding: 16,
-    shadowOffset: { width: 1, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 5,
-    borderWidth: 1,
-  },
-});

@@ -21,89 +21,32 @@ export const LowStockList: React.FC<LowStockListProps> = ({ lowStock }) => {
   const navigation = useNavigation();
   useLowStockNotification(lowStock);
   return (
-    <Card style={styles.lowStockSection}>
-      <ThemedText style={styles.sectionTitle}>
+    <Card className="mb-6 py-6">
+      <ThemedText className="text-xl font-bold mb-6 mt-1">
         Produtos com baixo estoque:
       </ThemedText>
       {lowStock.length > 0 ? (
-        <ThemedView style={styles.lowStockContainer}>
+        <ThemedView className="flex-row flex-wrap justify-between">
           {lowStock.slice(0, 4).map((item) => (
-            <Card key={item.id} style={styles.lowStockCard}>
-              <ThemedText style={styles.lowStockName}>{item.name}</ThemedText>
-              <ThemedText style={styles.lowStockQuantity}>
+            <Card key={item.id} className="w-[48%] p-4 mb-3 items-center">
+              <ThemedText className="text-base font-bold mb-2 text-center">{item.name}</ThemedText>
+              <ThemedText className="text-sm text-center">
                 Qtd: {item.quantity}
               </ThemedText>
             </Card>
           ))}
         </ThemedView>
       ) : (
-        <ThemedText style={styles.emptyList}>
+        <ThemedText className="text-sm mt-2 italic text-center">
           Nenhum produto em falta por enquanto.
         </ThemedText>
       )}
       <TouchableOpacity
-        style={styles.button}
+        className="bg-[#F5A689] py-2.5 rounded-lg mt-4 shadow-sm"
         onPress={() => navigation.navigate("inventory" as never)}
       >
-        <ThemedText style={styles.buttonText}>Ver Estoque</ThemedText>
+        <ThemedText className="text-white text-center font-semibold text-base">Ver Estoque</ThemedText>
       </TouchableOpacity>
     </Card>
   );
 };
-
-const styles = StyleSheet.create({
-  lowStockSection: {
-    marginBottom: 24,
-    paddingVertical: 24,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 24,
-    marginTop: 4,
-  },
-  lowStockContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  lowStockCard: {
-    flexBasis: "48%",
-    padding: 16,
-    marginBottom: 12,
-    alignItems: "center",
-  },
-  lowStockName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  lowStockQuantity: {
-    fontSize: 14,
-    textAlign: "center",
-  },
-  emptyList: {
-    fontSize: 14,
-    marginTop: 8,
-    fontStyle: "italic",
-    textAlign: "center",
-  },
-  button: {
-    backgroundColor: "#F5A689",
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginTop: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  buttonText: {
-    color: "#fff",
-    textAlign: "center",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-});

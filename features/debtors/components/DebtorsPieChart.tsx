@@ -13,8 +13,8 @@ interface DebtorsPieChartProps {
 export const DebtorsPieChart: React.FC<DebtorsPieChartProps> = ({
   debtorsData,
 }) => (
-  <Card style={styles.chartContainer}>
-    <ThemedText style={styles.sectionTitle}>
+  <Card className="mb-6 p-4 rounded-lg shadow-sm">
+    <ThemedText className="text-xl font-bold mb-6 mt-1">
       Distribuição dos Devedores
     </ThemedText>
     {debtorsData.length > 0 ? (
@@ -31,34 +31,9 @@ export const DebtorsPieChart: React.FC<DebtorsPieChartProps> = ({
         absolute
       />
     ) : (
-      <ThemedText style={styles.emptyList}>
+      <ThemedText className="text-sm mt-2 italic text-center">
         Nenhum dado disponível para o gráfico.
       </ThemedText>
     )}
   </Card>
 );
-
-const styles = StyleSheet.create({
-  chartContainer: {
-    marginBottom: 24,
-    padding: 16,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 24,
-    marginTop: 4,
-  },
-  emptyList: {
-    fontSize: 14,
-    marginTop: 8,
-    fontStyle: "italic",
-    textAlign: "center",
-  },
-});
