@@ -42,11 +42,21 @@ const chartConfig = {
 } satisfies ChartConfig
 
 function Dashboard() {
-  const [activeChart, setActiveChart] = React.useState<keyof typeof chartConfig>("stockIn")
+  const [activeChart, setActiveChart] = React.useState<keyof typeof chartConfig>(
+    () => (localStorage.getItem("dashboard_activeChart") as keyof typeof chartConfig) || "stockIn"
+  )
   const [stats, setStats] = React.useState<DashboardStats | null>(null)
   const [chartData, setChartData] = React.useState<DailyMovementStat[]>([])
-  const [timeRange, setTimeRange] = React.useState("30d")
+  const [timeRange, setTimeRange] = React.useState(() => localStorage.getItem("dashboard_timeRange") || "30d")
   const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    localStorage.setItem("dashboard_activeChart", activeChart)
+  }, [activeChart])
+
+  React.useEffect(() => {
+    localStorage.setItem("dashboard_timeRange", timeRange)
+  }, [timeRange])
 
   React.useEffect(() => {
     async function loadData() {
