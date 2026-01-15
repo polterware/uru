@@ -16,6 +16,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { AnalyticsRepository, DashboardStats, DailyMovementStat } from "@/lib/db/repositories/analytics-repository"
 
 export const Route = createFileRoute("/")({ component: Dashboard })
@@ -26,11 +33,11 @@ const chartConfig = {
   },
   stockIn: {
     label: "Stock In",
-    color: "hsl(var(--chart-1))",
+    color: "var(--chart-1)",
   },
   stockOut: {
     label: "Stock Out",
-    color: "hsl(var(--chart-2))",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
@@ -38,6 +45,7 @@ function Dashboard() {
   const [activeChart, setActiveChart] = React.useState<keyof typeof chartConfig>("stockIn")
   const [stats, setStats] = React.useState<DashboardStats | null>(null)
   const [chartData, setChartData] = React.useState<DailyMovementStat[]>([])
+  const [timeRange, setTimeRange] = React.useState("30d")
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
@@ -45,7 +53,7 @@ function Dashboard() {
       try {
         const [dashboardStats, dailyMovements] = await Promise.all([
           AnalyticsRepository.getDashboardStats(),
-          AnalyticsRepository.getDailyStockMovements(90) // 3 months
+          AnalyticsRepository.getStockMovements(timeRange)
         ])
         setStats(dashboardStats)
         setChartData(dailyMovements)
@@ -56,7 +64,7 @@ function Dashboard() {
       }
     }
     loadData()
-  }, [])
+  }, [timeRange])
 
   const total = React.useMemo(
     () => ({
@@ -125,85 +133,140 @@ function Dashboard() {
           </Card>
         </div>
 
-        <div className="col-span-3">
-          <Card className="col-span-3">
-            <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-4 sm:flex-row">
-              <div className="flex flex-1 flex-col justify-center gap-1 px-2 py-5 sm:py-6">
-                <CardTitle>Inventory Movements</CardTitle>
-                <CardDescription>
-                  Showing total stock movements for the last 3 months
-                </CardDescription>
-              </div>
-              <div className="flex">
-                {["stockIn", "stockOut"].map((key) => {
-                  const chart = key as keyof typeof chartConfig
-                  return (
-                    <button
-                      key={chart}
-                      data-active={activeChart === chart}
-                      className="relative z-30 flex cursor-pointer odd:rounded-l-lg even:rounded-r-lg flex-1 flex-col justify-center gap-1 px-6 py-4 text-left border even:border-l-0 data-[active=true]:bg-muted/50 sm:px-8 sm:py-6"
-                      onClick={() => setActiveChart(chart)}
+        {chartData.length > 0 && (
+          <div className="col-span-3">
+            <Card className="col-span-3">
+              <CardHeader className="flex flex-col items-stretch space-y-0 border-b  sm:flex-row">
+                <div className="flex flex-1 flex-col  gap-6">
+                  <div>
+                    <CardTitle className="text-xl">Inventory Movements</CardTitle>
+                    <CardDescription>
+                      Showing {timeRange === 'all' ? 'all-time' : `total stock movements for the last ${timeRange}`}
+                    </CardDescription>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Select value={timeRange} onValueChange={setTimeRange}>
+                    <SelectTrigger
+                      className="w-[200px] rounded-lg "
+                      aria-label="Select a value"
                     >
-                      <span className="text-xs text-muted-foreground">
-                        {chartConfig[chart].label}
-                      </span>
-                      <span className="text-lg leading-none font-bold sm:text-3xl">
-                        {total[key as keyof typeof total].toLocaleString()}
-                      </span>
-                    </button>
-                  )
-                })}
-              </div>
-            </CardHeader>
-            <CardContent className="px-2 sm:p-6">
-              <ChartContainer
-                config={chartConfig}
-                className="aspect-auto h-[250px] w-full"
-              >
-                <BarChart
-                  accessibilityLayer
-                  data={chartData}
-                  margin={{
-                    left: 12,
-                    right: 12,
-                  }}
+                      <SelectValue placeholder="Last 30 days" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectItem value="30m" className="rounded-lg">
+                        Last 30 minutes
+                      </SelectItem>
+                      <SelectItem value="1h" className="rounded-lg">
+                        Last hour
+                      </SelectItem>
+                      <SelectItem value="2h" className="rounded-lg">
+                        Last 2 hours
+                      </SelectItem>
+                      <SelectItem value="7d" className="rounded-lg">
+                        Last 7 days
+                      </SelectItem>
+                      <SelectItem value="30d" className="rounded-lg">
+                        Last 30 days
+                      </SelectItem>
+                      <SelectItem value="90d" className="rounded-lg">
+                        Last 3 months
+                      </SelectItem>
+                      <SelectItem value="1y" className="rounded-lg">
+                        Last year
+                      </SelectItem>
+                      <SelectItem value="all" className="rounded-lg">
+                        All time
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="flex h-full">
+                    {["stockIn", "stockOut"].map((key) => {
+                      const chart = key as keyof typeof chartConfig
+                      return (
+                        <button
+                          key={chart}
+                          data-active={activeChart === chart}
+                          className="relative z-30 flex items-center cursor-pointer odd:rounded-l-lg p-3 even:rounded-r-lg flex-col justify-center gap-1 px-10 text-left border even:border-l-0 data-[active=true]:bg-muted/50"
+                          onClick={() => setActiveChart(chart)}
+                        >
+                          <span className="text-xs text-nowrap text-muted-foreground">
+                            {chartConfig[chart].label}
+                          </span>
+                          <span className="text-lg leading-none font-bold sm:text-3xl">
+                            {total[key as keyof typeof total].toLocaleString()}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                </div>
+              </CardHeader>
+              <CardContent className="px-2 sm:p-6">
+                <ChartContainer
+                  config={chartConfig}
+                  className="aspect-auto h-[250px] w-full"
                 >
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="date"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    minTickGap={32}
-                    tickFormatter={(value) => {
-                      const date = new Date(value)
-                      return date.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })
+                  <BarChart
+                    accessibilityLayer
+                    data={chartData}
+                    margin={{
+                      left: 12,
+                      right: 12,
                     }}
-                  />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent
-                        className="w-[150px]"
-                        nameKey="views"
-                        labelFormatter={(value) => {
-                          return new Date(value).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
+                  >
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      dataKey="date"
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                      minTickGap={32}
+                      tickFormatter={(value) => {
+                        const date = new Date(value)
+                        if (['30m', '1h', '2h'].includes(timeRange)) {
+                          return date.toLocaleTimeString("pt-BR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
                           })
-                        }}
-                      />
-                    }
-                  />
-                  <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
-                </BarChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-        </div>
+                        }
+                        return date.toLocaleDateString("pt-BR", {
+                          month: "short",
+                          day: "numeric",
+                        })
+                      }}
+                    />
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          className="w-[150px]"
+                          nameKey="views"
+                          labelFormatter={(value) => {
+                            const date = new Date(value)
+                            if (['30m', '1h', '2h'].includes(timeRange)) {
+                              return date.toLocaleTimeString("pt-BR", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                second: "2-digit",
+                              })
+                            }
+                            return date.toLocaleDateString("pt-BR", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })
+                          }}
+                        />
+                      }
+                    />
+                    <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
+                  </BarChart>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   )

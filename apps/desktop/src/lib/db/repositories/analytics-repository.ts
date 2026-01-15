@@ -115,21 +115,61 @@ export class AnalyticsRepository {
   }
 
   /**
-   * Retrieves daily stock movement aggregation for the chart.
-   * @param days Number of past days to analyze
+   * Retrieves stock movement aggregation for various time ranges.
+   * @param range '30m', '1h', '2h', '7d', '30d', '90d', '1y', 'all'
    */
-  static async getDailyStockMovements(days = 30): Promise<DailyMovementStat[]> {
+  static async getStockMovements(
+    range: string = '30d',
+  ): Promise<DailyMovementStat[]> {
     const db = await getDb()
 
-    // SQLite query to group movements by day
-    // We assume occurred_at is ISO string. strftime('%Y-%m-%d', occurred_at) extracts date.
+    let timeFilter = ''
+    let groupBy = "strftime('%Y-%m-%d', occurred_at)"
+
+    switch (range) {
+      case '30m':
+        timeFilter = "occurred_at >= datetime('now', '-30 minutes')"
+        groupBy = "strftime('%Y-%m-%d %H:%M', occurred_at)" // Group by minute
+        break
+      case '1h':
+        timeFilter = "occurred_at >= datetime('now', '-1 hour')"
+        groupBy = "strftime('%Y-%m-%d %H:%M', occurred_at)"
+        break
+      case '2h':
+        timeFilter = "occurred_at >= datetime('now', '-2 hours')"
+        groupBy = "strftime('%Y-%m-%d %H:%M', occurred_at)"
+        break
+      case '7d':
+        timeFilter = "occurred_at >= date('now', '-7 days')"
+        groupBy = "strftime('%Y-%m-%d', occurred_at)"
+        break
+      case '30d':
+        timeFilter = "occurred_at >= date('now', '-30 days')"
+        groupBy = "strftime('%Y-%m-%d', occurred_at)"
+        break
+      case '90d':
+        timeFilter = "occurred_at >= date('now', '-90 days')"
+        groupBy = "strftime('%Y-%m-%d', occurred_at)"
+        break
+      case '1y':
+        timeFilter = "occurred_at >= date('now', '-1 year')"
+        groupBy = "strftime('%Y-%m', occurred_at)" // Group by month
+        break
+      case 'all':
+        timeFilter = '1=1' // No filter
+        groupBy = "strftime('%Y-%m', occurred_at)" // Group by month
+        break
+      default:
+        timeFilter = "occurred_at >= date('now', '-30 days')"
+    }
+
     const query = `
       SELECT
-        strftime('%Y-%m-%d', occurred_at) as date,
+        ${groupBy} as date,
         SUM(CASE WHEN type = 'IN' THEN quantity_change ELSE 0 END) as stockIn,
         SUM(CASE WHEN type IN ('OUT', 'ADJUST') THEN ABS(quantity_change) ELSE 0 END) as stockOut
       FROM inventory_movements
-      WHERE occurred_at >= date('now', '-${days} days')
+      WHERE ${timeFilter}
       GROUP BY date
       ORDER BY date ASC
     `
@@ -138,11 +178,15 @@ export class AnalyticsRepository {
       const result = await db.select<DailyMovementStat[]>(query)
       return result
     } catch (error) {
-      console.error(
-        '[AnalyticsRepository] getDailyStockMovements error:',
-        error,
-      )
+      console.error('[AnalyticsRepository] getStockMovements error:', error)
       return []
     }
+  }
+
+  /**
+   * @deprecated Use getStockMovements instead
+   */
+  static async getDailyStockMovements(days = 30): Promise<DailyMovementStat[]> {
+    return this.getStockMovements(`${days}d`)
   }
 }
