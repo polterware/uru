@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react"
+import { ArrowUpDown, ChevronDown, Columns, MoreHorizontal, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -34,8 +34,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 import { DebtorsRepository } from "@/lib/db/repositories/debtors-repository"
 import { Debtor } from "@/lib/db/types"
+import { format } from "date-fns"
 
 export const Route = createFileRoute("/debtors/")({
   component: Debtors,
@@ -80,14 +82,14 @@ function Debtors() {
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          onCheckedChange={(value: boolean) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          onCheckedChange={(value: boolean) => row.toggleSelected(!!value)}
           aria-label="Select row"
         />
       ),
@@ -112,12 +114,30 @@ function Debtors() {
     },
     {
       accessorKey: "phone",
-      header: "Phone",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Phone
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
       cell: ({ row }) => <div>{row.getValue("phone") || "-"}</div>,
     },
     {
       accessorKey: "current_balance",
-      header: () => <div className="text-right">Current Balance</div>,
+      header: ({ column }) => (
+        <div className="text-right">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Current Balance
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("current_balance"))
         const formatted = new Intl.NumberFormat("pt-BR", {
@@ -134,21 +154,55 @@ function Debtors() {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
       cell: ({ row }) => {
         const status = row.getValue("status") as string
+        const variant = status === "active" ? "secondary" : status === "blocked" ? "destructive" : "outline"
         return (
-          <div
-            className={`capitalize font-medium ${status === "active"
-              ? "text-blue-600"
-              : status === "blocked"
-                ? "text-red-600"
-                : "text-muted-foreground"
-              }`}
-          >
+          <Badge variant={variant} className="capitalize">
             {status}
-          </div>
+          </Badge>
         )
+      },
+    },
+    {
+      accessorKey: "created_at",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Created
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const date = row.getValue("created_at") as string
+        return date ? <div className="text-xs text-muted-foreground">{format(new Date(date), "dd/MM/yy HH:mm")}</div> : "-"
+      },
+    },
+    {
+      accessorKey: "updated_at",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Updated
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const date = row.getValue("updated_at") as string
+        return date ? <div className="text-xs text-muted-foreground">{format(new Date(date), "dd/MM/yy HH:mm")}</div> : "-"
       },
     },
     {
@@ -215,7 +269,7 @@ function Debtors() {
         <Input
           placeholder="Filter customers..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
@@ -224,7 +278,7 @@ function Debtors() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
+                <Columns className="mr-1 h-4 w-4" /> Customize Columns <ChevronDown className="ml-1 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -237,7 +291,7 @@ function Debtors() {
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
+                      onCheckedChange={(value: boolean) =>
                         column.toggleVisibility(!!value)
                       }
                     >

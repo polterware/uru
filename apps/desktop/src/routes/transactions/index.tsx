@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react"
+import { ArrowUpDown, ChevronDown, Columns, MoreHorizontal, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -36,6 +36,8 @@ import {
   PurchasesRepository,
   PurchaseWithDetails,
 } from "@/lib/db/repositories/purchases-repository"
+import { Badge } from "@/components/ui/badge"
+import { format } from "date-fns"
 
 export const Route = createFileRoute("/transactions/")({
   component: Transactions,
@@ -57,12 +59,20 @@ export const columns: ColumnDef<PurchaseWithDetails>[] = [
     },
     cell: ({ row }) => {
       const date = new Date(row.getValue("created_at"))
-      return <div>{date.toLocaleString()}</div>
+      return <div>{format(date, "dd/MM/yy HH:mm")}</div>
     },
   },
   {
     accessorKey: "debtor_name",
-    header: "Debtor",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Debtor
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
       const name = row.getValue("debtor_name") as string | null
       return <div className="font-medium">{name || "Walk-in Customer"}</div>
@@ -70,7 +80,17 @@ export const columns: ColumnDef<PurchaseWithDetails>[] = [
   },
   {
     accessorKey: "items_count",
-    header: () => <div className="text-right">Items</div>,
+    header: ({ column }) => (
+      <div className="text-right">
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Items
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+    ),
     cell: ({ row }) => {
       return (
         <div className="text-right font-medium">{row.getValue("items_count")}</div>
@@ -79,7 +99,17 @@ export const columns: ColumnDef<PurchaseWithDetails>[] = [
   },
   {
     accessorKey: "total_amount",
-    header: () => <div className="text-right">Total</div>,
+    header: ({ column }) => (
+      <div className="text-right">
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Total
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+    ),
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("total_amount") as string)
       const formatted = new Intl.NumberFormat("pt-BR", {
@@ -171,37 +201,40 @@ function Transactions() {
           }
           className="max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-2">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Button asChild className="ml-2">
-          <Link to="/transactions/new">
-            <Plus className="mr-2 h-4 w-4" /> New Sale
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-2">
+                <Columns className="mr-1 h-4 w-4" /> Customize Columns <ChevronDown className="ml-1 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  )
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button asChild>
+            <Link to="/transactions/new">
+              <Plus className="mr-2 h-4 w-4" /> New Sale
+            </Link>
+          </Button>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>

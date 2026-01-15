@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Activity, Box, TrendingUp } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import {
@@ -74,41 +75,50 @@ function Dashboard() {
       <div className="grid gap-4 md:grid-cols-3">
         <div className="grid gap-4 md:grid-cols-3 md:col-span-3">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Items</CardTitle>
-              <Box className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Items</CardTitle>
+              <Badge variant="outline" className="gap-1 rounded-full">
+                <TrendingUp className="h-3 w-3" />
+                {stats?.totalItemsGrowth ?? 0}%
+              </Badge>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.totalItems ?? 0}</div>
-              <p className="text-xs text-muted-foreground">
-                {stats?.totalItemsGrowth ?? 0}% from last month
+              <div className="text-3xl font-bold">{stats?.totalItems ?? 0}</div>
+              <p className="text-sm text-muted-foreground mt-1">
+                From last month
               </p>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Low Stock</CardTitle>
+              <Badge variant="outline" className="gap-1 rounded-full">
+                <Box className="h-3 w-3" />
+                Needs Attention
+              </Badge>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.lowStockItems ?? 0}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-3xl font-bold">{stats?.lowStockItems ?? 0}</div>
+              <p className="text-sm text-muted-foreground mt-1">
                 Items below safety stock
               </p>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
                 Asset Value
               </CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
+              <Badge variant="outline" className="gap-1 rounded-full">
+                <Activity className="h-3 w-3" />
+                Active
+              </Badge>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-3xl font-bold">
                 {stats?.totalInventoryValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) ?? 'R$ 0,00'}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground mt-1">
                 Total inventory cost
               </p>
             </CardContent>

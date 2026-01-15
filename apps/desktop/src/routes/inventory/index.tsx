@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react"
+import { ArrowUpDown, ChevronDown, Columns, MoreHorizontal, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -34,7 +34,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 import { InventoryRepository } from "@/lib/db/repositories/inventory-repository"
+import { format } from "date-fns"
 
 export const Route = createFileRoute("/inventory/")({
   component: Inventory,
@@ -47,6 +49,8 @@ type InventoryItem = {
   quantity: number
   price?: number
   status: "in-stock" | "low-stock" | "out-of-stock"
+  created_at: string
+  updated_at: string
 }
 
 export const columns: ColumnDef<InventoryItem>[] = [
@@ -58,14 +62,14 @@ export const columns: ColumnDef<InventoryItem>[] = [
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value: boolean) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onCheckedChange={(value: boolean) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />
     ),
@@ -74,7 +78,15 @@ export const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "sku",
-    header: "SKU",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        SKU
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => <div className="uppercase">{row.getValue("sku") || "-"}</div>,
   },
   {
@@ -94,26 +106,39 @@ export const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Status
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
       const status = row.getValue("status") as string
+      const variant = status === "in-stock" ? "secondary" : status === "low-stock" ? "outline" : "destructive"
+
       return (
-        <div
-          className={`capitalize ${status === "in-stock"
-            ? "text-green-600"
-            : status === "low-stock"
-              ? "text-yellow-600"
-              : "text-red-600"
-            }`}
-        >
+        <Badge variant={variant} className="capitalize">
           {status.replace("-", " ")}
-        </div>
+        </Badge>
       )
     },
   },
   {
     accessorKey: "price",
-    header: () => <div className="text-right">Price</div>,
+    header: ({ column }) => (
+      <div className="text-right">
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Price
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+    ),
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("price") || "0")
       const formatted = new Intl.NumberFormat("pt-BR", {
@@ -126,9 +151,51 @@ export const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "quantity",
-    header: () => <div className="text-right">Qty</div>,
+    header: ({ column }) => (
+      <div className="text-right">
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Qty
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+    ),
     cell: ({ row }) => {
       return <div className="text-right font-medium">{row.getValue("quantity")}</div>
+    },
+  },
+  {
+    accessorKey: "created_at",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Created
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const date = row.getValue("created_at") as string
+      return date ? <div className="text-xs text-muted-foreground">{format(new Date(date), "dd/MM/yy HH:mm")}</div> : "-"
+    },
+  },
+  {
+    accessorKey: "updated_at",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Updated
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const date = row.getValue("updated_at") as string
+      return date ? <div className="text-xs text-muted-foreground">{format(new Date(date), "dd/MM/yy HH:mm")}</div> : "-"
     },
   },
   {
@@ -186,7 +253,9 @@ function Inventory() {
         price: item.selling_price,
         status: item.quantity === 0
           ? "out-of-stock"
-          : (item.quantity < (item.min_stock_level || 5) ? "low-stock" : "in-stock")
+          : (item.quantity < (item.min_stock_level || 5) ? "low-stock" : "in-stock"),
+        created_at: item.created_at,
+        updated_at: item.updated_at,
       }))
       setData(formattedItems)
     } catch (error) {
@@ -224,7 +293,7 @@ function Inventory() {
         <Input
           placeholder="Filter names..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
@@ -233,7 +302,7 @@ function Inventory() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
+                <Columns className="mr-1 h-4 w-4" /> Customize Columns <ChevronDown className="ml-1 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -246,7 +315,7 @@ function Inventory() {
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
+                      onCheckedChange={(value: boolean) =>
                         column.toggleVisibility(!!value)
                       }
                     >

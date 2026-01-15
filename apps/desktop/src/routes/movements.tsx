@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, ChevronDown, Columns, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -32,10 +32,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 import {
   InventoryMovementsRepository,
   InventoryMovementWithDetails,
 } from "@/lib/db/repositories/inventory-movements-repository"
+import { format } from "date-fns"
 
 export const Route = createFileRoute("/movements")({
   component: InventoryMovements,
@@ -57,32 +59,59 @@ export const columns: ColumnDef<InventoryMovementWithDetails>[] = [
     },
     cell: ({ row }) => {
       const date = new Date(row.getValue("occurred_at"))
-      return <div>{date.toLocaleString()}</div>
+      return <div>{format(date, "dd/MM/yy HH:mm")}</div>
     },
   },
   {
     accessorKey: "item_name",
-    header: "Item",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Item
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
       return <div className="font-medium">{row.getValue("item_name")}</div>
     },
   },
   {
     accessorKey: "type",
-    header: "Type",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Type
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
       const type = row.getValue("type") as string
-      let colorClass = ""
-      if (type === "IN") colorClass = "text-green-600"
-      if (type === "OUT") colorClass = "text-red-600"
-      if (type === "ADJUSTMENT") colorClass = "text-yellow-600"
+      const variant = type === "IN" ? "secondary" : type === "OUT" ? "destructive" : "outline"
 
-      return <div className={`font-medium ${colorClass}`}>{type}</div>
+      return (
+        <Badge variant={variant} className="font-medium">
+          {type}
+        </Badge>
+      )
     },
   },
   {
     accessorKey: "quantity_change",
-    header: () => <div className="text-right">Qty Change</div>,
+    header: ({ column }) => (
+      <div className="text-right">
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Qty Change
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+    ),
     cell: ({ row }) => {
       const qty = parseFloat(row.getValue("quantity_change") as string)
       return (
@@ -94,7 +123,15 @@ export const columns: ColumnDef<InventoryMovementWithDetails>[] = [
   },
   {
     accessorKey: "debtor_name",
-    header: "Debtor / Reason",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Debtor / Reason
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
       const debtorName = row.original.debtor_name
       const reason = row.original.reason
@@ -190,7 +227,7 @@ function InventoryMovements() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-2">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
+              <Columns className="mr-1 h-4 w-4" /> Customize Columns <ChevronDown className="ml-1 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
