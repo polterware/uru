@@ -189,9 +189,6 @@ CREATE TABLE IF NOT EXISTS customer_groups (
     UNIQUE (shop_id, code)
 );
 
--- Atualizar FK de customers para customer_groups? SQLite nao suporta ALTER TABLE ADD CONSTRAINT FK facil.
--- Mas como customer_groups depende de shops e customers nao estritamente, podemos deixar customers criar antes.
-
 -- 10. Membros de Grupos de Clientes
 CREATE TABLE IF NOT EXISTS customer_group_memberships (
     customer_id TEXT REFERENCES customers(id) ON DELETE CASCADE,
