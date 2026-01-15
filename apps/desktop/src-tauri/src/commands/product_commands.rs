@@ -1,6 +1,6 @@
-use crate::dtos::product::{CreateProductDTO, UpdateProductDTO};
-use crate::models::product::Product;
-use crate::repositories::product::ProductRepository;
+use crate::dtos::product_dto::{CreateProductDTO, UpdateProductDTO};
+use crate::models::product_model::Product;
+use crate::services::product_service::ProductService;
 use tauri::State;
 use sqlx::SqlitePool;
 
@@ -9,12 +9,8 @@ pub async fn create_product(
     pool: State<'_, SqlitePool>,
     payload: CreateProductDTO,
 ) -> Result<Product, String> {
-    let (product, categories) = payload.into_models();
-    let repo = ProductRepository::new(pool.inner().clone());
-
-    repo.create(product, categories)
-        .await
-        .map_err(|e| format!("Erro ao criar produto: {}", e))
+    let service = ProductService::new(pool.inner().clone());
+    service.create_product(payload).await
 }
 
 #[tauri::command]
@@ -22,12 +18,8 @@ pub async fn update_product(
     pool: State<'_, SqlitePool>,
     payload: UpdateProductDTO,
 ) -> Result<Product, String> {
-    let (product, _) = payload.into_models();
-    let repo = ProductRepository::new(pool.inner().clone());
-
-    repo.update(product)
-        .await
-        .map_err(|e| format!("Erro ao atualizar produto: {}", e))
+    let service = ProductService::new(pool.inner().clone());
+    service.update_product(payload).await
 }
 
 #[tauri::command]
@@ -35,11 +27,8 @@ pub async fn delete_product(
     pool: State<'_, SqlitePool>,
     id: String,
 ) -> Result<(), String> {
-    let repo = ProductRepository::new(pool.inner().clone());
-
-    repo.delete(&id)
-        .await
-        .map_err(|e| format!("Erro ao deletar produto: {}", e))
+    let service = ProductService::new(pool.inner().clone());
+    service.delete_product(&id).await
 }
 
 #[tauri::command]
@@ -47,20 +36,14 @@ pub async fn get_product(
     pool: State<'_, SqlitePool>,
     id: String,
 ) -> Result<Option<Product>, String> {
-    let repo = ProductRepository::new(pool.inner().clone());
-
-    repo.get_by_id(&id)
-        .await
-        .map_err(|e| format!("Erro ao buscar produto: {}", e))
+    let service = ProductService::new(pool.inner().clone());
+    service.get_product(&id).await
 }
 
 #[tauri::command]
 pub async fn list_products(
     pool: State<'_, SqlitePool>,
 ) -> Result<Vec<Product>, String> {
-    let repo = ProductRepository::new(pool.inner().clone());
-
-    repo.list()
-        .await
-        .map_err(|e| format!("Erro ao listar produtos: {}", e))
+    let service = ProductService::new(pool.inner().clone());
+    service.list_products().await
 }
