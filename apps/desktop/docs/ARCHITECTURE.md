@@ -28,6 +28,20 @@ Para suportar sincronização distribuída (estilo WatermelonDB), todas as tabel
 - `created_at`: Data de criação do registro.
 - `updated_at`: Timestamp Unix (ou ISO 8601) usado como âncora de sincronização.
 
+### Camada de Compatibilidade (SQLite <-> Postgres)
+
+Como o _Mother Node_ utiliza SQLite (local) e o _Cloud Provider_ utiliza Postgres, as seguintes regras de mapeamento devem ser **estritamente seguidas** para garantir que o Sync funcione:
+
+| Atributo         | Postgres (Cloud) | SQLite (Local) | Tratamento na Aplicação                                                                     |
+| :--------------- | :--------------- | :------------- | :------------------------------------------------------------------------------------------ |
+| **Primary Keys** | `UUID`           | `TEXT`         | O Front/Rust deve gerar UUID v4 e salvar como string (36 chars).                            |
+| **JSON Data**    | `JSONB`          | `TEXT`         | O Rust/TS deve serializar Objetos para Strings antes de salvar, e parsear ao ler.           |
+| **Dates**        | `TIMESTAMP`      | `TEXT`         | Sempre salvar como ISO 8601 UTC String (`YYYY-MM-DDTHH:mm:ss.sssZ`).                        |
+| **Booleans**     | `BOOLEAN`        | `INTEGER`      | `true` -> `1`, `false` -> `0`. A aplicação deve converter isso na leitura.                  |
+| **Arrays**       | `TEXT[]`         | `TEXT`         | Salvar como JSON Array String `["a","b"]` ou CSV, dependendo do caso. Preferência por JSON. |
+
+> **Nota Crítica**: O SQLite é _type-less_ por natureza. A aplicação (seja no Frontend via Types ou no Rust via Structs) é responsável por garantir a integridade desses tipos antes do INSERT.
+
 ## 3. Sincronização em Nuvem (Cloud Sync)
 
 A sincronização entre os nós locais (SQLite) e a nuvem (Supabase/Postgres) segue um protocolo de **Eventual Consistency**.
