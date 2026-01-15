@@ -11,17 +11,17 @@ impl CategoriesRepository {
     }
 
     pub async fn create(&self, category: Category) -> Result<Category> {
-        sqlx::query_as::<_, Category>(
-            r#"
+        let sql = r#"
             INSERT INTO categories (
                 id, shop_id, parent_id, name, slug, description, image_url, banner_url,
                 type, rules, is_visible, sort_order, seo_title, seo_description,
                 template_suffix, metadata, _status, created_at, updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
             RETURNING *
-            "#
-        )
+        "#;
+
+        sqlx::query_as::<_, Category>(sql)
         .bind(category.id)
         .bind(category.shop_id)
         .bind(category.parent_id)
@@ -46,17 +46,18 @@ impl CategoriesRepository {
     }
 
     pub async fn update(&self, category: Category) -> Result<Category> {
-        sqlx::query_as::<_, Category>(
-            r#"
+        let sql = r#"
             UPDATE categories SET
-                shop_id = ?, parent_id = ?, name = ?, slug = ?, description = ?,
-                image_url = ?, banner_url = ?, type = ?, rules = ?, is_visible = ?,
-                sort_order = ?, seo_title = ?, seo_description = ?, template_suffix = ?,
-                metadata = ?, _status = ?, updated_at = ?
-            WHERE id = ?
+                shop_id = $2, parent_id = $3, name = $4, slug = $5, description = $6,
+                image_url = $7, banner_url = $8, type = $9, rules = $10, is_visible = $11,
+                sort_order = $12, seo_title = $13, seo_description = $14, template_suffix = $15,
+                metadata = $16, _status = $17, updated_at = $18
+            WHERE id = $1
             RETURNING *
-            "#
-        )
+        "#;
+
+        sqlx::query_as::<_, Category>(sql)
+        .bind(category.id)
         .bind(category.shop_id)
         .bind(category.parent_id)
         .bind(category.name)
@@ -74,7 +75,6 @@ impl CategoriesRepository {
         .bind(category.metadata)
         .bind(category.sync_status)
         .bind(category.updated_at)
-        .bind(category.id)
         .fetch_one(&self.pool)
         .await
     }

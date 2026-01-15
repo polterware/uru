@@ -1,16 +1,16 @@
 use crate::models::product::Product;
-use sqlx::{Sqlite, Pool, query, query_as};
+use sqlx::{SqlitePool, Result};
 
 pub struct ProductRepository {
-    pool: Pool<Sqlite>,
+    pool: SqlitePool,
 }
 
 impl ProductRepository {
-    pub fn new(pool: Pool<Sqlite>) -> Self {
+    pub fn new(pool: SqlitePool) -> Self {
         Self { pool }
     }
 
-    pub async fn create(&self, product: Product) -> Result<String, sqlx::Error> {
+    pub async fn create(&self, product: Product) -> Result<Product> {
         let sql = r#"
             INSERT INTO products (
                 id, sku, type, status, name, slug, gtin_ean, price, promotional_price, cost_price,
@@ -20,41 +20,40 @@ impl ProductRepository {
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
                 $18, $19, $20, $21, $22, $23, $24, $25
             )
+            RETURNING *
         "#;
 
-        query(sql)
-            .bind(&product.id)
-            .bind(&product.sku)
-            .bind(&product.r#type)
-            .bind(&product.status)
-            .bind(&product.name)
-            .bind(&product.slug)
-            .bind(&product.gtin_ean)
-            .bind(&product.price)
-            .bind(&product.promotional_price)
-            .bind(&product.cost_price)
-            .bind(&product.currency)
-            .bind(&product.tax_ncm)
-            .bind(&product.is_shippable)
-            .bind(&product.weight_g)
-            .bind(&product.width_mm)
-            .bind(&product.height_mm)
-            .bind(&product.depth_mm)
-            .bind(&product.attributes)
-            .bind(&product.metadata)
-            .bind(&product.category_id)
-            .bind(&product.brand_id)
-            .bind(&product.parent_id)
-            .bind(&product.sync_status)
-            .bind(&product.created_at)
-            .bind(&product.updated_at)
-            .execute(&self.pool)
-            .await?;
-
-        Ok(product.id)
+        sqlx::query_as::<_, Product>(sql)
+            .bind(product.id)
+            .bind(product.sku)
+            .bind(product.r#type)
+            .bind(product.status)
+            .bind(product.name)
+            .bind(product.slug)
+            .bind(product.gtin_ean)
+            .bind(product.price)
+            .bind(product.promotional_price)
+            .bind(product.cost_price)
+            .bind(product.currency)
+            .bind(product.tax_ncm)
+            .bind(product.is_shippable)
+            .bind(product.weight_g)
+            .bind(product.width_mm)
+            .bind(product.height_mm)
+            .bind(product.depth_mm)
+            .bind(product.attributes)
+            .bind(product.metadata)
+            .bind(product.category_id)
+            .bind(product.brand_id)
+            .bind(product.parent_id)
+            .bind(product.sync_status)
+            .bind(product.created_at)
+            .bind(product.updated_at)
+            .fetch_one(&self.pool)
+            .await
     }
 
-    pub async fn update(&self, product: Product) -> Result<Product, sqlx::Error> {
+    pub async fn update(&self, product: Product) -> Result<Product> {
         let sql = r#"
             UPDATE products SET
                 sku = $2,
@@ -79,74 +78,70 @@ impl ProductRepository {
                 brand_id = $21,
                 parent_id = $22,
                 _status = $23,
-                updated_at = CURRENT_TIMESTAMP
+                updated_at = $24
             WHERE id = $1
             RETURNING *
         "#;
 
-        let updated_product = query_as::<_, Product>(sql)
-            .bind(&product.id)
-            .bind(&product.sku)
-            .bind(&product.r#type)
-            .bind(&product.status)
-            .bind(&product.name)
-            .bind(&product.slug)
-            .bind(&product.gtin_ean)
-            .bind(&product.price)
-            .bind(&product.promotional_price)
-            .bind(&product.cost_price)
-            .bind(&product.currency)
-            .bind(&product.tax_ncm)
-            .bind(&product.is_shippable)
-            .bind(&product.weight_g)
-            .bind(&product.width_mm)
-            .bind(&product.height_mm)
-            .bind(&product.depth_mm)
-            .bind(&product.attributes)
-            .bind(&product.metadata)
-            .bind(&product.category_id)
-            .bind(&product.brand_id)
-            .bind(&product.parent_id)
-            .bind(&product.sync_status)
+        sqlx::query_as::<_, Product>(sql)
+            .bind(product.id)
+            .bind(product.sku)
+            .bind(product.r#type)
+            .bind(product.status)
+            .bind(product.name)
+            .bind(product.slug)
+            .bind(product.gtin_ean)
+            .bind(product.price)
+            .bind(product.promotional_price)
+            .bind(product.cost_price)
+            .bind(product.currency)
+            .bind(product.tax_ncm)
+            .bind(product.is_shippable)
+            .bind(product.weight_g)
+            .bind(product.width_mm)
+            .bind(product.height_mm)
+            .bind(product.depth_mm)
+            .bind(product.attributes)
+            .bind(product.metadata)
+            .bind(product.category_id)
+            .bind(product.brand_id)
+            .bind(product.parent_id)
+            .bind(product.sync_status)
+            .bind(product.updated_at)
             .fetch_one(&self.pool)
-            .await?;
-
-        Ok(updated_product)
+            .await
     }
 
-    pub async fn delete(&self, id: &str) -> Result<(), sqlx::Error> {
+    pub async fn delete(&self, id: &str) -> Result<()> {
         let sql = "DELETE FROM products WHERE id = $1";
-        query(sql)
+        sqlx::query(sql)
             .bind(id)
             .execute(&self.pool)
             .await?;
         Ok(())
     }
 
-    pub async fn get_by_id(&self, id: &str) -> Result<Option<Product>, sqlx::Error> {
+    pub async fn get_by_id(&self, id: &str) -> Result<Option<Product>> {
         let sql = "SELECT * FROM products WHERE id = $1";
-        let product = query_as::<_, Product>(sql)
+        sqlx::query_as::<_, Product>(sql)
             .bind(id)
             .fetch_optional(&self.pool)
-            .await?;
-        Ok(product)
+            .await
     }
 
-    pub async fn list(&self) -> Result<Vec<Product>, sqlx::Error> {
+    pub async fn list(&self) -> Result<Vec<Product>> {
         let sql = "SELECT * FROM products ORDER BY created_at DESC";
-        let products = query_as::<_, Product>(sql)
+        sqlx::query_as::<_, Product>(sql)
             .fetch_all(&self.pool)
-            .await?;
-        Ok(products)
+            .await
     }
 
-    pub async fn search(&self, query_str: &str) -> Result<Vec<Product>, sqlx::Error> {
+    pub async fn search(&self, query_str: &str) -> Result<Vec<Product>> {
         let sql = "SELECT * FROM products WHERE name LIKE $1 OR sku LIKE $1 OR gtin_ean LIKE $1";
         let search_pattern = format!("%{}%", query_str);
-        let products = query_as::<_, Product>(sql)
+        sqlx::query_as::<_, Product>(sql)
             .bind(search_pattern)
             .fetch_all(&self.pool)
-            .await?;
-        Ok(products)
+            .await
     }
 }

@@ -11,17 +11,17 @@ impl ShopsRepository {
     }
 
     pub async fn create(&self, shop: Shop) -> Result<Shop> {
-        sqlx::query_as::<_, Shop>(
-            r#"
+        let sql = r#"
             INSERT INTO shops (
                 id, name, legal_name, slug, is_default, status,
                 features_config, mail_config, storage_config, settings, branding,
                 currency, timezone, locale, owner_id, _status, created_at, updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
             RETURNING *
-            "#
-        )
+        "#;
+
+        sqlx::query_as::<_, Shop>(sql)
         .bind(shop.id)
         .bind(shop.name)
         .bind(shop.legal_name)
@@ -45,16 +45,17 @@ impl ShopsRepository {
     }
 
     pub async fn update(&self, shop: Shop) -> Result<Shop> {
-        sqlx::query_as::<_, Shop>(
-            r#"
+        let sql = r#"
             UPDATE shops SET
-                name = ?, legal_name = ?, slug = ?, is_default = ?, status = ?,
-                features_config = ?, mail_config = ?, storage_config = ?, settings = ?, branding = ?,
-                currency = ?, timezone = ?, locale = ?, owner_id = ?, _status = ?, updated_at = ?
-            WHERE id = ?
+                name = $2, legal_name = $3, slug = $4, is_default = $5, status = $6,
+                features_config = $7, mail_config = $8, storage_config = $9, settings = $10, branding = $11,
+                currency = $12, timezone = $13, locale = $14, owner_id = $15, _status = $16, updated_at = $17
+            WHERE id = $1
             RETURNING *
-            "#
-        )
+        "#;
+
+        sqlx::query_as::<_, Shop>(sql)
+        .bind(shop.id)
         .bind(shop.name)
         .bind(shop.legal_name)
         .bind(shop.slug)
@@ -71,7 +72,6 @@ impl ShopsRepository {
         .bind(shop.owner_id)
         .bind(shop.sync_status)
         .bind(shop.updated_at)
-        .bind(shop.id)
         .fetch_one(&self.pool)
         .await
     }
