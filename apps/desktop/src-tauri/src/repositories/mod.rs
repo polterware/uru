@@ -1,3 +1,4 @@
 pub mod shop;
 pub mod brand;
-pub mod categories;
+pub mod category;
+pub mod product;
