@@ -1,135 +1,102 @@
-# Turborepo starter
+# Inventy: The Local-First Inventory Cloud
 
-This Turborepo starter is maintained by the Turborepo core team.
+> **Manage your inventory in real-time across multiple devices using your own Local Network. No cloud subscriptions, no internet interaction required.**
 
-## Using this example
+**Inventy** is a high-performance, "Premium" aesthetics inventory management system designed for small businesses that need reliability and speed. It operates on a robust **Mother-Satellite Architecture**, where a Desktop computer acts as the local server for multiple mobile devices.
 
-Run the following command:
+---
 
-```sh
-npx create-turbo@latest
-```
+## 🌟 The Vision
 
-## What's inside?
+Most inventory apps are either:
 
-This Turborepo includes the following packages/apps:
+1.  **Cloud-based**: Slow, require monthly subscriptions, and stop working when the internet goes down.
+2.  **Single-device**: Data is trapped on one phone or computer.
 
-### Apps and Packages
+**Inventy** bridges this gap. It gives you the power of a "Cloud" system but runs entirely inside your Wi-Fi router. It is **Offline-First**, meaning you can keep selling even if the Wi-Fi or Power goes out, and everything syncs back up automatically when reconnected.
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## 🏗 Architecture: "Mother & Satellites"
 
-### Utilities
+The system is composed of two distinct application types that work in harmony:
 
-This Turborepo has some additional tools already setup for you:
+### 1. The Mother Node (Desktop)
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+- **Role**: The Truth Source. It holds the master database and orchestrates synchronization.
+- **Platform**: Windows / macOS / Linux (via **Tauri v2**).
+- **Tech Stack**:
+  - **Frontend**: Next.js (React) + Shadcn/UI + Framer Motion.
+  - **Backend**: Rust (via Tauri Sidecar) + Node.js (Local API).
+  - **Database**: SQLite (High Performance, WAL Mode).
+- **Responsibilities**:
+  - Announces presence on the network (Bonjour/mDNS).
+  - Resolves data conflicts.
+  - Provides advanced reporting and dashboarding on a large screen.
 
-### Build
+### 2. The Satellite Nodes (Mobile)
 
-To build all apps and packages, run the following command:
+- **Role**: Input Terminals. Used for POS (Point of Sale), stock checking, and barcode scanning.
+- **Platform**: Android / iOS (via **React Native**).
+- **Tech Stack**:
+  - **Logic**: TypeScript + React Native.
+  - **Database**: WatermelonDB / Op-SQLite.
+- **Responsibilities**:
+  - **Offline-First**: Reads/Writes to local DB immediately.
+  - **Sync**: Pushes changes to Mother Node periodically.
 
-```
-cd my-turborepo
+---
 
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
+## 🛠 Technology Stack Breakdown
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
+We chose this stack to maximize **Performance**, **Beauty**, and **DX (Developer Experience)**:
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+| Layer             | Technology            | Decision Rationale                                                                                                          |
+| :---------------- | :-------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| **Desktop Shell** | **Tauri v2**          | significantly lighter than Electron. Uses system webview (WebKit/WebView2) instead of bundling Chrome. Allows Rust backend. |
+| **Mobile Core**   | **React Native**      | Allows sharing 90% of business logic (Models, Validation, Util) with the Desktop web frontend via Monorepo.                 |
+| **Styling**       | **Tailwind + Shadcn** | Enables "Glassmorphism" and premium feel with minimal effort. Consistent design language across Web and Desktop.            |
+| **Sync Engine**   | **WatermelonDB**      | Specialized for dealing with thousands of records and complex offline sync logic (Push/Pull protocols).                     |
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+---
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+## 📡 The Sync Protocol
 
-### Develop
+The heart of Inventy is its ability to keep devices in sync without a central cloud server.
 
-To develop all apps and packages, run the following command:
+1.  **Discovery**:
+    - Mother Node starts up and broadcasts `_inventy-http._tcp` via mDNS.
+    - Satellites listen and auto-discover the Mother Node IP (e.g., `192.168.1.50:3000`).
+2.  **Authentication**:
+    - Satellites perform a handshake (Pairing) to ensure unauthorized devices can't access data.
+3.  **Synchronization**:
+    - **PULL**: Satellite asks "Give me everything changed since `last_pulled_at`".
+    - **PUSH**: Satellite sends "Here is everything I changed locally since last sync".
+    - **Conflict Resolution**: "Last Write Wins" or server-side merges based on audit logs.
 
-```
-cd my-turborepo
+---
 
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+## 💾 Database Schema Principles
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+To support robust two-way syncing, our database schema follows strict rules:
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+- **UUIDs**: Every record (Item, Client, Transaction) utilizes a UUIDv4 Primary Key. Incrementing IDs (1, 2, 3) are strictly forbidden to prevent collision between offline devices.
+- **Soft Deletes**: Data is never `DELETE`d. We set a `deleted_at` timestamp. This ensures deletion events propagate during sync.
+- **Timestamps**: `created_at` and `updated_at` are mandatory for the Sync Protocol to know what requires transfer.
+- **Immutable Logs**: Stock changes are recorded in an `inventory_movements` table (ledger) rather than just mutating the `quantity`, allowing full auditability.
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+---
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+## 🗺 Roadmap
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+- [ ] **Phase 1: Foundation**
+  - [ ] Establish Monorepo structure (`apps/mobile`, `apps/desktop`, `packages/shared`).
+  - [ ] Create shared WatermelonDB Schema definitions.
+- [ ] **Phase 2: The Mother Node**
+  - [ ] Init Tauri v2 project.
+  - [ ] Implement Local HTTP Server (Node/Rust) for Sync API.
+  - [ ] Build key "Dashboard" screens.
+- [ ] **Phase 3: The Connection**
+  - [ ] Implement mDNS Discovery on Mobile.
+  - [ ] Build "Pairing" UI.
+  - [ ] Finalize WatermelonDB Sync Adapter.
