@@ -12,11 +12,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Plus, DollarSign } from "lucide-react"
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -83,6 +85,28 @@ const data: Debtor[] = [
 
 export const columns: ColumnDef<Debtor>[] = [
   {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
     accessorKey: "name",
     header: ({ column }) => {
       return (
@@ -127,10 +151,10 @@ export const columns: ColumnDef<Debtor>[] = [
       return (
         <div
           className={`capitalize font-medium ${status === "active"
-              ? "text-blue-600"
-              : status === "overdue"
-                ? "text-red-600"
-                : "text-green-600"
+            ? "text-blue-600"
+            : status === "overdue"
+              ? "text-red-600"
+              : "text-green-600"
             }`}
         >
           {status}
@@ -219,9 +243,37 @@ function Debtors() {
           }
           className="max-w-sm"
         />
-        <Button>
-          <Plus className="mr-2 h-4 w-4" /> Add Customer
-        </Button>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  )
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" /> Add Customer
+          </Button>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>

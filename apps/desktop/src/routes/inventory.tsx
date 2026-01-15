@@ -15,6 +15,7 @@ import {
 import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -92,6 +93,28 @@ const data: InventoryItem[] = [
 
 export const columns: ColumnDef<InventoryItem>[] = [
   {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
     accessorKey: "sku",
     header: "SKU",
     cell: ({ row }) => <div className="uppercase">{row.getValue("sku")}</div>,
@@ -119,10 +142,10 @@ export const columns: ColumnDef<InventoryItem>[] = [
       return (
         <div
           className={`capitalize ${status === "in-stock"
-              ? "text-green-600"
-              : status === "low-stock"
-                ? "text-yellow-600"
-                : "text-red-600"
+            ? "text-green-600"
+            : status === "low-stock"
+              ? "text-yellow-600"
+              : "text-red-600"
             }`}
         >
           {status.replace("-", " ")}
@@ -220,9 +243,37 @@ function Inventory() {
           }
           className="max-w-sm"
         />
-        <Button>
-          <Plus className="mr-2 h-4 w-4" /> Add Item
-        </Button>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  )
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" /> Add Item
+          </Button>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
