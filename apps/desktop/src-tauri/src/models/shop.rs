@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 // Assuming we want to use chrono for timestamps as per Cargo.toml features
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
 pub struct Shop {
@@ -23,6 +23,6 @@ pub struct Shop {
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: String,
-    pub created_at: NaiveDateTime, // SQLite DATETIME is usually compatible with NaiveDateTime
-    pub updated_at: NaiveDateTime,
+    pub created_at: DateTime<Utc>, // SQLite DATETIME is usually compatible with NaiveDateTime
+    pub updated_at: DateTime<Utc>,
 }
