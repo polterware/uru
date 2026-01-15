@@ -25,11 +25,8 @@ Para suportar sincronização distribuída (estilo WatermelonDB), todas as tabel
 ### Colunas de Sincronização Obrigatórias:
 
 - `_status`: Indica se o registro foi `created`, `updated` ou `deleted`.
-- `_changed`: Timestamp ou hash para controle de versão fino.
+- `created_at`: Data de criação do registro.
 - `updated_at`: Timestamp Unix (ou ISO 8601) usado como âncora de sincronização.
-
-> [!NOTE]
-> Para detalhes técnicos de cada tabela, consulte o [DATABASE_SCHEMA.md](file:///Users/erickpatrickbarcelos/codes/inventy/apps/desktop/docs/DATABASE_SCHEMA.md).
 
 ## 3. Sincronização em Nuvem (Cloud Sync)
 

@@ -32,6 +32,7 @@ CREATE TABLE products (
     brand_id UUID,
     parent_id UUID REFERENCES products(id), -- Para variações (SKUs filhos)
 
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -70,6 +71,8 @@ CREATE TABLE inventory_levels (
     aisle_bin_slot VARCHAR(50), -- Localização micro (Prateleira 3B)
 
     last_counted_at TIMESTAMP,
+    _status VARCHAR(20) DEFAULT 'created',
+    created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
 
     -- Garante que não dupliquemos o mesmo lote no mesmo local
@@ -105,6 +108,7 @@ CREATE TABLE transactions (
     shipping_address JSONB, -- Snapshot do endereço
     billing_address JSONB,
 
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -128,7 +132,10 @@ CREATE TABLE transaction_items (
 
     -- Flexibilidade
     attributes_snapshot JSONB, -- Ex: A cor escolhida na hora da compra
-    tax_details JSONB -- Ex: {"icms_rate": 18, "ipi": 0}
+    tax_details JSONB, -- Ex: {"icms_rate": 18, "ipi": 0}
+    _status VARCHAR(20) DEFAULT 'created',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- 3. Movimentação Física (O Rastro do Estoque)
@@ -144,7 +151,9 @@ CREATE TABLE inventory_movements (
     previous_balance DECIMAL(15, 4),
     new_balance DECIMAL(15, 4),
 
-    created_at TIMESTAMP DEFAULT NOW()
+    _status VARCHAR(20) DEFAULT 'created',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 ```
@@ -182,7 +191,9 @@ CREATE TABLE payments (
     risk_level VARCHAR(20), -- 'low', 'medium', 'high', 'critical'
 
     -- Timestamps Críticos
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
     authorized_at TIMESTAMP,
     captured_at TIMESTAMP,
     voided_at TIMESTAMP
@@ -198,7 +209,9 @@ CREATE TABLE refunds (
 
     provider_refund_id VARCHAR(255),
 
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
     created_by UUID -- ID do funcionário que autorizou o estorno
 );
 
@@ -244,6 +257,7 @@ CREATE TABLE checkouts (
     metadata JSONB, -- Origem (Instagram, Google), User Agent, IP
     recovery_url VARCHAR(255), -- Link mágico para retomar o carrinho no e-mail
 
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW() -- Importante para limpar carrinhos velhos (Cron Job)
 );
@@ -293,6 +307,7 @@ CREATE TABLE orders (
     shipping_address JSONB, -- Endereço entrega congelado
 
     -- Rastreabilidade Temporal
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     cancelled_at TIMESTAMP,
@@ -352,6 +367,7 @@ CREATE TABLE shipments (
     metadata JSONB, -- Ex: {"locker_code": "1234"} para armários inteligentes
     customs_info JSONB, -- Ex: {"hs_code": "...", "country_of_origin": "BR"} para exportação
 
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -371,7 +387,10 @@ CREATE TABLE shipment_items (
 
     -- Controle de Qualidade (Opcional mas Enterprise)
     batch_number VARCHAR(100), -- Qual lote exato foi pego? (Rastreabilidade de validade)
-    serial_numbers TEXT[] -- Array de Seriais se for eletrônico (Ex: [IMEI1, IMEI2])
+    serial_numbers TEXT[], -- Array de Seriais se for eletrônico (Ex: [IMEI1, IMEI2])
+    _status VARCHAR(20) DEFAULT 'created',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 ```
@@ -384,7 +403,10 @@ CREATE TABLE shipment_events (
     description TEXT, -- "Objeto encaminhado para Unidade de Tratamento"
     location VARCHAR(255), -- "Curitiba / PR"
     happened_at TIMESTAMP, -- Data real do evento
-    raw_data JSONB -- O JSON bruto que a API dos Correios/FedEx devolveu
+    raw_data JSONB, -- O JSON bruto que a API dos Correios/FedEx devolveu
+    _status VARCHAR(20) DEFAULT 'created',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 ```
@@ -433,6 +455,7 @@ CREATE TABLE customers (
     metadata JSONB, -- IDs externos, integração ERP
     custom_attributes JSONB, -- "Data de Aniversário", "Nome do Cão", "Time de Futebol"
 
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -461,7 +484,10 @@ CREATE TABLE customer_addresses (
     postal_code VARCHAR(20), -- CEP
     phone VARCHAR(50), -- Telefone específico deste local
 
-    metadata JSONB -- "Portão azul", "Deixar na portaria"
+    metadata JSONB, -- "Portão azul", "Deixar na portaria"
+    _status VARCHAR(20) DEFAULT 'created',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 ```
@@ -492,6 +518,7 @@ CREATE TABLE users (
     -- Auditoria
     last_login_at TIMESTAMP,
     last_login_ip VARCHAR(45), -- IPv4 ou IPv6
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
 
@@ -522,7 +549,9 @@ CREATE TABLE user_identities (
 
     profile_data JSONB, -- Snapshot do perfil que veio do Google (Avatar, Locale)
 
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
 
     UNIQUE (provider, provider_user_id) -- Garante que um ID do Google só pertença a um user
 );
@@ -545,7 +574,9 @@ CREATE TABLE user_sessions (
     expires_at TIMESTAMP NOT NULL,
     revoked_at TIMESTAMP, -- Se preenchido, o token foi "morto" manualmente (Logout forçado)
 
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
     last_active_at TIMESTAMP -- Para saber "Visto por último há 2 dias"
 );
 
@@ -555,12 +586,18 @@ CREATE TABLE user_sessions (
 CREATE TABLE roles (
     id UUID PRIMARY KEY,
     name VARCHAR(50) UNIQUE, -- 'admin', 'editor', 'customer_support'
-    permissions TEXT[] -- ['product:create', 'order:refund', 'user:view']
+    permissions TEXT[], -- ['product:create', 'order:refund', 'user:view']
+    _status VARCHAR(20) DEFAULT 'created',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE user_roles (
     user_id UUID REFERENCES users(id),
     role_id UUID REFERENCES roles(id),
+    _status VARCHAR(20) DEFAULT 'created',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
     PRIMARY KEY (user_id, role_id)
 );
 
@@ -602,6 +639,7 @@ CREATE TABLE inquiries (
     sla_due_at TIMESTAMP, -- Quando isso DEVE ser respondido
     resolved_at TIMESTAMP,
 
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -625,7 +663,9 @@ CREATE TABLE inquiry_messages (
     external_id VARCHAR(255), -- ID do email no Gmail ou MessageID do Twilio
     read_at TIMESTAMP,
 
-    created_at TIMESTAMP DEFAULT NOW()
+    _status VARCHAR(20) DEFAULT 'created',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 ```
@@ -665,6 +705,7 @@ id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     -- Metadados
     owner_id UUID, -- Quem instalou/criou
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 
@@ -707,6 +748,7 @@ shop_id UUID NOT NULL REFERENCES shops(id), -- Contexto da loja
     --   "social": {"instagram": "..."}
     -- }
 
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
 
@@ -750,6 +792,7 @@ CREATE TABLE categories (
     template_suffix VARCHAR(50), -- 'sale-landing', 'grid-minimal'
     metadata JSONB DEFAULT '{}',
 
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
 
@@ -762,6 +805,9 @@ CREATE TABLE product_categories (
     product_id UUID REFERENCES products(id) ON DELETE CASCADE,
     category_id UUID REFERENCES categories(id) ON DELETE CASCADE,
     position INTEGER DEFAULT 0, -- Ordem do produto DENTRO da categoria
+    _status VARCHAR(20) DEFAULT 'created',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
     PRIMARY KEY (product_id, category_id)
 );
 ```
@@ -793,6 +839,7 @@ CREATE TABLE customer_groups (
     -- Extensibilidade
     metadata JSONB DEFAULT '{}',
 
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
 
@@ -805,7 +852,9 @@ CREATE TABLE customer_groups (
 CREATE TABLE customer_group_memberships (
     customer_id UUID REFERENCES customers(id) ON DELETE CASCADE,
     customer_group_id UUID REFERENCES customer_groups(id) ON DELETE CASCADE,
+    _status VARCHAR(20) DEFAULT 'created',
     created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
     PRIMARY KEY (customer_id, customer_group_id)
 );
 ```
