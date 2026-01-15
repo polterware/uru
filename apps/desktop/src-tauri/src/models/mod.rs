@@ -26,3 +26,4 @@ pub mod role;
 pub mod user_role;
 pub mod inquiry;
 pub mod inquiry_message;
+pub mod review;
