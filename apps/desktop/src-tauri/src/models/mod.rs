@@ -24,3 +24,5 @@ pub mod user_identity;
 pub mod user_session;
 pub mod role;
 pub mod user_role;
+pub mod inquiry;
+pub mod inquiry_message;

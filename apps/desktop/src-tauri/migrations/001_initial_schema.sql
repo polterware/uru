@@ -543,3 +543,19 @@ CREATE TABLE IF NOT EXISTS inquiry_messages (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 29. Avaliações
+CREATE TABLE IF NOT EXISTS reviews (
+    id TEXT PRIMARY KEY,
+    order_id TEXT NOT NULL REFERENCES orders(id),
+    customer_id TEXT REFERENCES customers(id),
+    product_id TEXT REFERENCES products(id),
+    rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    title TEXT,
+    body TEXT,
+    photos TEXT DEFAULT '[]', -- JSONB
+    videos TEXT DEFAULT '[]', -- JSONB
+    _status TEXT DEFAULT 'created',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
