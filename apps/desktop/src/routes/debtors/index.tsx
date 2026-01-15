@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import * as React from "react"
 import {
   ColumnDef,
@@ -17,16 +17,6 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -36,7 +26,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Table,
   TableBody,
@@ -48,7 +37,7 @@ import {
 import { DebtorsRepository } from "@/lib/db/repositories/debtors-repository"
 import { Debtor } from "@/lib/db/types"
 
-export const Route = createFileRoute("/debtors")({
+export const Route = createFileRoute("/debtors/")({
   component: Debtors,
 })
 
@@ -58,13 +47,6 @@ function Debtors() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-
-  // Form State
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false)
-  const [newName, setNewName] = React.useState("")
-  const [newPhone, setNewPhone] = React.useState("")
-  const [newEmail, setNewEmail] = React.useState("")
-  const [newNotes, setNewNotes] = React.useState("")
 
   const fetchDebtors = React.useCallback(async () => {
     try {
@@ -78,32 +60,6 @@ function Debtors() {
   React.useEffect(() => {
     fetchDebtors()
   }, [fetchDebtors])
-
-  const handleSaveDebtor = async () => {
-    if (!newName) return
-
-    try {
-      await DebtorsRepository.create({
-        name: newName,
-        phone: newPhone || undefined,
-        email: newEmail || undefined,
-        notes: newNotes || undefined,
-        current_balance: 0,
-        status: 'active'
-      })
-
-      // Reset form
-      setNewName("")
-      setNewPhone("")
-      setNewEmail("")
-      setNewNotes("")
-      setIsDialogOpen(false)
-
-      fetchDebtors()
-    } catch (error) {
-      console.error("Failed to create debtor:", error)
-    }
-  }
 
   const handleDeleteDebtor = async (id: string) => {
     if (!confirm("Are you sure you want to delete this customer?")) return
@@ -137,6 +93,7 @@ function Debtors() {
       ),
       enableSorting: false,
       enableHiding: false,
+      enableResizing: false,
     },
     {
       accessorKey: "name",
@@ -291,73 +248,11 @@ function Debtors() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" /> Add Customer
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Add Customer</DialogTitle>
-                <DialogDescription>
-                  Create a new customer record.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    id="name"
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="phone" className="text-right">
-                    Phone
-                  </Label>
-                  <Input
-                    id="phone"
-                    value={newPhone}
-                    onChange={(e) => setNewPhone(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="email" className="text-right">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="notes" className="text-right">
-                    Notes
-                  </Label>
-                  <Input
-                    id="notes"
-                    value={newNotes}
-                    onChange={(e) => setNewNotes(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline" type="button">Cancel</Button>
-                </DialogClose>
-                <Button onClick={handleSaveDebtor}>Save changes</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button asChild>
+            <Link to="/debtors/new">
+              <Plus className="mr-2 h-4 w-4" /> Add Customer
+            </Link>
+          </Button>
         </div>
       </div>
       <div className="rounded-md border">

@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { SettingsRepository } from "@/lib/db/repositories/settings-repository"
 
@@ -58,9 +59,10 @@ function Settings() {
       setIsSavingProfile(true)
       await SettingsRepository.set("store_name", storeName)
       await SettingsRepository.set("owner_email", ownerEmail)
-      // Visual feedback could be added here (e.g., toast)
+      toast.success("Profile saved successfully")
     } catch (error) {
       console.error("Failed to save profile:", error)
+      toast.error("Failed to save profile")
     } finally {
       setIsSavingProfile(false)
     }
@@ -70,9 +72,12 @@ function Settings() {
     try {
       setIsSavingNetwork(true)
       await SettingsRepository.set("server_port", serverPort)
+      await SettingsRepository.set("server_port", serverPort)
       await SettingsRepository.set("server_protocol", serverProtocol)
+      toast.success("Network settings saved")
     } catch (error) {
       console.error("Failed to save network settings:", error)
+      toast.error("Failed to save network settings")
     } finally {
       setIsSavingNetwork(false)
     }

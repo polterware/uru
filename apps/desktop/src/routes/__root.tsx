@@ -8,6 +8,7 @@ import appCss from '../styles.css?url'
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
 import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from "@/components/ui/sonner"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -70,13 +71,29 @@ function RootComponent() {
               {location.pathname !== '/' && (
                 <>
                   <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>
-                      {location.pathname.split('/').filter(Boolean).map((segment) =>
-                        segment.charAt(0).toUpperCase() + segment.slice(1)
-                      ).join(' / ')}
-                    </BreadcrumbPage>
-                  </BreadcrumbItem>
+                  {location.pathname.split('/').filter(Boolean).map((segment, index, array) => {
+                    const isLast = index === array.length - 1
+                    const path = '/' + array.slice(0, index + 1).join('/')
+
+                    return (
+                      <React.Fragment key={path}>
+                        <BreadcrumbItem>
+                          {isLast ? (
+                            <BreadcrumbPage>
+                              {segment.charAt(0).toUpperCase() + segment.slice(1)}
+                            </BreadcrumbPage>
+                          ) : (
+                            <BreadcrumbLink asChild>
+                              <Link to={path}>
+                                {segment.charAt(0).toUpperCase() + segment.slice(1)}
+                              </Link>
+                            </BreadcrumbLink>
+                          )}
+                        </BreadcrumbItem>
+                        {!isLast && <BreadcrumbSeparator className="hidden md:block" />}
+                      </React.Fragment>
+                    )
+                  })}
                 </>
               )}
             </BreadcrumbList>
@@ -111,6 +128,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           {children}
+          <Toaster />
           <Scripts />
         </ThemeProvider>
       </body>

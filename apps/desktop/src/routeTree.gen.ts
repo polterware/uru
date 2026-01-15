@@ -11,9 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as PairingRouteImport } from './routes/pairing'
-import { Route as InventoryRouteImport } from './routes/inventory'
-import { Route as DebtorsRouteImport } from './routes/debtors'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as InventoryIndexRouteImport } from './routes/inventory/index'
+import { Route as DebtorsIndexRouteImport } from './routes/debtors/index'
+import { Route as InventoryNewRouteImport } from './routes/inventory/new'
+import { Route as DebtorsNewRouteImport } from './routes/debtors/new'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -25,58 +27,98 @@ const PairingRoute = PairingRouteImport.update({
   path: '/pairing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InventoryRoute = InventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DebtorsRoute = DebtorsRouteImport.update({
-  id: '/debtors',
-  path: '/debtors',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InventoryIndexRoute = InventoryIndexRouteImport.update({
+  id: '/inventory/',
+  path: '/inventory/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DebtorsIndexRoute = DebtorsIndexRouteImport.update({
+  id: '/debtors/',
+  path: '/debtors/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InventoryNewRoute = InventoryNewRouteImport.update({
+  id: '/inventory/new',
+  path: '/inventory/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DebtorsNewRoute = DebtorsNewRouteImport.update({
+  id: '/debtors/new',
+  path: '/debtors/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/debtors': typeof DebtorsRoute
-  '/inventory': typeof InventoryRoute
   '/pairing': typeof PairingRoute
   '/settings': typeof SettingsRoute
+  '/debtors/new': typeof DebtorsNewRoute
+  '/inventory/new': typeof InventoryNewRoute
+  '/debtors': typeof DebtorsIndexRoute
+  '/inventory': typeof InventoryIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/debtors': typeof DebtorsRoute
-  '/inventory': typeof InventoryRoute
   '/pairing': typeof PairingRoute
   '/settings': typeof SettingsRoute
+  '/debtors/new': typeof DebtorsNewRoute
+  '/inventory/new': typeof InventoryNewRoute
+  '/debtors': typeof DebtorsIndexRoute
+  '/inventory': typeof InventoryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/debtors': typeof DebtorsRoute
-  '/inventory': typeof InventoryRoute
   '/pairing': typeof PairingRoute
   '/settings': typeof SettingsRoute
+  '/debtors/new': typeof DebtorsNewRoute
+  '/inventory/new': typeof InventoryNewRoute
+  '/debtors/': typeof DebtorsIndexRoute
+  '/inventory/': typeof InventoryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/debtors' | '/inventory' | '/pairing' | '/settings'
+  fullPaths:
+    | '/'
+    | '/pairing'
+    | '/settings'
+    | '/debtors/new'
+    | '/inventory/new'
+    | '/debtors'
+    | '/inventory'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/debtors' | '/inventory' | '/pairing' | '/settings'
-  id: '__root__' | '/' | '/debtors' | '/inventory' | '/pairing' | '/settings'
+  to:
+    | '/'
+    | '/pairing'
+    | '/settings'
+    | '/debtors/new'
+    | '/inventory/new'
+    | '/debtors'
+    | '/inventory'
+  id:
+    | '__root__'
+    | '/'
+    | '/pairing'
+    | '/settings'
+    | '/debtors/new'
+    | '/inventory/new'
+    | '/debtors/'
+    | '/inventory/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DebtorsRoute: typeof DebtorsRoute
-  InventoryRoute: typeof InventoryRoute
   PairingRoute: typeof PairingRoute
   SettingsRoute: typeof SettingsRoute
+  DebtorsNewRoute: typeof DebtorsNewRoute
+  InventoryNewRoute: typeof InventoryNewRoute
+  DebtorsIndexRoute: typeof DebtorsIndexRoute
+  InventoryIndexRoute: typeof InventoryIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -95,20 +137,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PairingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/inventory': {
-      id: '/inventory'
-      path: '/inventory'
-      fullPath: '/inventory'
-      preLoaderRoute: typeof InventoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/debtors': {
-      id: '/debtors'
-      path: '/debtors'
-      fullPath: '/debtors'
-      preLoaderRoute: typeof DebtorsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -116,15 +144,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inventory/': {
+      id: '/inventory/'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/debtors/': {
+      id: '/debtors/'
+      path: '/debtors'
+      fullPath: '/debtors'
+      preLoaderRoute: typeof DebtorsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inventory/new': {
+      id: '/inventory/new'
+      path: '/inventory/new'
+      fullPath: '/inventory/new'
+      preLoaderRoute: typeof InventoryNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/debtors/new': {
+      id: '/debtors/new'
+      path: '/debtors/new'
+      fullPath: '/debtors/new'
+      preLoaderRoute: typeof DebtorsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DebtorsRoute: DebtorsRoute,
-  InventoryRoute: InventoryRoute,
   PairingRoute: PairingRoute,
   SettingsRoute: SettingsRoute,
+  DebtorsNewRoute: DebtorsNewRoute,
+  InventoryNewRoute: InventoryNewRoute,
+  DebtorsIndexRoute: DebtorsIndexRoute,
+  InventoryIndexRoute: InventoryIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

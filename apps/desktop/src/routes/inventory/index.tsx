@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import * as React from "react"
 import {
   ColumnDef,
@@ -17,16 +17,6 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -36,7 +26,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Table,
   TableBody,
@@ -47,7 +36,7 @@ import {
 } from "@/components/ui/table"
 import { InventoryRepository } from "@/lib/db/repositories/inventory-repository"
 
-export const Route = createFileRoute("/inventory")({
+export const Route = createFileRoute("/inventory/")({
   component: Inventory,
 })
 
@@ -183,13 +172,6 @@ function Inventory() {
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-  // Form State
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false)
-  const [newItemName, setNewItemName] = React.useState("")
-  const [newItemSku, setNewItemSku] = React.useState("")
-  const [newItemQuantity, setNewItemQuantity] = React.useState("")
-  const [newItemPrice, setNewItemPrice] = React.useState("")
-  const [newItemMinStock, setNewItemMinStock] = React.useState("5")
 
   const fetchInventory = React.useCallback(async () => {
     console.log('[InventoryRoute] fetchInventory called')
@@ -216,35 +198,6 @@ function Inventory() {
     fetchInventory()
   }, [fetchInventory])
 
-  const handleSaveItem = async () => {
-    if (!newItemName) return
-
-    try {
-      const newItemPayload = {
-        name: newItemName,
-        sku: newItemSku,
-        quantity: parseFloat(newItemQuantity) || 0,
-        selling_price: parseFloat(newItemPrice) || 0,
-        min_stock_level: parseFloat(newItemMinStock) || 5,
-      }
-      console.log('[InventoryRoute] Creating item with payload:', newItemPayload)
-
-      await InventoryRepository.create(newItemPayload)
-
-      // Reset form
-      setNewItemName("")
-      setNewItemSku("")
-      setNewItemQuantity("")
-      setNewItemPrice("")
-      setNewItemMinStock("5")
-      setIsDialogOpen(false)
-
-      // Refresh list
-      fetchInventory()
-    } catch (error) {
-      console.error("Failed to create item:", error)
-    }
-  }
 
   const table = useReactTable({
     data,
@@ -304,88 +257,11 @@ function Inventory() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" /> Add Item
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Add Inventory Item</DialogTitle>
-                <DialogDescription>
-                  Create a new product record in the inventory.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    id="name"
-                    value={newItemName}
-                    onChange={(e) => setNewItemName(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="sku" className="text-right">
-                    SKU
-                  </Label>
-                  <Input
-                    id="sku"
-                    value={newItemSku}
-                    onChange={(e) => setNewItemSku(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="quantity" className="text-right">
-                    Quantity
-                  </Label>
-                  <Input
-                    id="quantity"
-                    type="number"
-                    value={newItemQuantity}
-                    onChange={(e) => setNewItemQuantity(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="price" className="text-right">
-                    Price
-                  </Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    value={newItemPrice}
-                    onChange={(e) => setNewItemPrice(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="minStock" className="text-right">
-                    Min Stock
-                  </Label>
-                  <Input
-                    id="minStock"
-                    type="number"
-                    value={newItemMinStock}
-                    onChange={(e) => setNewItemMinStock(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline" type="button">Cancel</Button>
-                </DialogClose>
-                <Button onClick={handleSaveItem}>Save changes</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button asChild>
+            <Link to="/inventory/new">
+              <Plus className="mr-2 h-4 w-4" /> Add Item
+            </Link>
+          </Button>
         </div>
       </div>
       <div className="rounded-md border">
