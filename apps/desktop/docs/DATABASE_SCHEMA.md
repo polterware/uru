@@ -126,6 +126,7 @@ Tabela append-only que registra **toda** entrada e saída.
 | :-------------------- | :-------- | :---------- | :------------------------------------------------------------------- |
 | `id`                  | `TEXT`    | Sim         | UUID v4.                                                             |
 | `item_id`             | `TEXT`    | Sim         | FK para `inventory_items`.                                           |
+| `purchase_id`         | `TEXT`    | Não         | FK para `purchases`.                                                 |
 | `debtor_id`           | `TEXT`    | Não         | FK para `debtors` (se houver cliente vinculado).                     |
 | `type`                | `TEXT`    | Sim         | `IN` (Compra/Entrada), `OUT` (Venda/Saída), `ADJUST` (Ajuste/Perda). |
 | `quantity_change`     | `REAL`    | Sim         | Valor positivo ou negativo. Ex: `-2.5`.                              |
@@ -134,7 +135,21 @@ Tabela append-only que registra **toda** entrada e saída.
 | `occurred_at`         | `INTEGER` | Sim         | Data real da ocorrência (pode ser retroativa).                       |
 | ...                   | ...       | ...         | Colunas de Sync (`_status`, `_changed`).                             |
 
-### 3.4 `settings` (Configurações)
+### 3.4 `purchases` (Vendas/Compras)
+
+Agrupamento de movimentações (carrinho de compras).
+
+| Coluna         | Tipo      | Obrigatório | Descrição              |
+| :------------- | :-------- | :---------- | :--------------------- |
+| `id`           | `TEXT`    | Sim         | UUID v4.               |
+| `debtor_id`    | `TEXT`    | Não         | FK para `debtors`.     |
+| `total_amount` | `REAL`    | Sim         | Valor total da compra. |
+| `created_at`   | `INTEGER` | Sim         | Timestamp.             |
+| `updated_at`   | `INTEGER` | Sim         | Timestamp.             |
+| `deleted_at`   | `TEXT`    | Não         | Timestamp soft delete. |
+| ...            | ...       | ...         | Sync cols.             |
+
+### 3.5 `settings` (Configurações)
 
 Armazena chaves e valores de configuração do sistema (ex: Perfil da Loja, Rede).
 

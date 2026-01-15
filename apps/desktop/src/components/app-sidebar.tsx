@@ -1,4 +1,4 @@
-import { Home, Inbox, Settings, Smartphone, Users } from "lucide-react"
+import { ArrowRightLeft, Home, Inbox, Settings, Smartphone, Users } from "lucide-react"
 
 import {
   Sidebar,
@@ -28,6 +28,11 @@ const items = [
     title: "Debtors",
     url: "/debtors",
     icon: Users,
+  },
+  {
+    title: "Transactions",
+    url: "/transactions",
+    icon: ArrowRightLeft,
   },
   {
     title: "Pairing",

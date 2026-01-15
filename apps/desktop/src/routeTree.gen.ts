@@ -12,8 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as PairingRouteImport } from './routes/pairing'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TransactionsIndexRouteImport } from './routes/transactions/index'
 import { Route as InventoryIndexRouteImport } from './routes/inventory/index'
 import { Route as DebtorsIndexRouteImport } from './routes/debtors/index'
+import { Route as TransactionsNewRouteImport } from './routes/transactions/new'
 import { Route as InventoryNewRouteImport } from './routes/inventory/new'
 import { Route as DebtorsNewRouteImport } from './routes/debtors/new'
 
@@ -32,6 +34,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TransactionsIndexRoute = TransactionsIndexRouteImport.update({
+  id: '/transactions/',
+  path: '/transactions/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InventoryIndexRoute = InventoryIndexRouteImport.update({
   id: '/inventory/',
   path: '/inventory/',
@@ -40,6 +47,11 @@ const InventoryIndexRoute = InventoryIndexRouteImport.update({
 const DebtorsIndexRoute = DebtorsIndexRouteImport.update({
   id: '/debtors/',
   path: '/debtors/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransactionsNewRoute = TransactionsNewRouteImport.update({
+  id: '/transactions/new',
+  path: '/transactions/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InventoryNewRoute = InventoryNewRouteImport.update({
@@ -59,8 +71,10 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/debtors/new': typeof DebtorsNewRoute
   '/inventory/new': typeof InventoryNewRoute
+  '/transactions/new': typeof TransactionsNewRoute
   '/debtors': typeof DebtorsIndexRoute
   '/inventory': typeof InventoryIndexRoute
+  '/transactions': typeof TransactionsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -68,8 +82,10 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/debtors/new': typeof DebtorsNewRoute
   '/inventory/new': typeof InventoryNewRoute
+  '/transactions/new': typeof TransactionsNewRoute
   '/debtors': typeof DebtorsIndexRoute
   '/inventory': typeof InventoryIndexRoute
+  '/transactions': typeof TransactionsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -78,8 +94,10 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/debtors/new': typeof DebtorsNewRoute
   '/inventory/new': typeof InventoryNewRoute
+  '/transactions/new': typeof TransactionsNewRoute
   '/debtors/': typeof DebtorsIndexRoute
   '/inventory/': typeof InventoryIndexRoute
+  '/transactions/': typeof TransactionsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -89,8 +107,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/debtors/new'
     | '/inventory/new'
+    | '/transactions/new'
     | '/debtors'
     | '/inventory'
+    | '/transactions'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -98,8 +118,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/debtors/new'
     | '/inventory/new'
+    | '/transactions/new'
     | '/debtors'
     | '/inventory'
+    | '/transactions'
   id:
     | '__root__'
     | '/'
@@ -107,8 +129,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/debtors/new'
     | '/inventory/new'
+    | '/transactions/new'
     | '/debtors/'
     | '/inventory/'
+    | '/transactions/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,8 +141,10 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   DebtorsNewRoute: typeof DebtorsNewRoute
   InventoryNewRoute: typeof InventoryNewRoute
+  TransactionsNewRoute: typeof TransactionsNewRoute
   DebtorsIndexRoute: typeof DebtorsIndexRoute
   InventoryIndexRoute: typeof InventoryIndexRoute
+  TransactionsIndexRoute: typeof TransactionsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -144,6 +170,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/transactions/': {
+      id: '/transactions/'
+      path: '/transactions'
+      fullPath: '/transactions'
+      preLoaderRoute: typeof TransactionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inventory/': {
       id: '/inventory/'
       path: '/inventory'
@@ -156,6 +189,13 @@ declare module '@tanstack/react-router' {
       path: '/debtors'
       fullPath: '/debtors'
       preLoaderRoute: typeof DebtorsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transactions/new': {
+      id: '/transactions/new'
+      path: '/transactions/new'
+      fullPath: '/transactions/new'
+      preLoaderRoute: typeof TransactionsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inventory/new': {
@@ -181,8 +221,10 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   DebtorsNewRoute: DebtorsNewRoute,
   InventoryNewRoute: InventoryNewRoute,
+  TransactionsNewRoute: TransactionsNewRoute,
   DebtorsIndexRoute: DebtorsIndexRoute,
   InventoryIndexRoute: InventoryIndexRoute,
+  TransactionsIndexRoute: TransactionsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

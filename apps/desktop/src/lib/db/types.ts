@@ -30,6 +30,7 @@ export interface Debtor {
 export interface InventoryMovement {
   id: string
   item_id: string
+  purchase_id?: string
   debtor_id?: string
   type: 'IN' | 'OUT' | 'ADJUST'
   quantity_change: number
@@ -37,6 +38,15 @@ export interface InventoryMovement {
   reason?: string
   occurred_at: string
   created_at: string
+}
+
+export interface Purchase {
+  id: string
+  debtor_id?: string
+  total_amount: number
+  created_at: string
+  updated_at: string
+  deleted_at?: string | null
 }
 
 export interface Setting {
