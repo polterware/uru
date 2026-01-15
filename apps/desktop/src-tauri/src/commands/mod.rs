@@ -1,0 +1,6 @@
+pub mod product_commands;
+pub mod customer_commands;
+pub mod transaction_commands;
+pub mod shipment_commands;
+pub mod user_commands;
+pub mod inquiry_commands;
