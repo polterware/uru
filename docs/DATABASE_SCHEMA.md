@@ -44,6 +44,8 @@ erDiagram
         string id PK
         string name
         string phone
+        string email
+        string notes
         real current_balance
         int _status
         int _changed
@@ -82,6 +84,7 @@ Representa os produtos/itens do estoque.
 | `selling_price`   | `REAL`    | Não         | Preço de venda unitário.                                  |
 | `created_at`      | `INTEGER` | Sim         | Timestamp de criação.                                     |
 | `updated_at`      | `INTEGER` | Sim         | Timestamp da última modificação.                          |
+| `deleted_at`      | `TEXT`    | Não         | Timestamp de soft delete (se aplicável).                  |
 | `_status`         | `TEXT`    | Não         | Metadados WatermelonDB (`created`, `updated`, `deleted`). |
 | `_changed`        | `TEXT`    | Não         | Metadados WatermelonDB.                                   |
 
@@ -94,10 +97,13 @@ Cadastro de pessoas que interagem com o sistema (compra fiado, histórico).
 | `id`              | `TEXT`    | Sim         | UUID v4.                                                   |
 | `name`            | `TEXT`    | Sim         | Nome completo.                                             |
 | `phone`           | `TEXT`    | Não         | Contato (WhatsApp).                                        |
+| `email`           | `TEXT`    | Não         | Endereço de e-mail.                                        |
+| `notes`           | `TEXT`    | Não         | Observações ou anotações sobre o cliente.                  |
 | `current_balance` | `REAL`    | Sim         | Saldo devedor atual (Positivo = Deve, Negativo = Crédito). |
 | `status`          | `TEXT`    | Sim         | `active`, `blocked` (não pode comprar mais), `archived`.   |
 | `created_at`      | `INTEGER` | Sim         | Timestamp.                                                 |
 | `updated_at`      | `INTEGER` | Sim         | Timestamp.                                                 |
+| `deleted_at`      | `TEXT`    | Não         | Timestamp de soft delete.                                  |
 | ...               | ...       | ...         | Colunas de Sync (`_status`, `_changed`).                   |
 
 ### 3.3 `inventory_movements` (Ledger)

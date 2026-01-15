@@ -17,6 +17,16 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -26,6 +36,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Table,
   TableBody,
@@ -34,184 +45,193 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { DebtorsRepository } from "@/lib/db/repositories/debtors-repository"
+import { Debtor } from "@/lib/db/types"
 
 export const Route = createFileRoute("/debtors")({
   component: Debtors,
 })
 
-type Debtor = {
-  id: string
-  name: string
-  phone: string
-  total_debt: number
-  last_payment_date: string | null
-  status: "active" | "overdue" | "settled"
-}
-
-const data: Debtor[] = [
-  {
-    id: "usr_123",
-    name: "João da Silva",
-    phone: "(11) 99999-1234",
-    total_debt: 150.00,
-    last_payment_date: "2024-05-10",
-    status: "active",
-  },
-  {
-    id: "usr_456",
-    name: "Maria Oliveira",
-    phone: "(21) 98888-5678",
-    total_debt: 450.50,
-    last_payment_date: "2024-03-15",
-    status: "overdue",
-  },
-  {
-    id: "usr_789",
-    name: "Carlos Santos",
-    phone: "(31) 97777-9012",
-    total_debt: 0.00,
-    last_payment_date: "2024-05-14",
-    status: "settled",
-  },
-  {
-    id: "usr_101",
-    name: "Ana Pereira",
-    phone: "(41) 96666-3456",
-    total_debt: 25.00,
-    last_payment_date: null,
-    status: "active",
-  },
-]
-
-export const columns: ColumnDef<Debtor>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Customer Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "phone",
-    header: "Phone",
-    cell: ({ row }) => <div>{row.getValue("phone")}</div>,
-  },
-  {
-    accessorKey: "total_debt",
-    header: () => <div className="text-right">Total Debt</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("total_debt"))
-      const formatted = new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(amount)
-
-      return (
-        <div className={`text-right font-bold ${amount > 0 ? "text-red-600" : "text-green-600"}`}>
-          {formatted}
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string
-      return (
-        <div
-          className={`capitalize font-medium ${status === "active"
-            ? "text-blue-600"
-            : status === "overdue"
-              ? "text-red-600"
-              : "text-green-600"
-            }`}
-        >
-          {status}
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "last_payment_date",
-    header: () => <div className="text-right">Last Payment</div>,
-    cell: ({ row }) => {
-      const dateStr = row.getValue("last_payment_date") as string;
-      if (!dateStr) return <div className="text-right text-muted-foreground">-</div>;
-      return <div className="text-right">{new Date(dateStr).toLocaleDateString("pt-BR")}</div>
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const debtor = row.original
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(debtor.id)}
-            >
-              Copy Customer ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Add New Charge</DropdownMenuItem>
-            <DropdownMenuItem>Register Payment</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600">View History</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
-]
-
 function Debtors() {
+  const [data, setData] = React.useState<Debtor[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+
+  // Form State
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false)
+  const [newName, setNewName] = React.useState("")
+  const [newPhone, setNewPhone] = React.useState("")
+  const [newEmail, setNewEmail] = React.useState("")
+  const [newNotes, setNewNotes] = React.useState("")
+
+  const fetchDebtors = React.useCallback(async () => {
+    try {
+      const debtors = await DebtorsRepository.getAll()
+      setData(debtors)
+    } catch (error) {
+      console.error("Failed to fetch debtors:", error)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    fetchDebtors()
+  }, [fetchDebtors])
+
+  const handleSaveDebtor = async () => {
+    if (!newName) return
+
+    try {
+      await DebtorsRepository.create({
+        name: newName,
+        phone: newPhone || undefined,
+        email: newEmail || undefined,
+        notes: newNotes || undefined,
+        current_balance: 0,
+        status: 'active'
+      })
+
+      // Reset form
+      setNewName("")
+      setNewPhone("")
+      setNewEmail("")
+      setNewNotes("")
+      setIsDialogOpen(false)
+
+      fetchDebtors()
+    } catch (error) {
+      console.error("Failed to create debtor:", error)
+    }
+  }
+
+  const handleDeleteDebtor = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this customer?")) return
+    try {
+      await DebtorsRepository.delete(id)
+      fetchDebtors()
+    } catch (error) {
+      console.error("Failed to delete debtor:", error)
+    }
+  }
+
+  const columns = React.useMemo<ColumnDef<Debtor>[]>(() => [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Customer Name
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+    },
+    {
+      accessorKey: "phone",
+      header: "Phone",
+      cell: ({ row }) => <div>{row.getValue("phone") || "-"}</div>,
+    },
+    {
+      accessorKey: "current_balance",
+      header: () => <div className="text-right">Current Balance</div>,
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("current_balance"))
+        const formatted = new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }).format(amount)
+
+        return (
+          <div className={`text-right font-bold ${amount > 0 ? "text-red-600" : "text-green-600"}`}>
+            {formatted}
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string
+        return (
+          <div
+            className={`capitalize font-medium ${status === "active"
+              ? "text-blue-600"
+              : status === "blocked"
+                ? "text-red-600"
+                : "text-muted-foreground"
+              }`}
+          >
+            {status}
+          </div>
+        )
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const debtor = row.original
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(debtor.id)}
+              >
+                Copy Customer ID
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Add New Charge</DropdownMenuItem>
+              <DropdownMenuItem>Register Payment</DropdownMenuItem>
+              <DropdownMenuItem>Edit Customer</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-red-600"
+                onClick={() => handleDeleteDebtor(debtor.id)}
+              >
+                Delete Customer
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ], [])
 
   const table = useReactTable({
     data,
@@ -270,9 +290,74 @@ function Debtors() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" /> Add Customer
-          </Button>
+
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" /> Add Customer
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add Customer</DialogTitle>
+                <DialogDescription>
+                  Create a new customer record.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="phone" className="text-right">
+                    Phone
+                  </Label>
+                  <Input
+                    id="phone"
+                    value={newPhone}
+                    onChange={(e) => setNewPhone(e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="email" className="text-right">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="notes" className="text-right">
+                    Notes
+                  </Label>
+                  <Input
+                    id="notes"
+                    value={newNotes}
+                    onChange={(e) => setNewNotes(e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline" type="button">Cancel</Button>
+                </DialogClose>
+                <Button onClick={handleSaveDebtor}>Save changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
       <div className="rounded-md border">
