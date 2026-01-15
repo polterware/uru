@@ -10,6 +10,7 @@ Devemos combinar o melhor de 4 abordagens para garantir código robusto:
 2.  **Consistência de Dados**: Usar `RETURNING *` no SQL para garantir que o objeto em memória reflete exatamente o estado do banco (ex: datas geradas, defaults).
 3.  **Segurança de Binds**: Usar parâmetros numerados (`$1`, `$2`...) em vez de posicionais (`?`) para evitar erros silenciosos ao alterar a ordem dos campos.
 4.  **Organização**: Separar o SQL em uma variável string `let sql = ...` para manter a legibilidade do código Rust quando houver muitas colunas.
+5.  **Datas em UTC**: Sempre utilizar `chrono::DateTime<Utc>` para campos de data/hora, garantindo compatibilidade entre SQLite e Postgres.
 
 ## Exemplo Prático: Método `create`
 
@@ -71,3 +72,4 @@ pub async fn update(&self, item: Item) -> Result<Item> {
 | **`RETURNING *`**       | Garante que dados gerados pelo banco (Triggers, Auto-increment, Defaults) voltem para o Rust atualizados. |
 | **`$1, $2 (Numbered)`** | Evita bugs críticos onde dados são salvos na coluna errada se a ordem mudar no SQL ou no Bind.            |
 | **`let sql = ...`**     | Melhora drasticamente a leitura (Code Cleanliness) quando a query tem muitas colunas (20+).               |
+| **`DateTime<Utc>`**     | Garante que o timestamp salvo seja agnóstico de fuso horário, prevenindo bugs de sincronização.           |
