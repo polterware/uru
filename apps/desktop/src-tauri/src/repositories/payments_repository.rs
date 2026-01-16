@@ -1,3 +1,4 @@
+use crate::db::DbTransaction;
 use crate::models::payment_model::Payment;
 use sqlx::{Result, SqlitePool};
 
@@ -25,24 +26,24 @@ impl<'a> PaymentsRepository<'a> {
         "#;
 
         sqlx::query_as::<_, Payment>(sql)
-            .bind(payment.id)                      // $1
-            .bind(payment.transaction_id)          // $2
-            .bind(payment.amount)                  // $3
-            .bind(payment.currency)                // $4
-            .bind(payment.provider)                // $5
-            .bind(payment.method)                  // $6
-            .bind(payment.installments)            // $7
-            .bind(payment.status)                  // $8
+            .bind(payment.id) // $1
+            .bind(payment.transaction_id) // $2
+            .bind(payment.amount) // $3
+            .bind(payment.currency) // $4
+            .bind(payment.provider) // $5
+            .bind(payment.method) // $6
+            .bind(payment.installments) // $7
+            .bind(payment.status) // $8
             .bind(payment.provider_transaction_id) // $9
-            .bind(payment.authorization_code)      // $10
-            .bind(payment.payment_details)         // $11
-            .bind(payment.risk_level)              // $12
-            .bind(payment.sync_status)             // $13
-            .bind(payment.created_at)              // $14
-            .bind(payment.updated_at)              // $15
-            .bind(payment.authorized_at)           // $16
-            .bind(payment.captured_at)             // $17
-            .bind(payment.voided_at)               // $18
+            .bind(payment.authorization_code) // $10
+            .bind(payment.payment_details) // $11
+            .bind(payment.risk_level) // $12
+            .bind(payment.sync_status) // $13
+            .bind(payment.created_at) // $14
+            .bind(payment.updated_at) // $15
+            .bind(payment.authorized_at) // $16
+            .bind(payment.captured_at) // $17
+            .bind(payment.voided_at) // $18
             .fetch_one(self.pool)
             .await
     }
@@ -72,24 +73,24 @@ impl<'a> PaymentsRepository<'a> {
         "#;
 
         sqlx::query_as::<_, Payment>(sql)
-            .bind(payment.id)                      // $1
-            .bind(payment.transaction_id)          // $2
-            .bind(payment.amount)                  // $3
-            .bind(payment.currency)                // $4
-            .bind(payment.provider)                // $5
-            .bind(payment.method)                  // $6
-            .bind(payment.installments)            // $7
-            .bind(payment.status)                  // $8
+            .bind(payment.id) // $1
+            .bind(payment.transaction_id) // $2
+            .bind(payment.amount) // $3
+            .bind(payment.currency) // $4
+            .bind(payment.provider) // $5
+            .bind(payment.method) // $6
+            .bind(payment.installments) // $7
+            .bind(payment.status) // $8
             .bind(payment.provider_transaction_id) // $9
-            .bind(payment.authorization_code)      // $10
-            .bind(payment.payment_details)         // $11
-            .bind(payment.risk_level)              // $12
-            .bind(payment.sync_status)             // $13
-            .bind(payment.created_at)              // $14
-            .bind(payment.updated_at)              // $15
-            .bind(payment.authorized_at)           // $16
-            .bind(payment.captured_at)             // $17
-            .bind(payment.voided_at)               // $18
+            .bind(payment.authorization_code) // $10
+            .bind(payment.payment_details) // $11
+            .bind(payment.risk_level) // $12
+            .bind(payment.sync_status) // $13
+            .bind(payment.created_at) // $14
+            .bind(payment.updated_at) // $15
+            .bind(payment.authorized_at) // $16
+            .bind(payment.captured_at) // $17
+            .bind(payment.voided_at) // $18
             .fetch_one(self.pool)
             .await
     }
@@ -112,10 +113,91 @@ impl<'a> PaymentsRepository<'a> {
 
     pub async fn delete(&self, id: &str) -> Result<()> {
         let sql = "DELETE FROM payments WHERE id = $1";
-        sqlx::query(sql)
-            .bind(id)
-            .execute(self.pool)
-            .await?;
+        sqlx::query(sql).bind(id).execute(self.pool).await?;
         Ok(())
+    }
+
+    // ============================================================
+    // Transaction-aware methods for atomic operations
+    // ============================================================
+
+    /// Get payment by ID within a database transaction
+    pub async fn get_by_id_with_tx<'b>(
+        tx: &mut DbTransaction<'b>,
+        id: &str,
+    ) -> Result<Option<Payment>> {
+        let sql = "SELECT * FROM payments WHERE id = $1";
+        sqlx::query_as::<_, Payment>(sql)
+            .bind(id)
+            .fetch_optional(&mut **tx)
+            .await
+    }
+
+    /// Capture a payment within a database transaction
+    pub async fn capture_with_tx<'b>(tx: &mut DbTransaction<'b>, id: &str) -> Result<Payment> {
+        let sql = r#"
+            UPDATE payments
+            SET status = 'captured',
+                captured_at = CURRENT_TIMESTAMP,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = $1
+            RETURNING *
+        "#;
+        sqlx::query_as::<_, Payment>(sql)
+            .bind(id)
+            .fetch_one(&mut **tx)
+            .await
+    }
+
+    /// Void a payment within a database transaction
+    pub async fn void_with_tx<'b>(tx: &mut DbTransaction<'b>, id: &str) -> Result<Payment> {
+        let sql = r#"
+            UPDATE payments
+            SET status = 'voided',
+                voided_at = CURRENT_TIMESTAMP,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = $1
+            RETURNING *
+        "#;
+        sqlx::query_as::<_, Payment>(sql)
+            .bind(id)
+            .fetch_one(&mut **tx)
+            .await
+    }
+
+    /// Update payment status within a database transaction
+    pub async fn update_status_with_tx<'b>(
+        tx: &mut DbTransaction<'b>,
+        id: &str,
+        status: &str,
+    ) -> Result<Payment> {
+        let sql = r#"
+            UPDATE payments
+            SET status = $2, updated_at = CURRENT_TIMESTAMP
+            WHERE id = $1
+            RETURNING *
+        "#;
+        sqlx::query_as::<_, Payment>(sql)
+            .bind(id)
+            .bind(status)
+            .fetch_one(&mut **tx)
+            .await
+    }
+
+    /// Get sum of refunds for a payment within a database transaction
+    pub async fn get_refunded_amount_with_tx<'b>(
+        tx: &mut DbTransaction<'b>,
+        payment_id: &str,
+    ) -> Result<f64> {
+        let sql = r#"
+            SELECT COALESCE(SUM(amount), 0) as total
+            FROM refunds
+            WHERE payment_id = $1 AND status = 'completed'
+        "#;
+        let result: (f64,) = sqlx::query_as(sql)
+            .bind(payment_id)
+            .fetch_one(&mut **tx)
+            .await?;
+        Ok(result.0)
     }
 }
