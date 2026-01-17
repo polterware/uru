@@ -1,4 +1,4 @@
-use crate::dtos::user_dto::CreateUserDTO;
+use crate::dtos::user_dto::{CreateUserDTO, UpdateUserDTO};
 use crate::models::user_model::User;
 use crate::repositories::user_identities_repository::UserIdentitiesRepository;
 use crate::repositories::user_repository::UserRepository;
@@ -7,6 +7,7 @@ use crate::repositories::user_sessions_repository::UserSessionsRepository;
 use sqlx::SqlitePool;
 
 pub struct UserService {
+    pool: SqlitePool,
     repo: UserRepository,
     identities_repo: UserIdentitiesRepository,
     roles_repo: UserRolesRepository,
@@ -18,8 +19,9 @@ impl UserService {
         let repo = UserRepository::new(pool.clone());
         let identities_repo = UserIdentitiesRepository::new(pool.clone());
         let roles_repo = UserRolesRepository::new(pool.clone());
-        let sessions_repo = UserSessionsRepository::new(pool);
+        let sessions_repo = UserSessionsRepository::new(pool.clone());
         Self {
+            pool,
             repo,
             identities_repo,
             roles_repo,
@@ -28,59 +30,85 @@ impl UserService {
     }
 
     pub async fn create_user(&self, payload: CreateUserDTO) -> Result<User, String> {
-        let (user, roles) = payload.into_models();
+        let (user, roles, identities) = payload.into_models();
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| format!("Failed to start transaction: {}", e))?;
+
         let created_user = self
             .repo
-            .create(user)
+            .create_in_tx(&mut tx, &user)
             .await
-            .map_err(|e| format!("Erro ao criar usuário: {}", e))?;
-
-        // original call passed Vec::new() for identities (2nd arg) and roles (3rd arg).
-        // Wait, logic in user_service.rs: self.repo.create(user, Vec::new(), roles)
-        // So identities empty, roles present.
+            .map_err(|e| format!("Failed to create user: {}", e))?;
 
         if !roles.is_empty() {
             self.roles_repo
-                .create_many(roles)
+                .create_many_in_tx(&mut tx, roles)
                 .await
-                .map_err(|e| format!("Erro ao criar roles do usuário: {}", e))?;
+                .map_err(|e| format!("Failed to create user roles: {}", e))?;
         }
 
-        // identities passed as empty in original service call.
+        if !identities.is_empty() {
+            self.identities_repo
+                .create_many_in_tx(&mut tx, identities)
+                .await
+                .map_err(|e| format!("Failed to create user identities: {}", e))?;
+        }
+
+        tx.commit()
+            .await
+            .map_err(|e| format!("Failed to commit transaction: {}", e))?;
 
         Ok(created_user)
+    }
+
+    pub async fn update_user(&self, payload: UpdateUserDTO) -> Result<User, String> {
+        let existing = self
+            .repo
+            .get_by_id(&payload.id)
+            .await
+            .map_err(|e| format!("Failed to fetch user: {}", e))?
+            .ok_or_else(|| format!("User not found: {}", payload.id))?;
+
+        let updated = payload.apply_to_model(existing);
+        self.repo
+            .update(updated)
+            .await
+            .map_err(|e| format!("Failed to update user: {}", e))
     }
 
     pub async fn delete_user(&self, id: &str) -> Result<(), String> {
         self.identities_repo
             .delete_by_user_id(id)
             .await
-            .map_err(|e| format!("Erro ao deletar identidades: {}", e))?;
+            .map_err(|e| format!("Failed to delete identities: {}", e))?;
         self.roles_repo
             .delete_by_user_id(id)
             .await
-            .map_err(|e| format!("Erro ao deletar roles: {}", e))?;
+            .map_err(|e| format!("Failed to delete roles: {}", e))?;
         self.sessions_repo
             .delete_by_user_id(id)
             .await
-            .map_err(|e| format!("Erro ao deletar sessões: {}", e))?;
+            .map_err(|e| format!("Failed to delete sessions: {}", e))?;
         self.repo
             .delete(id)
             .await
-            .map_err(|e| format!("Erro ao deletar usuário: {}", e))
+            .map_err(|e| format!("Failed to delete user: {}", e))
     }
 
     pub async fn get_user(&self, id: &str) -> Result<Option<User>, String> {
         self.repo
             .get_by_id(id)
             .await
-            .map_err(|e| format!("Erro ao buscar usuário: {}", e))
+            .map_err(|e| format!("Failed to fetch user: {}", e))
     }
 
     pub async fn list_users(&self) -> Result<Vec<User>, String> {
         self.repo
             .list()
             .await
-            .map_err(|e| format!("Erro ao listar usuários: {}", e))
+            .map_err(|e| format!("Failed to list users: {}", e))
     }
 }

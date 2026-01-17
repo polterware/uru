@@ -1,4 +1,4 @@
-use crate::dtos::user_dto::CreateUserDTO;
+use crate::dtos::user_dto::{CreateUserDTO, UpdateUserDTO};
 use crate::models::user_model::User;
 use crate::services::user_service::UserService;
 use tauri::State;
@@ -11,6 +11,15 @@ pub async fn create_user(
 ) -> Result<User, String> {
     let service = UserService::new(pool.inner().clone());
     service.create_user(payload).await
+}
+
+#[tauri::command]
+pub async fn update_user(
+    pool: State<'_, SqlitePool>,
+    payload: UpdateUserDTO,
+) -> Result<User, String> {
+    let service = UserService::new(pool.inner().clone());
+    service.update_user(payload).await
 }
 
 #[tauri::command]

@@ -242,11 +242,11 @@ impl ProductRepository {
         if let Some(query) = query {
             let pattern = format!("%{}%", query);
             builder.push(" AND (p.name LIKE ");
-            builder.push_bind(&pattern);
+            builder.push_bind(pattern.clone());
             builder.push(" OR p.sku LIKE ");
-            builder.push_bind(&pattern);
+            builder.push_bind(pattern.clone());
             builder.push(" OR p.gtin_ean LIKE ");
-            builder.push_bind(&pattern);
+            builder.push_bind(pattern);
             builder.push(")");
         }
 

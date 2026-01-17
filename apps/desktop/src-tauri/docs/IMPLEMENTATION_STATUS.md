@@ -54,13 +54,13 @@ Status das implementações por tabela do schema.
 
 ## Tabelas de Usuários
 
-| Tabela            | Service        | Tx Methods | Triggers | Indexes | Status               |
-| ----------------- | -------------- | ---------- | -------- | ------- | -------------------- |
-| `users`           | ⚠️ UserService | ❌         | ❌       | ❌      | 🔧 Index email/phone |
-| `user_identities` | ❌             | ❌         | ❌       | ❌      | 🔧 Index provider    |
-| `user_sessions`   | ❌             | ❌         | ❌       | ❌      | 🔧 Index token       |
-| `roles`           | ❌             | ❌         | ❌       | ❌      | ❌ CRUD simples      |
-| `user_roles`      | ❌ join table  | ❌         | ❌       | ❌      | ❌ CRUD simples      |
+| Tabela            | Service                 | Tx Methods   | Triggers | Indexes | Status |
+| ----------------- | ----------------------- | ------------ | -------- | ------- | ------ |
+| `users`           | ✅ UserService          | ✅ 5 métodos | ❌       | ❌      | ✅ OK  |
+| `user_identities` | ✅ UserIdentityService  | ✅ 6 métodos | ❌       | ❌      | ✅ OK  |
+| `user_sessions`   | ✅ UserSessionService   | ✅ 6 métodos | ❌       | ❌      | ✅ OK  |
+| `roles`           | ✅ RoleService          | ✅ 5 métodos | ❌       | ❌      | ✅ OK  |
+| `user_roles`      | ✅ UserRoleService      | ✅ 3 métodos | ❌       | ❌      | ✅ OK  |
 
 ---
 
@@ -84,11 +84,11 @@ Status das implementações por tabela do schema.
 
 ## Tabelas de Grupos
 
-| Tabela                       | Service       | Tx Methods | Triggers | Indexes | Status               |
-| ---------------------------- | ------------- | ---------- | -------- | ------- | -------------------- |
-| `customer_groups`            | ❌            | ❌         | ❌       | ❌      | ❌ CRUD simples      |
-| `customer_group_memberships` | ❌ join table | ❌         | ❌       | ❌      | ❌ CRUD simples      |
-| `customer_addresses`         | ❌            | ❌         | ❌       | ❌      | 🔧 Index customer_id |
+| Tabela                       | Service                           | Tx Methods   | Triggers | Indexes | Status |
+| ---------------------------- | --------------------------------- | ------------ | -------- | ------- | ------ |
+| `customer_groups`            | ✅ CustomerGroupService           | ✅ 5 métodos | ❌       | ❌      | ✅ OK  |
+| `customer_group_memberships` | ✅ CustomerGroupMembershipService | ✅ 4 métodos | ❌       | ❌      | ✅ OK  |
+| `customer_addresses`         | ✅ CustomerAddressService         | ✅ 6 métodos | ❌       | ❌      | ✅ OK  |
 
 ---
 

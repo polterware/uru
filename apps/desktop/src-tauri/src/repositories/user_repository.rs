@@ -1,5 +1,5 @@
 use crate::models::user_model::User;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, Sqlite, SqlitePool, Transaction};
 
 pub struct UserRepository {
     pool: SqlitePool,
@@ -43,6 +43,46 @@ impl UserRepository {
             .bind(&user.profile_type)
             .bind(&user.status)
             .fetch_one(&self.pool)
+            .await
+    }
+
+    pub async fn create_in_tx(
+        &self,
+        tx: &mut Transaction<'_, Sqlite>,
+        user: &User,
+    ) -> Result<User> {
+        let sql = r#"
+            INSERT INTO users (
+                id, email, phone, password_hash, security_stamp, is_email_verified,
+                is_phone_verified, failed_login_attempts, lockout_end_at, mfa_enabled,
+                mfa_secret, mfa_backup_codes, last_login_at, last_login_ip, _status,
+                created_at, updated_at, profile_type, status
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+            RETURNING *
+        "#;
+
+        sqlx::query_as::<_, User>(sql)
+            .bind(&user.id)
+            .bind(&user.email)
+            .bind(&user.phone)
+            .bind(&user.password_hash)
+            .bind(&user.security_stamp)
+            .bind(&user.is_email_verified)
+            .bind(&user.is_phone_verified)
+            .bind(&user.failed_login_attempts)
+            .bind(&user.lockout_end_at)
+            .bind(&user.mfa_enabled)
+            .bind(&user.mfa_secret)
+            .bind(&user.mfa_backup_codes)
+            .bind(&user.last_login_at)
+            .bind(&user.last_login_ip)
+            .bind(&user.status_internal)
+            .bind(&user.created_at)
+            .bind(&user.updated_at)
+            .bind(&user.profile_type)
+            .bind(&user.status)
+            .fetch_one(&mut **tx)
             .await
     }
 
