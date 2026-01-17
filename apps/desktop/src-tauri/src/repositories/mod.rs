@@ -3,6 +3,7 @@ pub mod category_repository;
 pub mod checkouts_repository;
 pub mod customer_groups_repository;
 pub mod customer_repository;
+pub mod audit_logs_repository;
 pub mod inquiries_repository;
 pub mod inventory_levels_repository;
 pub mod locations_repository;

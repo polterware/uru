@@ -1,24 +1,8 @@
+use crate::dtos::customer_address_dto::CreateCustomerAddressDTO;
+use crate::models::customer_model::{Customer, CustomerAddress, CustomerGroupMembership};
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use chrono::Utc;
-use crate::models::customer_model::{Customer, CustomerAddress, CustomerGroupMembership};
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateCustomerAddressDTO {
-    pub r#type: Option<String>,
-    pub is_default: Option<bool>,
-    pub first_name: Option<String>,
-    pub last_name: Option<String>,
-    pub company: Option<String>,
-    pub address1: Option<String>,
-    pub address2: Option<String>,
-    pub city: Option<String>,
-    pub province_code: Option<String>,
-    pub country_code: Option<String>,
-    pub postal_code: Option<String>,
-    pub phone: Option<String>,
-    pub metadata: Option<String>,
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateCustomerDTO {

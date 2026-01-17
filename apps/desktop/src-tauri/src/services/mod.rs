@@ -1,3 +1,4 @@
+pub mod audit_log_service;
 pub mod brand_service;
 pub mod category_service;
 pub mod customer_address_service;

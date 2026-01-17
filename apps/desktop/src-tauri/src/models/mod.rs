@@ -1,3 +1,4 @@
+pub mod audit_log_model;
 pub mod brand_model;
 pub mod shop_model;
 pub mod category_model;

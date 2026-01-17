@@ -94,9 +94,9 @@ Status das implementações por tabela do schema.
 
 ## Tabelas de Sistema
 
-| Tabela       | Service    | Tx Methods | Triggers      | Indexes  | Status |
-| ------------ | ---------- | ---------- | ------------- | -------- | ------ |
-| `audit_logs` | ❌ sistema | ❌         | ✅ 8 triggers | ✅ 2 idx | ✅ OK  |
+| Tabela       | Service             | Tx Methods   | Triggers      | Indexes  | Status |
+| ------------ | ------------------- | ------------ | ------------- | -------- | ------ |
+| `audit_logs` | ✅ AuditLogService  | ✅ 2 métodos | ✅ 8 triggers | ✅ 2 idx | ✅ OK  |
 
 ---
 

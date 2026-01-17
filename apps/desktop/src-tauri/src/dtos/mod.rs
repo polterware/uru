@@ -1,3 +1,4 @@
+pub mod audit_log_dto;
 pub mod brand_dto;
 pub mod category_dto;
 pub mod customer_address_dto;
@@ -16,6 +17,7 @@ pub mod user_identity_dto;
 pub mod user_role_dto;
 pub mod user_session_dto;
 
+pub use audit_log_dto::*;
 pub use brand_dto::*;
 pub use category_dto::*;
 pub use customer_address_dto::*;

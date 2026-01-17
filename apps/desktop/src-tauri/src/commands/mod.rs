@@ -1,3 +1,4 @@
+pub mod audit_log_commands;
 pub mod brand_commands;
 pub mod category_commands;
 pub mod customer_address_commands;
