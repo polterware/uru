@@ -826,10 +826,16 @@ CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku);
 CREATE INDEX IF NOT EXISTS idx_products_status ON products(status) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_products_parent ON products(parent_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_products_type ON products(type) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_products_created ON products(created_at) WHERE _status != 'deleted';
 
 CREATE INDEX IF NOT EXISTS idx_inventory_levels_product ON inventory_levels(product_id) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_inventory_levels_location ON inventory_levels(location_id) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_inventory_levels_status ON inventory_levels(stock_status) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_inventory_levels_expiry ON inventory_levels(expiry_date) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_inventory_levels_serial ON inventory_levels(serial_number) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_inventory_levels_batch ON inventory_levels(batch_number) WHERE _status != 'deleted';
 
 CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone) WHERE _status != 'deleted';
@@ -839,17 +845,57 @@ CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type) WHERE _st
 CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(status) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_transactions_customer ON transactions(customer_id) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_transactions_created ON transactions(created_at) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_transactions_staff ON transactions(staff_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_transactions_channel ON transactions(channel) WHERE _status != 'deleted';
 
 CREATE INDEX IF NOT EXISTS idx_orders_customer ON orders(customer_id) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_orders_number ON orders(order_number) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_orders_shop ON orders(shop_id) WHERE _status != 'deleted';
 
 CREATE INDEX IF NOT EXISTS idx_payments_transaction ON payments(transaction_id) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_payments_provider_transaction ON payments(provider_transaction_id) WHERE _status != 'deleted';
 
 CREATE INDEX IF NOT EXISTS idx_shipments_order ON shipments(order_id) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_shipments_status ON shipments(status) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_shipments_tracking ON shipments(tracking_number) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_transaction_items_transaction ON transaction_items(transaction_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_transaction_items_product ON transaction_items(product_id) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_inventory_movements_transaction ON inventory_movements(transaction_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_inventory_movements_level ON inventory_movements(inventory_level_id) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_refunds_payment ON refunds(payment_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_refunds_status ON refunds(status) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_checkouts_user ON checkouts(user_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_checkouts_status ON checkouts(status) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_user_sessions_token_hash ON user_sessions(token_hash) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_user_sessions_user ON user_sessions(user_id) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_inquiries_customer ON inquiries(customer_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_inquiries_status ON inquiries(status) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_inquiry_messages_inquiry ON inquiry_messages(inquiry_id) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_reviews_product ON reviews(product_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_reviews_customer ON reviews(customer_id) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_shipment_items_shipment ON shipment_items(shipment_id) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_shipment_events_shipment ON shipment_events(shipment_id) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_customer_addresses_customer ON customer_addresses(customer_id) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_brands_shop ON brands(shop_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_categories_shop ON categories(shop_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_customer_groups_shop ON customer_groups(shop_id) WHERE _status != 'deleted';
 
 CREATE INDEX IF NOT EXISTS idx_audit_logs_table ON audit_logs(table_name, created_at);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_record ON audit_logs(record_id);
