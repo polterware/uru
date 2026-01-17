@@ -31,6 +31,25 @@ expostos nas tabelas e formularios. A base e o schema de
 - `pairing`: funcionalidade separada
 - `debtors`: removido do escopo
 
+## Status atual (implementado x pendente)
+
+### Implementado
+- Tabelas de listagem e rotas dedicadas: `/products`, `/brands`, `/categories`, `/customers`
+- Tabelas de listagem e rotas existentes: `/inventory`, `/movements`, `/transactions`, `/orders`, `/payments`, `/refunds`, `/checkouts`
+- Analytics no backend (SQLite/Rust) com comandos:
+  - `get_dashboard_stats`
+  - `get_stock_movements`
+- Repositorio frontend para analytics e consumo no dashboard
+
+### Pendente
+- Formularios de criacao/edicao (CRUD completo e parcial)
+- Sub-CRUDs de `customer_addresses` e `customer_group_memberships`
+- Sub-CRUD de `transaction_items`
+- Acoes de status (ex.: alterar status de `transactions`, `orders`, `payments`, `refunds`, `checkouts`)
+- Filtros, ordenacao e paginacao reais via backend (hoje apenas UI)
+- Ajuste de estoque via `inventory_movements` (formulario + fluxo)
+- Navegacao por FKs (link para entidade relacionada)
+
 ## Rotas dedicadas
 
 Criar rotas dedicadas no frontend para os CRUDs completos:
@@ -308,6 +327,23 @@ Tabela: `transaction_items`
 ### Acoes permitidas
 - Criar, listar, alterar status
 - Sem delete fisico
+
+## Analytics (dashboard)
+
+### Backend (Tauri + SQLite)
+- Comandos:
+  - `get_dashboard_stats`
+  - `get_stock_movements`
+- Fonte de dados:
+  - `inventory_levels` e `products` para totais/valor de estoque
+  - `inventory_movements` para series temporais (`stock_in` / `stock_out`)
+- Time ranges suportados: `30m`, `1h`, `2h`, `7d`, `30d`, `90d`, `1y`, `all`
+
+### Frontend
+- `AnalyticsRepository` em `src/lib/db/repositories/analytics-repository.ts`
+- Dashboard em `/` consome:
+  - `getDashboardStats()`
+  - `getStockMovements(timeRange)`
 
 ## Observacoes finais
 

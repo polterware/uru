@@ -4,6 +4,15 @@ pub mod features;
 use crate::features::analytics::commands::analytics_commands::{
     get_dashboard_stats, get_stock_movements,
 };
+use crate::features::product::commands::product_commands::{
+    create_product, update_product, delete_product, get_product, list_products, list_products_filtered,
+};
+use crate::features::brand::commands::brand_commands::{
+    create_brand, update_brand, delete_brand, get_brand, list_brands,
+};
+use crate::features::category::commands::category_commands::{
+    create_category, update_category, delete_category, get_category, list_categories_by_shop,
+};
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
 use tauri::Manager;
 use std::fs;
@@ -14,8 +23,28 @@ use std::str::FromStr;
 pub fn run() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
+            // Analytics
             get_dashboard_stats,
-            get_stock_movements
+            get_stock_movements,
+            // Products
+            create_product,
+            update_product,
+            delete_product,
+            get_product,
+            list_products,
+            list_products_filtered,
+            // Brands
+            create_brand,
+            update_brand,
+            delete_brand,
+            get_brand,
+            list_brands,
+            // Categories
+            create_category,
+            update_category,
+            delete_category,
+            get_category,
+            list_categories_by_shop
         ])
         .setup(|app| {
             let app_data_dir = app.path().app_data_dir()?;

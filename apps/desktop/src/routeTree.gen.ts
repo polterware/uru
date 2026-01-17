@@ -24,6 +24,7 @@ import { Route as CheckoutsIndexRouteImport } from './routes/checkouts/index'
 import { Route as CategoriesIndexRouteImport } from './routes/categories/index'
 import { Route as BrandsIndexRouteImport } from './routes/brands/index'
 import { Route as TransactionsNewRouteImport } from './routes/transactions/new'
+import { Route as ProductsNewRouteImport } from './routes/products/new'
 import { Route as InventoryNewRouteImport } from './routes/inventory/new'
 
 const SettingsRoute = SettingsRouteImport.update({
@@ -101,6 +102,11 @@ const TransactionsNewRoute = TransactionsNewRouteImport.update({
   path: '/transactions/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductsNewRoute = ProductsNewRouteImport.update({
+  id: '/products/new',
+  path: '/products/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InventoryNewRoute = InventoryNewRouteImport.update({
   id: '/inventory/new',
   path: '/inventory/new',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/pairing': typeof PairingRoute
   '/settings': typeof SettingsRoute
   '/inventory/new': typeof InventoryNewRoute
+  '/products/new': typeof ProductsNewRoute
   '/transactions/new': typeof TransactionsNewRoute
   '/brands': typeof BrandsIndexRoute
   '/categories': typeof CategoriesIndexRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/pairing': typeof PairingRoute
   '/settings': typeof SettingsRoute
   '/inventory/new': typeof InventoryNewRoute
+  '/products/new': typeof ProductsNewRoute
   '/transactions/new': typeof TransactionsNewRoute
   '/brands': typeof BrandsIndexRoute
   '/categories': typeof CategoriesIndexRoute
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/pairing': typeof PairingRoute
   '/settings': typeof SettingsRoute
   '/inventory/new': typeof InventoryNewRoute
+  '/products/new': typeof ProductsNewRoute
   '/transactions/new': typeof TransactionsNewRoute
   '/brands/': typeof BrandsIndexRoute
   '/categories/': typeof CategoriesIndexRoute
@@ -170,6 +179,7 @@ export interface FileRouteTypes {
     | '/pairing'
     | '/settings'
     | '/inventory/new'
+    | '/products/new'
     | '/transactions/new'
     | '/brands'
     | '/categories'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/pairing'
     | '/settings'
     | '/inventory/new'
+    | '/products/new'
     | '/transactions/new'
     | '/brands'
     | '/categories'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/pairing'
     | '/settings'
     | '/inventory/new'
+    | '/products/new'
     | '/transactions/new'
     | '/brands/'
     | '/categories/'
@@ -225,6 +237,7 @@ export interface RootRouteChildren {
   PairingRoute: typeof PairingRoute
   SettingsRoute: typeof SettingsRoute
   InventoryNewRoute: typeof InventoryNewRoute
+  ProductsNewRoute: typeof ProductsNewRoute
   TransactionsNewRoute: typeof TransactionsNewRoute
   BrandsIndexRoute: typeof BrandsIndexRoute
   CategoriesIndexRoute: typeof CategoriesIndexRoute
@@ -345,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TransactionsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/products/new': {
+      id: '/products/new'
+      path: '/products/new'
+      fullPath: '/products/new'
+      preLoaderRoute: typeof ProductsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inventory/new': {
       id: '/inventory/new'
       path: '/inventory/new'
@@ -361,6 +381,7 @@ const rootRouteChildren: RootRouteChildren = {
   PairingRoute: PairingRoute,
   SettingsRoute: SettingsRoute,
   InventoryNewRoute: InventoryNewRoute,
+  ProductsNewRoute: ProductsNewRoute,
   TransactionsNewRoute: TransactionsNewRoute,
   BrandsIndexRoute: BrandsIndexRoute,
   CategoriesIndexRoute: CategoriesIndexRoute,

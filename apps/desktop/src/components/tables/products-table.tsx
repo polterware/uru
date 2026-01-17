@@ -1,111 +1,280 @@
 import * as React from "react"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import { toast } from "sonner"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { DataTable } from "@/components/tables/data-table"
+import { ProductEditSheet } from "@/components/forms/product-edit-sheet"
 import { formatCurrency, formatDateTime } from "@/lib/formatters"
+import { Product, ProductsRepository } from "@/lib/db/repositories/products-repository"
+import { Brand, BrandsRepository } from "@/lib/db/repositories/brands-repository"
 
-type ProductRow = {
-  id: string
-  sku: string
-  name: string
-  type: string
-  status: string
-  price: number
-  promotional_price?: number | null
-  brand_id?: string | null
-  category_id?: string | null
-  is_shippable?: boolean | null
-  stock_status?: string | null
-  created_at?: string | null
+type ProductRow = Product & {
+  brand_name?: string
+  category_name?: string
 }
 
-const columns: ColumnDef<ProductRow>[] = [
-  {
-    accessorKey: "sku",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        SKU
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div className="uppercase">{row.getValue("sku") || "-"}</div>,
-  },
-  {
-    accessorKey: "name",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Name
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-    cell: ({ row }) => <Badge variant="outline">{row.getValue("type") || "-"}</Badge>,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => <Badge variant="secondary">{row.getValue("status") || "-"}</Badge>,
-  },
-  {
-    accessorKey: "price",
-    header: "Price",
-    cell: ({ row }) => formatCurrency(row.getValue("price")),
-  },
-  {
-    accessorKey: "promotional_price",
-    header: "Promo Price",
-    cell: ({ row }) => formatCurrency(row.getValue("promotional_price")),
-  },
-  {
-    accessorKey: "brand_id",
-    header: "Brand",
-    cell: ({ row }) => row.getValue("brand_id") || "-",
-  },
-  {
-    accessorKey: "category_id",
-    header: "Category",
-    cell: ({ row }) => row.getValue("category_id") || "-",
-  },
-  {
-    accessorKey: "is_shippable",
-    header: "Shippable",
-    cell: ({ row }) => (row.getValue("is_shippable") ? "Yes" : "No"),
-  },
-  {
-    accessorKey: "stock_status",
-    header: "Stock Status",
-    cell: ({ row }) => row.getValue("stock_status") || "-",
-  },
-  {
-    accessorKey: "created_at",
-    header: "Created At",
-    cell: ({ row }) => formatDateTime(row.getValue("created_at")),
-  },
-]
-
 export function ProductsTable() {
-  const data = React.useMemo<ProductRow[]>(() => [], [])
+  const [data, setData] = React.useState<ProductRow[]>([])
+  const [brands, setBrands] = React.useState<Brand[]>([])
+  const [isLoading, setIsLoading] = React.useState(true)
+  const [deleteId, setDeleteId] = React.useState<string | null>(null)
+  const [editProduct, setEditProduct] = React.useState<Product | null>(null)
+  const [isEditOpen, setIsEditOpen] = React.useState(false)
+
+  const loadData = React.useCallback(async () => {
+    try {
+      setIsLoading(true)
+      const [products, brandsData] = await Promise.all([
+        ProductsRepository.list(),
+        BrandsRepository.list(),
+      ])
+      setBrands(brandsData)
+
+      const brandsMap = new Map(brandsData.map((b) => [b.id, b.name]))
+
+      const enrichedProducts = products.map((product) => ({
+        ...product,
+        brand_name: product.brand_id ? brandsMap.get(product.brand_id) : undefined,
+      }))
+
+      setData(enrichedProducts)
+    } catch (error) {
+      console.error("Failed to load products:", error)
+      toast.error("Failed to load products")
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  const handleDelete = async () => {
+    if (!deleteId) return
+
+    try {
+      await ProductsRepository.delete(deleteId)
+      toast.success("Product deleted successfully")
+      loadData()
+    } catch (error) {
+      console.error("Failed to delete product:", error)
+      toast.error("Failed to delete product")
+    } finally {
+      setDeleteId(null)
+    }
+  }
+
+  const handleEdit = (product: Product) => {
+    setEditProduct(product)
+    setIsEditOpen(true)
+  }
+
+  const columns: ColumnDef<ProductRow>[] = React.useMemo(
+    () => [
+      {
+        accessorKey: "sku",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            SKU
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        ),
+        cell: ({ row }) => (
+          <div className="uppercase font-mono text-sm">{row.getValue("sku") || "-"}</div>
+        ),
+      },
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Name
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        ),
+        cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+      },
+      {
+        accessorKey: "type",
+        header: "Type",
+        cell: ({ row }) => {
+          const type = row.getValue("type") as string
+          const variant =
+            type === "physical"
+              ? "default"
+              : type === "digital"
+                ? "secondary"
+                : type === "service"
+                  ? "outline"
+                  : "default"
+          return <Badge variant={variant}>{type || "-"}</Badge>
+        },
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+          const status = row.getValue("status") as string
+          const variant =
+            status === "active"
+              ? "default"
+              : status === "draft"
+                ? "secondary"
+                : status === "archived"
+                  ? "outline"
+                  : "destructive"
+          return <Badge variant={variant}>{status || "-"}</Badge>
+        },
+      },
+      {
+        accessorKey: "price",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Price
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        ),
+        cell: ({ row }) => formatCurrency(row.getValue("price")),
+      },
+      {
+        accessorKey: "promotional_price",
+        header: "Promo Price",
+        cell: ({ row }) => {
+          const promoPrice = row.getValue("promotional_price") as number | null
+          return promoPrice ? (
+            <span className="text-green-600 font-medium">{formatCurrency(promoPrice)}</span>
+          ) : (
+            "-"
+          )
+        },
+      },
+      {
+        accessorKey: "brand_name",
+        header: "Brand",
+        cell: ({ row }) => row.getValue("brand_name") || "-",
+      },
+      {
+        accessorKey: "is_shippable",
+        header: "Shippable",
+        cell: ({ row }) => (row.getValue("is_shippable") ? "Yes" : "No"),
+      },
+      {
+        accessorKey: "created_at",
+        header: "Created At",
+        cell: ({ row }) => formatDateTime(row.getValue("created_at")),
+      },
+      {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          const product = row.original
+
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => navigator.clipboard.writeText(product.id)}
+                >
+                  Copy ID
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => handleEdit(product)}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={() => setDeleteId(product.id)}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )
+        },
+      },
+    ],
+    []
+  )
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-muted-foreground">Loading products...</div>
+      </div>
+    )
+  }
 
   return (
-    <DataTable
-      data={data}
-      columns={columns}
-      filterColumnId="name"
-      filterPlaceholder="Filter products..."
-      emptyMessage="No products found."
-    />
+    <>
+      <DataTable
+        data={data}
+        columns={columns}
+        filterColumnId="name"
+        filterPlaceholder="Filter products..."
+        emptyMessage="No products found."
+        action={{ label: "New Product", to: "/products/new" }}
+      />
+
+      <ProductEditSheet
+        product={editProduct}
+        open={isEditOpen}
+        onOpenChange={setIsEditOpen}
+        onSuccess={loadData}
+      />
+
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the product.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }
