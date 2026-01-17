@@ -1,5 +1,11 @@
+import { Activity, Box, TrendingUp } from "lucide-react"
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import * as React from "react"
 import { createFileRoute } from "@tanstack/react-router"
+
+import type { ChartConfig } from "@/components/ui/chart"
+import type { DailyMovementStat, DashboardStats } from "@/lib/db/repositories/analytics-repository"
+import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
@@ -7,11 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Activity, Box, TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -23,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { AnalyticsRepository, DashboardStats, DailyMovementStat } from "@/lib/db/repositories/analytics-repository"
+import { AnalyticsRepository } from "@/lib/db/repositories/analytics-repository"
 import { useLocalStorage } from "@/hooks/use-local-storage"
 
 export const Route = createFileRoute("/")({ component: Dashboard })
@@ -45,7 +47,7 @@ const chartConfig = {
 function Dashboard() {
   const [activeChart, setActiveChart] = useLocalStorage<keyof typeof chartConfig>("dashboard_activeChart", "stockIn")
   const [stats, setStats] = React.useState<DashboardStats | null>(null)
-  const [chartData, setChartData] = React.useState<DailyMovementStat[]>([])
+  const [chartData, setChartData] = React.useState<Array<DailyMovementStat>>([])
   const [timeRange, setTimeRange] = useLocalStorage("dashboard_timeRange", "30d")
   const [loading, setLoading] = React.useState(true)
 

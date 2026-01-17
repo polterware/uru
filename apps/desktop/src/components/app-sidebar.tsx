@@ -1,4 +1,19 @@
-import { Activity, ArrowRightLeft, Home, Inbox, Settings, Smartphone, Users } from "lucide-react"
+import {
+  Activity,
+  ArrowRightLeft,
+  CreditCard,
+  Home,
+  Inbox,
+  Layers,
+  Package,
+  Receipt,
+  Settings,
+  ShoppingCart,
+  Smartphone,
+  Tag,
+  Undo2,
+  Users,
+} from "lucide-react"
 
 import {
   Sidebar,
@@ -20,19 +35,54 @@ const items = [
     icon: Home,
   },
   {
+    title: "Products",
+    url: "/products",
+    icon: Package,
+  },
+  {
+    title: "Brands",
+    url: "/brands",
+    icon: Tag,
+  },
+  {
+    title: "Categories",
+    url: "/categories",
+    icon: Layers,
+  },
+  {
+    title: "Customers",
+    url: "/customers",
+    icon: Users,
+  },
+  {
     title: "Transactions",
     url: "/transactions",
     icon: ArrowRightLeft,
   },
   {
+    title: "Orders",
+    url: "/orders",
+    icon: ShoppingCart,
+  },
+  {
+    title: "Payments",
+    url: "/payments",
+    icon: CreditCard,
+  },
+  {
+    title: "Refunds",
+    url: "/refunds",
+    icon: Undo2,
+  },
+  {
+    title: "Checkouts",
+    url: "/checkouts",
+    icon: Receipt,
+  },
+  {
     title: "Inventory",
     url: "/inventory",
     icon: Inbox,
-  },
-  {
-    title: "Debtors",
-    url: "/debtors",
-    icon: Users,
   },
   {
     title: "Movements",

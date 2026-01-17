@@ -14,11 +14,17 @@ import { Route as PairingRouteImport } from './routes/pairing'
 import { Route as MovementsRouteImport } from './routes/movements'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TransactionsIndexRouteImport } from './routes/transactions/index'
+import { Route as RefundsIndexRouteImport } from './routes/refunds/index'
+import { Route as ProductsIndexRouteImport } from './routes/products/index'
+import { Route as PaymentsIndexRouteImport } from './routes/payments/index'
+import { Route as OrdersIndexRouteImport } from './routes/orders/index'
 import { Route as InventoryIndexRouteImport } from './routes/inventory/index'
-import { Route as DebtorsIndexRouteImport } from './routes/debtors/index'
+import { Route as CustomersIndexRouteImport } from './routes/customers/index'
+import { Route as CheckoutsIndexRouteImport } from './routes/checkouts/index'
+import { Route as CategoriesIndexRouteImport } from './routes/categories/index'
+import { Route as BrandsIndexRouteImport } from './routes/brands/index'
 import { Route as TransactionsNewRouteImport } from './routes/transactions/new'
 import { Route as InventoryNewRouteImport } from './routes/inventory/new'
-import { Route as DebtorsNewRouteImport } from './routes/debtors/new'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -45,14 +51,49 @@ const TransactionsIndexRoute = TransactionsIndexRouteImport.update({
   path: '/transactions/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RefundsIndexRoute = RefundsIndexRouteImport.update({
+  id: '/refunds/',
+  path: '/refunds/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsIndexRoute = ProductsIndexRouteImport.update({
+  id: '/products/',
+  path: '/products/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentsIndexRoute = PaymentsIndexRouteImport.update({
+  id: '/payments/',
+  path: '/payments/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersIndexRoute = OrdersIndexRouteImport.update({
+  id: '/orders/',
+  path: '/orders/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InventoryIndexRoute = InventoryIndexRouteImport.update({
   id: '/inventory/',
   path: '/inventory/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DebtorsIndexRoute = DebtorsIndexRouteImport.update({
-  id: '/debtors/',
-  path: '/debtors/',
+const CustomersIndexRoute = CustomersIndexRouteImport.update({
+  id: '/customers/',
+  path: '/customers/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutsIndexRoute = CheckoutsIndexRouteImport.update({
+  id: '/checkouts/',
+  path: '/checkouts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriesIndexRoute = CategoriesIndexRouteImport.update({
+  id: '/categories/',
+  path: '/categories/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandsIndexRoute = BrandsIndexRouteImport.update({
+  id: '/brands/',
+  path: '/brands/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TransactionsNewRoute = TransactionsNewRouteImport.update({
@@ -65,22 +106,23 @@ const InventoryNewRoute = InventoryNewRouteImport.update({
   path: '/inventory/new',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DebtorsNewRoute = DebtorsNewRouteImport.update({
-  id: '/debtors/new',
-  path: '/debtors/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/movements': typeof MovementsRoute
   '/pairing': typeof PairingRoute
   '/settings': typeof SettingsRoute
-  '/debtors/new': typeof DebtorsNewRoute
   '/inventory/new': typeof InventoryNewRoute
   '/transactions/new': typeof TransactionsNewRoute
-  '/debtors': typeof DebtorsIndexRoute
+  '/brands': typeof BrandsIndexRoute
+  '/categories': typeof CategoriesIndexRoute
+  '/checkouts': typeof CheckoutsIndexRoute
+  '/customers': typeof CustomersIndexRoute
   '/inventory': typeof InventoryIndexRoute
+  '/orders': typeof OrdersIndexRoute
+  '/payments': typeof PaymentsIndexRoute
+  '/products': typeof ProductsIndexRoute
+  '/refunds': typeof RefundsIndexRoute
   '/transactions': typeof TransactionsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -88,11 +130,17 @@ export interface FileRoutesByTo {
   '/movements': typeof MovementsRoute
   '/pairing': typeof PairingRoute
   '/settings': typeof SettingsRoute
-  '/debtors/new': typeof DebtorsNewRoute
   '/inventory/new': typeof InventoryNewRoute
   '/transactions/new': typeof TransactionsNewRoute
-  '/debtors': typeof DebtorsIndexRoute
+  '/brands': typeof BrandsIndexRoute
+  '/categories': typeof CategoriesIndexRoute
+  '/checkouts': typeof CheckoutsIndexRoute
+  '/customers': typeof CustomersIndexRoute
   '/inventory': typeof InventoryIndexRoute
+  '/orders': typeof OrdersIndexRoute
+  '/payments': typeof PaymentsIndexRoute
+  '/products': typeof ProductsIndexRoute
+  '/refunds': typeof RefundsIndexRoute
   '/transactions': typeof TransactionsIndexRoute
 }
 export interface FileRoutesById {
@@ -101,11 +149,17 @@ export interface FileRoutesById {
   '/movements': typeof MovementsRoute
   '/pairing': typeof PairingRoute
   '/settings': typeof SettingsRoute
-  '/debtors/new': typeof DebtorsNewRoute
   '/inventory/new': typeof InventoryNewRoute
   '/transactions/new': typeof TransactionsNewRoute
-  '/debtors/': typeof DebtorsIndexRoute
+  '/brands/': typeof BrandsIndexRoute
+  '/categories/': typeof CategoriesIndexRoute
+  '/checkouts/': typeof CheckoutsIndexRoute
+  '/customers/': typeof CustomersIndexRoute
   '/inventory/': typeof InventoryIndexRoute
+  '/orders/': typeof OrdersIndexRoute
+  '/payments/': typeof PaymentsIndexRoute
+  '/products/': typeof ProductsIndexRoute
+  '/refunds/': typeof RefundsIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
 }
 export interface FileRouteTypes {
@@ -115,11 +169,17 @@ export interface FileRouteTypes {
     | '/movements'
     | '/pairing'
     | '/settings'
-    | '/debtors/new'
     | '/inventory/new'
     | '/transactions/new'
-    | '/debtors'
+    | '/brands'
+    | '/categories'
+    | '/checkouts'
+    | '/customers'
     | '/inventory'
+    | '/orders'
+    | '/payments'
+    | '/products'
+    | '/refunds'
     | '/transactions'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -127,11 +187,17 @@ export interface FileRouteTypes {
     | '/movements'
     | '/pairing'
     | '/settings'
-    | '/debtors/new'
     | '/inventory/new'
     | '/transactions/new'
-    | '/debtors'
+    | '/brands'
+    | '/categories'
+    | '/checkouts'
+    | '/customers'
     | '/inventory'
+    | '/orders'
+    | '/payments'
+    | '/products'
+    | '/refunds'
     | '/transactions'
   id:
     | '__root__'
@@ -139,11 +205,17 @@ export interface FileRouteTypes {
     | '/movements'
     | '/pairing'
     | '/settings'
-    | '/debtors/new'
     | '/inventory/new'
     | '/transactions/new'
-    | '/debtors/'
+    | '/brands/'
+    | '/categories/'
+    | '/checkouts/'
+    | '/customers/'
     | '/inventory/'
+    | '/orders/'
+    | '/payments/'
+    | '/products/'
+    | '/refunds/'
     | '/transactions/'
   fileRoutesById: FileRoutesById
 }
@@ -152,11 +224,17 @@ export interface RootRouteChildren {
   MovementsRoute: typeof MovementsRoute
   PairingRoute: typeof PairingRoute
   SettingsRoute: typeof SettingsRoute
-  DebtorsNewRoute: typeof DebtorsNewRoute
   InventoryNewRoute: typeof InventoryNewRoute
   TransactionsNewRoute: typeof TransactionsNewRoute
-  DebtorsIndexRoute: typeof DebtorsIndexRoute
+  BrandsIndexRoute: typeof BrandsIndexRoute
+  CategoriesIndexRoute: typeof CategoriesIndexRoute
+  CheckoutsIndexRoute: typeof CheckoutsIndexRoute
+  CustomersIndexRoute: typeof CustomersIndexRoute
   InventoryIndexRoute: typeof InventoryIndexRoute
+  OrdersIndexRoute: typeof OrdersIndexRoute
+  PaymentsIndexRoute: typeof PaymentsIndexRoute
+  ProductsIndexRoute: typeof ProductsIndexRoute
+  RefundsIndexRoute: typeof RefundsIndexRoute
   TransactionsIndexRoute: typeof TransactionsIndexRoute
 }
 
@@ -197,6 +275,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TransactionsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/refunds/': {
+      id: '/refunds/'
+      path: '/refunds'
+      fullPath: '/refunds'
+      preLoaderRoute: typeof RefundsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products/': {
+      id: '/products/'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payments/': {
+      id: '/payments/'
+      path: '/payments'
+      fullPath: '/payments'
+      preLoaderRoute: typeof PaymentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders/': {
+      id: '/orders/'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inventory/': {
       id: '/inventory/'
       path: '/inventory'
@@ -204,11 +310,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventoryIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/debtors/': {
-      id: '/debtors/'
-      path: '/debtors'
-      fullPath: '/debtors'
-      preLoaderRoute: typeof DebtorsIndexRouteImport
+    '/customers/': {
+      id: '/customers/'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof CustomersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkouts/': {
+      id: '/checkouts/'
+      path: '/checkouts'
+      fullPath: '/checkouts'
+      preLoaderRoute: typeof CheckoutsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categories/': {
+      id: '/categories/'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof CategoriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brands/': {
+      id: '/brands/'
+      path: '/brands'
+      fullPath: '/brands'
+      preLoaderRoute: typeof BrandsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/transactions/new': {
@@ -225,13 +352,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventoryNewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/debtors/new': {
-      id: '/debtors/new'
-      path: '/debtors/new'
-      fullPath: '/debtors/new'
-      preLoaderRoute: typeof DebtorsNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -240,11 +360,17 @@ const rootRouteChildren: RootRouteChildren = {
   MovementsRoute: MovementsRoute,
   PairingRoute: PairingRoute,
   SettingsRoute: SettingsRoute,
-  DebtorsNewRoute: DebtorsNewRoute,
   InventoryNewRoute: InventoryNewRoute,
   TransactionsNewRoute: TransactionsNewRoute,
-  DebtorsIndexRoute: DebtorsIndexRoute,
+  BrandsIndexRoute: BrandsIndexRoute,
+  CategoriesIndexRoute: CategoriesIndexRoute,
+  CheckoutsIndexRoute: CheckoutsIndexRoute,
+  CustomersIndexRoute: CustomersIndexRoute,
   InventoryIndexRoute: InventoryIndexRoute,
+  OrdersIndexRoute: OrdersIndexRoute,
+  PaymentsIndexRoute: PaymentsIndexRoute,
+  ProductsIndexRoute: ProductsIndexRoute,
+  RefundsIndexRoute: RefundsIndexRoute,
   TransactionsIndexRoute: TransactionsIndexRoute,
 }
 export const routeTree = rootRouteImport

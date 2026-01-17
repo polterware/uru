@@ -1,4 +1,5 @@
 pub mod audit_log;
+pub mod analytics;
 pub mod brand;
 pub mod category;
 pub mod checkout;
