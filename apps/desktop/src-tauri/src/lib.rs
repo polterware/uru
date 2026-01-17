@@ -3,6 +3,14 @@ pub mod features;
 
 use crate::features::analytics::commands::analytics_commands::{
     get_dashboard_stats, get_stock_movements,
+    get_cumulative_revenue, get_stock_movements_area, get_revenue_by_payment_method,
+    get_top_products, get_revenue_by_category, get_monthly_sales, get_stock_status,
+    get_daily_sales_trend, get_customer_growth, get_average_order_value,
+    get_payment_method_distribution, get_category_distribution, get_order_status_distribution,
+    get_customer_group_distribution,
+    get_monthly_performance_metrics, get_product_metrics,
+    get_monthly_sales_progress, get_conversion_rate, get_inventory_capacity,
+    get_product_ranking, get_month_over_month_growth, get_year_to_date_sales,
 };
 use crate::features::product::commands::product_commands::{
     create_product, update_product, delete_product, get_product, list_products, list_products_filtered,
@@ -73,6 +81,35 @@ pub fn run() {
             // Analytics
             get_dashboard_stats,
             get_stock_movements,
+            // Area Chart
+            get_cumulative_revenue,
+            get_stock_movements_area,
+            get_revenue_by_payment_method,
+            // Bar Chart
+            get_top_products,
+            get_revenue_by_category,
+            get_monthly_sales,
+            get_stock_status,
+            // Line Chart
+            get_daily_sales_trend,
+            get_customer_growth,
+            get_average_order_value,
+            // Pie Chart
+            get_payment_method_distribution,
+            get_category_distribution,
+            get_order_status_distribution,
+            get_customer_group_distribution,
+            // Radar Chart
+            get_monthly_performance_metrics,
+            get_product_metrics,
+            // Radial Chart
+            get_monthly_sales_progress,
+            get_conversion_rate,
+            get_inventory_capacity,
+            // Advanced Queries
+            get_product_ranking,
+            get_month_over_month_growth,
+            get_year_to_date_sales,
             // Products
             create_product,
             update_product,

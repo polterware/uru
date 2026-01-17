@@ -126,11 +126,6 @@ const inventoryItems = [
 
 const systemItems = [
   {
-    title: "Dashboard",
-    url: "/",
-    icon: Home,
-  },
-  {
     title: "Pairing",
     url: "/pairing",
     icon: Smartphone,
@@ -205,6 +200,16 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
+            {/* Dashboard - Separated at the top */}
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link to="/">
+                  <Home className="size-4" />
+                  <span>Dashboard</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
             {/* Catalog Section */}
             <SidebarMenuItem>
               <Collapsible defaultOpen className="group/collapsible">
