@@ -14,9 +14,9 @@ Este documento rastreia o status de implementação das funcionalidades CRUD par
 
 | Domínio | UI Table | List (Backend) | Create | Update | Delete (soft) | Filtros/Paginação | FK Navigation |
 |---------|----------|----------------|--------|--------|---------------|-------------------|---------------|
-| Products | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ (Brand) |
+| Products | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ (Brand, Category) |
 | Brands | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ➖ |
-| Categories | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Categories | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ (Parent) |
 | Customers | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 ### Sub-CRUDs de Customers
@@ -84,7 +84,7 @@ Este documento rastreia o status de implementação das funcionalidades CRUD par
 |------|---------|--------|
 | List (backend) | Products | ✅ |
 | List (backend) | Brands | ✅ |
-| List (backend) | Categories | ❌ |
+| List (backend) | Categories | ✅ |
 | List (backend) | Customers | ❌ |
 | List (backend) | Inventory | ❌ |
 | List (backend) | Movements | ❌ |
@@ -101,8 +101,8 @@ Este documento rastreia o status de implementação das funcionalidades CRUD par
 | Formulário de edição | Products | ✅ |
 | Formulário de criação | Brands | ✅ |
 | Formulário de edição | Brands | ✅ |
-| Formulário de criação | Categories | ❌ |
-| Formulário de edição | Categories | ❌ |
+| Formulário de criação | Categories | ✅ |
+| Formulário de edição | Categories | ✅ |
 | Formulário de criação | Customers | ❌ |
 | Formulário de edição | Customers | ❌ |
 
@@ -324,6 +324,7 @@ export const {Domain}sRepository = {
 
 | Data | Alteração |
 |------|-----------|
+| 2026-01-17 | Implementado CRUD completo de Categories (List, Create, Update, Delete, FK Navigation Parent) |
 | 2026-01-17 | Implementado CRUD completo de Brands (List, Create, Update, Delete) |
 | 2026-01-17 | Adicionada seção "Arquitetura de Implementação" com padrão para replicar em outros domínios |
 | 2026-01-17 | Implementado CRUD completo de Products (List, Create, Update, Delete, FK Navigation) |

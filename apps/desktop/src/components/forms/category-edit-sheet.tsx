@@ -181,14 +181,14 @@ export function CategoryEditSheet({
                 <div className="grid gap-2">
                   <Label htmlFor="edit-parent_id">Parent Category</Label>
                   <Select
-                    value={formData.parent_id}
-                    onValueChange={(value) => handleChange("parent_id", value)}
+                    value={formData.parent_id || "none"}
+                    onValueChange={(value) => handleChange("parent_id", value === "none" ? "" : value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="None (Root Category)" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">None (Root Category)</SelectItem>
+                      <SelectItem value="none">None (Root Category)</SelectItem>
                       {availableParents.map((cat) => (
                         <SelectItem key={cat.id} value={cat.id}>
                           {cat.name}

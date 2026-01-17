@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select"
 import { ProductsRepository, CreateProductDTO } from "@/lib/db/repositories/products-repository"
 import { Brand, BrandsRepository } from "@/lib/db/repositories/brands-repository"
+import { Category, CategoriesRepository } from "@/lib/db/repositories/categories-repository"
 
 export const Route = createFileRoute("/products/new")({
   component: NewProduct,
@@ -46,6 +47,7 @@ const PRODUCT_STATUSES = [
 function NewProduct() {
   const navigate = useNavigate()
   const [brands, setBrands] = React.useState<Brand[]>([])
+  const [categories, setCategories] = React.useState<Category[]>([])
   const [isSaving, setIsSaving] = React.useState(false)
 
   // Form state
@@ -67,20 +69,25 @@ function NewProduct() {
     height_mm: "0",
     depth_mm: "0",
     brand_id: "",
+    category_id: "",
     attributes: "",
     metadata: "",
   })
 
   React.useEffect(() => {
-    const loadBrands = async () => {
+    const loadData = async () => {
       try {
-        const brandsData = await BrandsRepository.list()
+        const [brandsData, categoriesData] = await Promise.all([
+          BrandsRepository.list(),
+          CategoriesRepository.list(),
+        ])
         setBrands(brandsData)
+        setCategories(categoriesData)
       } catch (error) {
-        console.error("Failed to load brands:", error)
+        console.error("Failed to load data:", error)
       }
     }
-    loadBrands()
+    loadData()
   }, [])
 
   const handleChange = (field: string, value: string | boolean) => {
@@ -135,6 +142,7 @@ function NewProduct() {
         height_mm: parseInt(formData.height_mm) || 0,
         depth_mm: parseInt(formData.depth_mm) || 0,
         brand_id: formData.brand_id || undefined,
+        category_id: formData.category_id || undefined,
         attributes: formData.attributes || undefined,
         metadata: formData.metadata || undefined,
         categories: [],
@@ -255,23 +263,46 @@ function NewProduct() {
                 </div>
               </div>
 
-              <div className="grid gap-2">
-                <Label htmlFor="brand_id">Brand</Label>
-                <Select
-                  value={formData.brand_id}
-                  onValueChange={(value) => handleChange("brand_id", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select brand (optional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {brands.map((brand) => (
-                      <SelectItem key={brand.id} value={brand.id}>
-                        {brand.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="brand_id">Brand</Label>
+                  <Select
+                    value={formData.brand_id || "none"}
+                    onValueChange={(value) => handleChange("brand_id", value === "none" ? "" : value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select brand (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {brands.map((brand) => (
+                        <SelectItem key={brand.id} value={brand.id}>
+                          {brand.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="category_id">Category</Label>
+                  <Select
+                    value={formData.category_id || "none"}
+                    onValueChange={(value) => handleChange("category_id", value === "none" ? "" : value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardContent>
           </Card>

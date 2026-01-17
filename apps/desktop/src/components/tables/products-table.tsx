@@ -28,6 +28,7 @@ import { ProductEditSheet } from "@/components/forms/product-edit-sheet"
 import { formatCurrency, formatDateTime } from "@/lib/formatters"
 import { Product, ProductsRepository } from "@/lib/db/repositories/products-repository"
 import { Brand, BrandsRepository } from "@/lib/db/repositories/brands-repository"
+import { Category, CategoriesRepository } from "@/lib/db/repositories/categories-repository"
 
 type ProductRow = Product & {
   brand_name?: string
@@ -37,6 +38,7 @@ type ProductRow = Product & {
 export function ProductsTable() {
   const [data, setData] = React.useState<ProductRow[]>([])
   const [brands, setBrands] = React.useState<Brand[]>([])
+  const [categories, setCategories] = React.useState<Category[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
   const [deleteId, setDeleteId] = React.useState<string | null>(null)
   const [editProduct, setEditProduct] = React.useState<Product | null>(null)
@@ -45,17 +47,21 @@ export function ProductsTable() {
   const loadData = React.useCallback(async () => {
     try {
       setIsLoading(true)
-      const [products, brandsData] = await Promise.all([
+      const [products, brandsData, categoriesData] = await Promise.all([
         ProductsRepository.list(),
         BrandsRepository.list(),
+        CategoriesRepository.list(),
       ])
       setBrands(brandsData)
+      setCategories(categoriesData)
 
       const brandsMap = new Map(brandsData.map((b) => [b.id, b.name]))
+      const categoriesMap = new Map(categoriesData.map((c) => [c.id, c.name]))
 
       const enrichedProducts = products.map((product) => ({
         ...product,
         brand_name: product.brand_id ? brandsMap.get(product.brand_id) : undefined,
+        category_name: product.category_id ? categoriesMap.get(product.category_id) : undefined,
       }))
 
       setData(enrichedProducts)
@@ -184,6 +190,11 @@ export function ProductsTable() {
         cell: ({ row }) => row.getValue("brand_name") || "-",
       },
       {
+        accessorKey: "category_name",
+        header: "Category",
+        cell: ({ row }) => row.getValue("category_name") || "-",
+      },
+      {
         accessorKey: "is_shippable",
         header: "Shippable",
         cell: ({ row }) => (row.getValue("is_shippable") ? "Yes" : "No"),
@@ -256,6 +267,8 @@ export function ProductsTable() {
 
       <ProductEditSheet
         product={editProduct}
+        brands={brands}
+        categories={categories}
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
         onSuccess={loadData}

@@ -179,14 +179,14 @@ function NewCategory() {
               <div className="grid gap-2">
                 <Label htmlFor="parent_id">Parent Category</Label>
                 <Select
-                  value={formData.parent_id}
-                  onValueChange={(value) => handleChange("parent_id", value)}
+                  value={formData.parent_id || "none"}
+                  onValueChange={(value) => handleChange("parent_id", value === "none" ? "" : value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="None (Root Category)" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None (Root Category)</SelectItem>
+                    <SelectItem value="none">None (Root Category)</SelectItem>
                     {categories.map((cat) => (
                       <SelectItem key={cat.id} value={cat.id}>
                         {cat.name}

@@ -23,10 +23,13 @@ import {
 } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Product, ProductsRepository, UpdateProductDTO } from "@/lib/db/repositories/products-repository"
-import { Brand, BrandsRepository } from "@/lib/db/repositories/brands-repository"
+import { Brand } from "@/lib/db/repositories/brands-repository"
+import { Category } from "@/lib/db/repositories/categories-repository"
 
 type ProductEditSheetProps = {
   product: Product | null
+  brands: Brand[]
+  categories: Category[]
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess: () => void
@@ -48,11 +51,12 @@ const PRODUCT_STATUSES = [
 
 export function ProductEditSheet({
   product,
+  brands,
+  categories,
   open,
   onOpenChange,
   onSuccess,
 }: ProductEditSheetProps) {
-  const [brands, setBrands] = React.useState<Brand[]>([])
   const [isSaving, setIsSaving] = React.useState(false)
   const [formData, setFormData] = React.useState({
     sku: "",
@@ -72,21 +76,10 @@ export function ProductEditSheet({
     height_mm: "0",
     depth_mm: "0",
     brand_id: "",
+    category_id: "",
     attributes: "",
     metadata: "",
   })
-
-  React.useEffect(() => {
-    const loadBrands = async () => {
-      try {
-        const brandsData = await BrandsRepository.list()
-        setBrands(brandsData)
-      } catch (error) {
-        console.error("Failed to load brands:", error)
-      }
-    }
-    loadBrands()
-  }, [])
 
   React.useEffect(() => {
     if (product) {
@@ -108,6 +101,7 @@ export function ProductEditSheet({
         height_mm: product.height_mm?.toString() || "0",
         depth_mm: product.depth_mm?.toString() || "0",
         brand_id: product.brand_id || "",
+        category_id: product.category_id || "",
         attributes: product.attributes || "",
         metadata: product.metadata || "",
       })
@@ -152,6 +146,7 @@ export function ProductEditSheet({
         height_mm: parseInt(formData.height_mm) || 0,
         depth_mm: parseInt(formData.depth_mm) || 0,
         brand_id: formData.brand_id || undefined,
+        category_id: formData.category_id || undefined,
         attributes: formData.attributes || undefined,
         metadata: formData.metadata || undefined,
       }
@@ -266,16 +261,37 @@ export function ProductEditSheet({
                 <div className="grid gap-2">
                   <Label htmlFor="edit-brand_id">Brand</Label>
                   <Select
-                    value={formData.brand_id}
-                    onValueChange={(value) => handleChange("brand_id", value)}
+                    value={formData.brand_id || "none"}
+                    onValueChange={(value) => handleChange("brand_id", value === "none" ? "" : value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select brand (optional)" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
                       {brands.map((brand) => (
                         <SelectItem key={brand.id} value={brand.id}>
                           {brand.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-category_id">Category</Label>
+                  <Select
+                    value={formData.category_id || "none"}
+                    onValueChange={(value) => handleChange("category_id", value === "none" ? "" : value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
