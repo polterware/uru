@@ -50,8 +50,9 @@ Este documento rastreia o status de implementação das funcionalidades CRUD par
 
 | Domínio | UI Table | List (Backend) | Create | Update | Delete | Ajuste via Movements | Filtros/Paginação | FK Navigation |
 |---------|----------|----------------|--------|--------|--------|----------------------|-------------------|---------------|
-| Inventory | ✅ | ❌ | ➖ | ➖ | ➖ | ❌ | ❌ | ❌ |
-| Movements | ✅ | ❌ | ❌ | ➖ | ➖ | ➖ | ❌ | ❌ |
+| Inventory | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ (Product, Location) |
+| Movements | ✅ | ✅ | ✅ (via adjust/transfer) | ➖ | ➖ | ➖ | ❌ | ✅ (Product, Location) |
+| Locations | ➖ | ✅ | ✅ | ✅ | ✅ | ➖ | ❌ | ➖ |
 
 ---
 
@@ -86,8 +87,9 @@ Este documento rastreia o status de implementação das funcionalidades CRUD par
 | List (backend) | Brands | ✅ |
 | List (backend) | Categories | ✅ |
 | List (backend) | Customers | ✅ |
-| List (backend) | Inventory | ❌ |
-| List (backend) | Movements | ❌ |
+| List (backend) | Inventory | ✅ |
+| List (backend) | Movements | ✅ |
+| List (backend) | Locations | ✅ |
 | List (backend) | Transactions | ✅ |
 | List (backend) | Orders | ✅ |
 | List (backend) | Payments | ✅ |
@@ -114,14 +116,17 @@ Este documento rastreia o status de implementação das funcionalidades CRUD par
 | Formulário de criação | Payments | ✅ |
 | Formulário de criação | Refunds | ✅ |
 | Formulário de criação | Checkouts | ✅ |
+| Formulário de criação | Inventory Level | ✅ |
 | Formulário de edição | Transactions | ✅ |
 | Formulário de edição | Checkouts | ✅ |
+| Formulário de edição | Inventory Level | ✅ |
 | Ações de status | Transactions | ✅ |
 | Ações de status | Orders | ✅ |
 | Ações de status | Payments | ✅ |
 | Ações de status | Refunds | ✅ |
 | Ações de status | Checkouts | ✅ |
-| Ajuste de estoque | Movements | ❌ |
+| Ajuste de estoque | Movements | ✅ |
+| Transferência de estoque | Movements | ✅ |
 
 ### Baixa Prioridade
 | Item | Domínio | Status |
@@ -326,6 +331,9 @@ export const {Domain}sRepository = {
 
 | Data | Alteração |
 |------|-----------|
+| 2026-01-17 | Implementado CRUD completo de Inventory (inventory_levels: List, Create, Update, Delete, FK Navigation Product/Location) |
+| 2026-01-17 | Implementado CRUD de Movements (List, Adjust Stock, Transfer Stock, FK Navigation Product/Location) |
+| 2026-01-17 | Adicionados comandos inventory_level, inventory_movement e location ao invoke_handler |
 | 2026-01-17 | Implementado CRUD completo de Transactions (List, Create, Update, Delete, Status Actions: complete, cancel) |
 | 2026-01-17 | Implementado Sub-CRUD de transaction_items (List, Create, Update, Delete) |
 | 2026-01-17 | Implementado Sub-CRUD completo de customer_addresses (List, Create, Update, Delete) |

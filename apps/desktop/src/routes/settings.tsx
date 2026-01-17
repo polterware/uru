@@ -43,10 +43,18 @@ function Settings() {
   async function loadSettings() {
     try {
       const settings = await SettingsRepository.getAll()
-      if (settings.organization_name) setOrganizationName(settings.organization_name)
-      if (settings.owner_email) setOwnerEmail(settings.owner_email)
-      if (settings.server_port) setServerPort(settings.server_port)
-      if (settings.server_protocol) setServerProtocol(settings.server_protocol)
+      if (settings.organization_name !== undefined) {
+        setOrganizationName(settings.organization_name)
+      }
+      if (settings.owner_email !== undefined) {
+        setOwnerEmail(settings.owner_email)
+      }
+      if (settings.server_port !== undefined) {
+        setServerPort(settings.server_port)
+      }
+      if (settings.server_protocol !== undefined) {
+        setServerProtocol(settings.server_protocol)
+      }
     } catch (error) {
       console.error("Failed to load settings:", error)
     } finally {
@@ -59,6 +67,7 @@ function Settings() {
       setIsSavingProfile(true)
       await SettingsRepository.set("organization_name", organizationName)
       await SettingsRepository.set("owner_email", ownerEmail)
+      await loadSettings()
       toast.success("Profile saved successfully")
     } catch (error) {
       console.error("Failed to save profile:", error)
@@ -72,8 +81,8 @@ function Settings() {
     try {
       setIsSavingNetwork(true)
       await SettingsRepository.set("server_port", serverPort)
-      await SettingsRepository.set("server_port", serverPort)
       await SettingsRepository.set("server_protocol", serverProtocol)
+      await loadSettings()
       toast.success("Network settings saved")
     } catch (error) {
       console.error("Failed to save network settings:", error)

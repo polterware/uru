@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import * as React from "react"
 import { toast } from "sonner"
 import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight } from "lucide-react"
@@ -38,7 +38,6 @@ export const Route = createFileRoute("/movements")({
 })
 
 function MovementsRoute() {
-  const navigate = useNavigate()
   const [activeTab, setActiveTab] = React.useState("list")
   const [isSaving, setIsSaving] = React.useState(false)
   const [products, setProducts] = React.useState<Product[]>([])
