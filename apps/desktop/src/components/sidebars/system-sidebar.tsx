@@ -2,9 +2,6 @@ import * as React from "react"
 import { Link } from "@tanstack/react-router"
 import {
   Building2,
-  ChevronDown,
-  ChevronRight,
-  Home,
   Settings,
   Layers,
   FileText,
@@ -19,15 +16,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
 
 const systemItems = [
   {
@@ -81,71 +70,29 @@ export function SystemSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
-            {/* Home / Shops */}
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link to="/">
-                  <Home className="size-4" />
-                  <span>Home / Shops</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            {/* System Items */}
+            {systemItems.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild>
+                  <Link to={item.url}>
+                    <item.icon className="size-4" />
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
 
-            {/* System Section */}
-            <SidebarMenuItem>
-              <Collapsible defaultOpen className="group/collapsible">
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuButton>
-                    <Settings className="size-4" />
-                    <span>System</span>
-                    <ChevronRight className="ml-auto size-4 group-data-[state=open]/collapsible:hidden" />
-                    <ChevronDown className="ml-auto size-4 hidden group-data-[state=open]/collapsible:block" />
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    {systemItems.map((item) => (
-                      <SidebarMenuSubItem key={item.title}>
-                        <SidebarMenuSubButton asChild>
-                          <Link to={item.url}>
-                            <item.icon />
-                            <span>{item.title}</span>
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </Collapsible>
-            </SidebarMenuItem>
-
-            {/* Management Section */}
-            <SidebarMenuItem>
-              <Collapsible defaultOpen className="group/collapsible">
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuButton>
-                    <Layers className="size-4" />
-                    <span>Management</span>
-                    <ChevronRight className="ml-auto size-4 group-data-[state=open]/collapsible:hidden" />
-                    <ChevronDown className="ml-auto size-4 hidden group-data-[state=open]/collapsible:block" />
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    {managementItems.map((item) => (
-                      <SidebarMenuSubItem key={item.title}>
-                        <SidebarMenuSubButton asChild>
-                          <Link to={item.url}>
-                            <item.icon />
-                            <span>{item.title}</span>
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </Collapsible>
-            </SidebarMenuItem>
+            {/* Management Items */}
+            {managementItems.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild>
+                  <Link to={item.url}>
+                    <item.icon className="size-4" />
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
