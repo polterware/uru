@@ -370,8 +370,34 @@ impl AnalyticsRepository {
     }
 
     /// Query 3: Receita por Método de Pagamento ao Longo do Tempo
-    pub async fn get_revenue_by_payment_method(&self, days: i64) -> sqlx::Result<Vec<RevenueByPaymentMethodRow>> {
-        let sql = r#"
+    pub async fn get_revenue_by_payment_method(
+        &self,
+        shop_id: Option<String>,
+        days: i64,
+    ) -> sqlx::Result<Vec<RevenueByPaymentMethodRow>> {
+        let sql = if shop_id.is_some() {
+            r#"
+            SELECT 
+                DATE(p.created_at) AS date,
+                p.method AS payment_method,
+                SUM(p.amount) AS daily_amount,
+                SUM(SUM(p.amount)) OVER (
+                    PARTITION BY p.method 
+                    ORDER BY DATE(p.created_at)
+                ) AS cumulative_amount_by_method
+            FROM payments p
+            INNER JOIN transactions t ON t.id = p.transaction_id
+            INNER JOIN customers c ON c.id = t.customer_id
+            INNER JOIN orders o ON o.customer_id = c.id AND o.id = t.order_id
+            WHERE p.status = 'captured'
+              AND p._status != 'deleted'
+              AND o.shop_id = $2
+              AND p.created_at >= date('now', '-' || $1 || ' days')
+            GROUP BY DATE(p.created_at), p.method
+            ORDER BY date ASC, payment_method
+        "#
+        } else {
+            r#"
             SELECT 
                 DATE(p.created_at) AS date,
                 p.method AS payment_method,
@@ -387,12 +413,14 @@ impl AnalyticsRepository {
               AND p.created_at >= date('now', '-' || $1 || ' days')
             GROUP BY DATE(p.created_at), p.method
             ORDER BY date ASC, payment_method
-        "#;
+        "#
+        };
 
-        sqlx::query_as::<_, RevenueByPaymentMethodRow>(sql)
-            .bind(days)
-            .fetch_all(&self.pool)
-            .await
+        let mut query = sqlx::query_as::<_, RevenueByPaymentMethodRow>(sql).bind(days);
+        if let Some(ref id) = shop_id {
+            query = query.bind(id);
+        }
+        query.fetch_all(&self.pool).await
     }
 
     // ============================================================
@@ -400,8 +428,36 @@ impl AnalyticsRepository {
     // ============================================================
 
     /// Query 4: Top 10 Produtos Mais Vendidos (por Quantidade)
-    pub async fn get_top_products(&self, days: i64, limit: i64) -> sqlx::Result<Vec<TopProductRow>> {
-        let sql = r#"
+    pub async fn get_top_products(
+        &self,
+        shop_id: Option<String>,
+        days: i64,
+        limit: i64,
+    ) -> sqlx::Result<Vec<TopProductRow>> {
+        let sql = if shop_id.is_some() {
+            r#"
+            SELECT 
+                ti.product_id,
+                COALESCE(ti.name_snapshot, p.name) AS product_name,
+                SUM(ti.quantity) AS total_quantity,
+                SUM(ti.total_line) AS total_revenue,
+                COUNT(DISTINCT t.id) AS order_count
+            FROM transaction_items ti
+            LEFT JOIN products p ON p.id = ti.product_id
+            INNER JOIN transactions t ON t.id = ti.transaction_id
+            INNER JOIN customers c ON c.id = t.customer_id
+            INNER JOIN orders o ON o.customer_id = c.id AND o.id = t.order_id
+            WHERE t.type = 'sale'
+              AND t.status = 'completed'
+              AND t._status != 'deleted'
+              AND o.shop_id = $3
+              AND t.created_at >= date('now', '-' || $1 || ' days')
+            GROUP BY ti.product_id, COALESCE(ti.name_snapshot, p.name)
+            ORDER BY total_quantity DESC
+            LIMIT $2
+        "#
+        } else {
+            r#"
             SELECT 
                 ti.product_id,
                 COALESCE(ti.name_snapshot, p.name) AS product_name,
@@ -418,18 +474,44 @@ impl AnalyticsRepository {
             GROUP BY ti.product_id, COALESCE(ti.name_snapshot, p.name)
             ORDER BY total_quantity DESC
             LIMIT $2
-        "#;
+        "#
+        };
 
-        sqlx::query_as::<_, TopProductRow>(sql)
-            .bind(days)
-            .bind(limit)
-            .fetch_all(&self.pool)
-            .await
+        let mut query = sqlx::query_as::<_, TopProductRow>(sql).bind(days).bind(limit);
+        if let Some(ref id) = shop_id {
+            query = query.bind(id);
+        }
+        query.fetch_all(&self.pool).await
     }
 
     /// Query 5: Receita por Categoria
-    pub async fn get_revenue_by_category(&self) -> sqlx::Result<Vec<RevenueByCategoryRow>> {
-        let sql = r#"
+    pub async fn get_revenue_by_category(
+        &self,
+        shop_id: Option<String>,
+    ) -> sqlx::Result<Vec<RevenueByCategoryRow>> {
+        let sql = if shop_id.is_some() {
+            r#"
+            SELECT 
+                c.name AS category_name,
+                SUM(ti.total_line) AS total_revenue,
+                COUNT(DISTINCT ti.product_id) AS product_count,
+                COUNT(DISTINCT t.id) AS order_count
+            FROM transaction_items ti
+            INNER JOIN transactions t ON t.id = ti.transaction_id
+            INNER JOIN products p ON p.id = ti.product_id
+            INNER JOIN product_categories pc ON pc.product_id = p.id
+            INNER JOIN categories c ON c.id = pc.category_id
+            INNER JOIN customers cu ON cu.id = t.customer_id
+            INNER JOIN orders o ON o.customer_id = cu.id AND o.id = t.order_id
+            WHERE t.type = 'sale'
+              AND t.status = 'completed'
+              AND t._status != 'deleted'
+              AND o.shop_id = $1
+            GROUP BY c.id, c.name
+            ORDER BY total_revenue DESC
+        "#
+        } else {
+            r#"
             SELECT 
                 c.name AS category_name,
                 SUM(ti.total_line) AS total_revenue,
@@ -445,16 +527,39 @@ impl AnalyticsRepository {
               AND t._status != 'deleted'
             GROUP BY c.id, c.name
             ORDER BY total_revenue DESC
-        "#;
+        "#
+        };
 
-        sqlx::query_as::<_, RevenueByCategoryRow>(sql)
-            .fetch_all(&self.pool)
-            .await
+        let mut query = sqlx::query_as::<_, RevenueByCategoryRow>(sql);
+        if let Some(ref id) = shop_id {
+            query = query.bind(id);
+        }
+        query.fetch_all(&self.pool).await
     }
 
     /// Query 6: Vendas Mensais (Últimos 12 Meses)
-    pub async fn get_monthly_sales(&self, months: i64) -> sqlx::Result<Vec<MonthlySalesRow>> {
-        let sql = r#"
+    pub async fn get_monthly_sales(
+        &self,
+        shop_id: Option<String>,
+        months: i64,
+    ) -> sqlx::Result<Vec<MonthlySalesRow>> {
+        let sql = if shop_id.is_some() {
+            r#"
+            SELECT 
+                strftime('%Y-%m', created_at) AS month,
+                SUM(total_price) AS monthly_revenue,
+                COUNT(*) AS order_count,
+                AVG(total_price) AS avg_order_value
+            FROM orders
+            WHERE payment_status = 'paid'
+              AND _status != 'deleted'
+              AND shop_id = $2
+              AND created_at >= date('now', '-' || $1 || ' months')
+            GROUP BY strftime('%Y-%m', created_at)
+            ORDER BY month ASC
+        "#
+        } else {
+            r#"
             SELECT 
                 strftime('%Y-%m', created_at) AS month,
                 SUM(total_price) AS monthly_revenue,
@@ -466,12 +571,14 @@ impl AnalyticsRepository {
               AND created_at >= date('now', '-' || $1 || ' months')
             GROUP BY strftime('%Y-%m', created_at)
             ORDER BY month ASC
-        "#;
+        "#
+        };
 
-        sqlx::query_as::<_, MonthlySalesRow>(sql)
-            .bind(months)
-            .fetch_all(&self.pool)
-            .await
+        let mut query = sqlx::query_as::<_, MonthlySalesRow>(sql).bind(months);
+        if let Some(ref id) = shop_id {
+            query = query.bind(id);
+        }
+        query.fetch_all(&self.pool).await
     }
 
     /// Query 7: Produtos por Status de Estoque (Baixo, Médio, Alto)
@@ -520,8 +627,35 @@ impl AnalyticsRepository {
     // ============================================================
 
     /// Query 8: Tendência de Vendas Diárias (com Média Móvel de 7 dias)
-    pub async fn get_daily_sales_trend(&self, days: i64) -> sqlx::Result<Vec<DailySalesTrendRow>> {
-        let sql = r#"
+    pub async fn get_daily_sales_trend(
+        &self,
+        shop_id: Option<String>,
+        days: i64,
+    ) -> sqlx::Result<Vec<DailySalesTrendRow>> {
+        let sql = if shop_id.is_some() {
+            r#"
+            SELECT 
+                DATE(created_at) AS date,
+                COUNT(*) AS daily_orders,
+                SUM(total_price) AS daily_revenue,
+                AVG(SUM(total_price)) OVER (
+                    ORDER BY DATE(created_at) 
+                    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+                ) AS moving_avg_7d_revenue,
+                AVG(COUNT(*)) OVER (
+                    ORDER BY DATE(created_at) 
+                    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+                ) AS moving_avg_7d_orders
+            FROM orders
+            WHERE payment_status = 'paid'
+              AND _status != 'deleted'
+              AND shop_id = $2
+              AND created_at >= date('now', '-' || $1 || ' days')
+            GROUP BY DATE(created_at)
+            ORDER BY date ASC
+        "#
+        } else {
+            r#"
             SELECT 
                 DATE(created_at) AS date,
                 COUNT(*) AS daily_orders,
@@ -540,17 +674,44 @@ impl AnalyticsRepository {
               AND created_at >= date('now', '-' || $1 || ' days')
             GROUP BY DATE(created_at)
             ORDER BY date ASC
-        "#;
+        "#
+        };
 
-        sqlx::query_as::<_, DailySalesTrendRow>(sql)
-            .bind(days)
-            .fetch_all(&self.pool)
-            .await
+        let mut query = sqlx::query_as::<_, DailySalesTrendRow>(sql).bind(days);
+        if let Some(ref id) = shop_id {
+            query = query.bind(id);
+        }
+        query.fetch_all(&self.pool).await
     }
 
     /// Query 9: Crescimento de Clientes ao Longo do Tempo
-    pub async fn get_customer_growth(&self, months: i64) -> sqlx::Result<Vec<CustomerGrowthRow>> {
-        let sql = r#"
+    pub async fn get_customer_growth(
+        &self,
+        shop_id: Option<String>,
+        months: i64,
+    ) -> sqlx::Result<Vec<CustomerGrowthRow>> {
+        let sql = if shop_id.is_some() {
+            r#"
+            SELECT DISTINCT
+                strftime('%Y-%m', c.created_at) AS month,
+                COUNT(DISTINCT c.id) AS new_customers,
+                SUM(COUNT(DISTINCT c.id)) OVER (ORDER BY strftime('%Y-%m', c.created_at)) AS cumulative_customers,
+                LAG(COUNT(DISTINCT c.id)) OVER (ORDER BY strftime('%Y-%m', c.created_at)) AS previous_month,
+                ROUND(
+                    (COUNT(DISTINCT c.id) - LAG(COUNT(DISTINCT c.id)) OVER (ORDER BY strftime('%Y-%m', c.created_at))) * 100.0 
+                    / NULLIF(LAG(COUNT(DISTINCT c.id)) OVER (ORDER BY strftime('%Y-%m', c.created_at)), 0),
+                    2
+                ) AS growth_percentage
+            FROM customers c
+            INNER JOIN orders o ON o.customer_id = c.id
+            WHERE c._status != 'deleted'
+              AND o.shop_id = $2
+              AND c.created_at >= date('now', '-' || $1 || ' months')
+            GROUP BY strftime('%Y-%m', c.created_at)
+            ORDER BY month ASC
+        "#
+        } else {
+            r#"
             SELECT 
                 strftime('%Y-%m', created_at) AS month,
                 COUNT(*) AS new_customers,
@@ -566,17 +727,44 @@ impl AnalyticsRepository {
               AND created_at >= date('now', '-' || $1 || ' months')
             GROUP BY strftime('%Y-%m', created_at)
             ORDER BY month ASC
-        "#;
+        "#
+        };
 
-        sqlx::query_as::<_, CustomerGrowthRow>(sql)
-            .bind(months)
-            .fetch_all(&self.pool)
-            .await
+        let mut query = sqlx::query_as::<_, CustomerGrowthRow>(sql).bind(months);
+        if let Some(ref id) = shop_id {
+            query = query.bind(id);
+        }
+        query.fetch_all(&self.pool).await
     }
 
     /// Query 10: Ticket Médio ao Longo do Tempo
-    pub async fn get_average_order_value(&self, months: i64) -> sqlx::Result<Vec<AverageOrderValueRow>> {
-        let sql = r#"
+    pub async fn get_average_order_value(
+        &self,
+        shop_id: Option<String>,
+        months: i64,
+    ) -> sqlx::Result<Vec<AverageOrderValueRow>> {
+        let sql = if shop_id.is_some() {
+            r#"
+            SELECT 
+                strftime('%Y-%m', created_at) AS month,
+                COUNT(*) AS order_count,
+                AVG(total_price) AS avg_order_value,
+                LAG(AVG(total_price)) OVER (ORDER BY strftime('%Y-%m', created_at)) AS previous_avg,
+                ROUND(
+                    (AVG(total_price) - LAG(AVG(total_price)) OVER (ORDER BY strftime('%Y-%m', created_at))) * 100.0
+                    / NULLIF(LAG(AVG(total_price)) OVER (ORDER BY strftime('%Y-%m', created_at)), 0),
+                    2
+                ) AS avg_change_percentage
+            FROM orders
+            WHERE payment_status = 'paid'
+              AND _status != 'deleted'
+              AND shop_id = $2
+              AND created_at >= date('now', '-' || $1 || ' months')
+            GROUP BY strftime('%Y-%m', created_at)
+            ORDER BY month ASC
+        "#
+        } else {
+            r#"
             SELECT 
                 strftime('%Y-%m', created_at) AS month,
                 COUNT(*) AS order_count,
@@ -593,12 +781,14 @@ impl AnalyticsRepository {
               AND created_at >= date('now', '-' || $1 || ' months')
             GROUP BY strftime('%Y-%m', created_at)
             ORDER BY month ASC
-        "#;
+        "#
+        };
 
-        sqlx::query_as::<_, AverageOrderValueRow>(sql)
-            .bind(months)
-            .fetch_all(&self.pool)
-            .await
+        let mut query = sqlx::query_as::<_, AverageOrderValueRow>(sql).bind(months);
+        if let Some(ref id) = shop_id {
+            query = query.bind(id);
+        }
+        query.fetch_all(&self.pool).await
     }
 
     // ============================================================
@@ -606,8 +796,34 @@ impl AnalyticsRepository {
     // ============================================================
 
     /// Query 11: Distribuição de Vendas por Método de Pagamento
-    pub async fn get_payment_method_distribution(&self, days: i64) -> sqlx::Result<Vec<PaymentMethodDistributionRow>> {
-        let sql = r#"
+    pub async fn get_payment_method_distribution(
+        &self,
+        shop_id: Option<String>,
+        days: i64,
+    ) -> sqlx::Result<Vec<PaymentMethodDistributionRow>> {
+        let sql = if shop_id.is_some() {
+            r#"
+            SELECT 
+                p.method AS payment_method,
+                SUM(p.amount) AS total_amount,
+                COUNT(*) AS transaction_count,
+                ROUND(
+                    SUM(p.amount) * 100.0 / SUM(SUM(p.amount)) OVER (),
+                    2
+                ) AS percentage
+            FROM payments p
+            INNER JOIN transactions t ON t.id = p.transaction_id
+            INNER JOIN customers c ON c.id = t.customer_id
+            INNER JOIN orders o ON o.customer_id = c.id AND o.id = t.order_id
+            WHERE p.status = 'captured'
+              AND p._status != 'deleted'
+              AND o.shop_id = $2
+              AND p.created_at >= date('now', '-' || $1 || ' days')
+            GROUP BY p.method
+            ORDER BY total_amount DESC
+        "#
+        } else {
+            r#"
             SELECT 
                 p.method AS payment_method,
                 SUM(p.amount) AS total_amount,
@@ -623,17 +839,40 @@ impl AnalyticsRepository {
               AND p.created_at >= date('now', '-' || $1 || ' days')
             GROUP BY p.method
             ORDER BY total_amount DESC
-        "#;
+        "#
+        };
 
-        sqlx::query_as::<_, PaymentMethodDistributionRow>(sql)
-            .bind(days)
-            .fetch_all(&self.pool)
-            .await
+        let mut query = sqlx::query_as::<_, PaymentMethodDistributionRow>(sql).bind(days);
+        if let Some(ref id) = shop_id {
+            query = query.bind(id);
+        }
+        query.fetch_all(&self.pool).await
     }
 
     /// Query 12: Distribuição de Produtos por Categoria
-    pub async fn get_category_distribution(&self) -> sqlx::Result<Vec<CategoryDistributionRow>> {
-        let sql = r#"
+    pub async fn get_category_distribution(
+        &self,
+        shop_id: Option<String>,
+    ) -> sqlx::Result<Vec<CategoryDistributionRow>> {
+        let sql = if shop_id.is_some() {
+            r#"
+            SELECT 
+                c.name AS category_name,
+                COUNT(DISTINCT pc.product_id) AS product_count,
+                ROUND(
+                    COUNT(DISTINCT pc.product_id) * 100.0 / SUM(COUNT(DISTINCT pc.product_id)) OVER (),
+                    2
+                ) AS percentage
+            FROM product_categories pc
+            INNER JOIN categories c ON c.id = pc.category_id
+            INNER JOIN products p ON p.id = pc.product_id
+            WHERE p._status != 'deleted'
+              AND c.shop_id = $1
+            GROUP BY c.id, c.name
+            ORDER BY product_count DESC
+        "#
+        } else {
+            r#"
             SELECT 
                 c.name AS category_name,
                 COUNT(DISTINCT pc.product_id) AS product_count,
@@ -647,16 +886,45 @@ impl AnalyticsRepository {
             WHERE p._status != 'deleted'
             GROUP BY c.id, c.name
             ORDER BY product_count DESC
-        "#;
+        "#
+        };
 
-        sqlx::query_as::<_, CategoryDistributionRow>(sql)
-            .fetch_all(&self.pool)
-            .await
+        let mut query = sqlx::query_as::<_, CategoryDistributionRow>(sql);
+        if let Some(ref id) = shop_id {
+            query = query.bind(id);
+        }
+        query.fetch_all(&self.pool).await
     }
 
     /// Query 13: Distribuição de Pedidos por Status
-    pub async fn get_order_status_distribution(&self, days: i64) -> sqlx::Result<Vec<OrderStatusDistributionRow>> {
-        let sql = r#"
+    pub async fn get_order_status_distribution(
+        &self,
+        shop_id: Option<String>,
+        days: i64,
+    ) -> sqlx::Result<Vec<OrderStatusDistributionRow>> {
+        let sql = if shop_id.is_some() {
+            r#"
+            SELECT 
+                payment_status,
+                COUNT(*) AS order_count,
+                SUM(total_price) AS total_revenue,
+                ROUND(
+                    COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (),
+                    2
+                ) AS order_percentage,
+                ROUND(
+                    SUM(total_price) * 100.0 / SUM(SUM(total_price)) OVER (),
+                    2
+                ) AS revenue_percentage
+            FROM orders
+            WHERE _status != 'deleted'
+              AND shop_id = $2
+              AND created_at >= date('now', '-' || $1 || ' days')
+            GROUP BY payment_status
+            ORDER BY order_count DESC
+        "#
+        } else {
+            r#"
             SELECT 
                 payment_status,
                 COUNT(*) AS order_count,
@@ -674,12 +942,14 @@ impl AnalyticsRepository {
               AND created_at >= date('now', '-' || $1 || ' days')
             GROUP BY payment_status
             ORDER BY order_count DESC
-        "#;
+        "#
+        };
 
-        sqlx::query_as::<_, OrderStatusDistributionRow>(sql)
-            .bind(days)
-            .fetch_all(&self.pool)
-            .await
+        let mut query = sqlx::query_as::<_, OrderStatusDistributionRow>(sql).bind(days);
+        if let Some(ref id) = shop_id {
+            query = query.bind(id);
+        }
+        query.fetch_all(&self.pool).await
     }
 
     /// Query 14: Distribuição de Clientes por Grupo

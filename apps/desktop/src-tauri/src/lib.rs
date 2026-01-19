@@ -26,7 +26,7 @@ use crate::features::product::commands::product_commands::{
     create_product, update_product, delete_product, get_product, list_products, list_products_filtered,
 };
 use crate::features::brand::commands::brand_commands::{
-    create_brand, update_brand, delete_brand, get_brand, list_brands,
+    create_brand, update_brand, delete_brand, get_brand, list_brands, list_brands_by_shop,
 };
 use crate::features::category::commands::category_commands::{
     create_category, update_category, delete_category, get_category, list_categories_by_shop, list_categories,
@@ -36,6 +36,9 @@ use crate::features::checkout::commands::checkout_commands::{
 };
 use crate::features::refund::commands::refund_commands::{
     create_refund, update_refund, delete_refund, get_refund, list_refunds, list_refunds_by_payment, update_refund_status,
+};
+use crate::features::payment::commands::payment_commands::{
+    list_payments, list_payments_by_shop, get_payment, update_payment_status,
 };
 use crate::features::order::commands::order_commands::{
     create_order, update_order, delete_order, get_order, list_orders, list_orders_by_shop,
@@ -133,6 +136,7 @@ pub fn run() {
             delete_brand,
             get_brand,
             list_brands,
+            list_brands_by_shop,
             // Categories
             create_category,
             update_category,
@@ -158,6 +162,11 @@ pub fn run() {
             list_refunds,
             list_refunds_by_payment,
             update_refund_status,
+            // Payments
+            list_payments,
+            list_payments_by_shop,
+            get_payment,
+            update_payment_status,
             // Checkouts
             create_checkout,
             update_checkout,
