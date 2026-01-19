@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select"
 import { AnalyticsRepository, type TopProduct } from "@/lib/db/repositories/analytics-repository"
 import { formatCurrency } from "@/lib/formatters"
+import { useShop } from "@/hooks/use-shop"
 
 const chartConfig = {
   totalQuantity: {
@@ -38,6 +39,7 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function TopProductsBarChart() {
+  const { shopId } = useShop()
   const [days, setDays] = React.useState<number>(30)
   const [limit, setLimit] = React.useState<number>(10)
   const [data, setData] = React.useState<TopProduct[]>([])
@@ -46,9 +48,10 @@ export function TopProductsBarChart() {
 
   React.useEffect(() => {
     async function loadData() {
+      if (!shopId) return
       try {
         setLoading(true)
-        const productsData = await AnalyticsRepository.getTopProducts(days, limit)
+        const productsData = await AnalyticsRepository.getTopProducts(shopId, days, limit)
         setData(productsData)
       } catch (error) {
         console.error("Failed to load top products data", error)
@@ -57,7 +60,7 @@ export function TopProductsBarChart() {
       }
     }
     loadData()
-  }, [days, limit])
+  }, [shopId, days, limit])
 
   const chartData = React.useMemo(() => {
     return data.map((product) => ({

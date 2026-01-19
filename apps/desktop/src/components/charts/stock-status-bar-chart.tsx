@@ -17,6 +17,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart"
 import { AnalyticsRepository, type StockStatus } from "@/lib/db/repositories/analytics-repository"
+import { useShop } from "@/hooks/use-shop"
 
 const stockStatusColors: Record<string, string> = {
   "Out of Stock": "var(--chart-2)",
@@ -40,14 +41,16 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function StockStatusBarChart() {
+  const { shopId } = useShop()
   const [data, setData] = React.useState<StockStatus[]>([])
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     async function loadData() {
+      if (!shopId) return
       try {
         setLoading(true)
-        const statusData = await AnalyticsRepository.getStockStatus()
+        const statusData = await AnalyticsRepository.getStockStatus(shopId)
         setData(statusData)
       } catch (error) {
         console.error("Failed to load stock status data", error)
@@ -56,7 +59,7 @@ export function StockStatusBarChart() {
       }
     }
     loadData()
-  }, [])
+  }, [shopId])
 
   const chartData = React.useMemo(() => {
     return data.map((item) => ({

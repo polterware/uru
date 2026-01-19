@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select"
 import { AnalyticsRepository, type CustomerGrowth } from "@/lib/db/repositories/analytics-repository"
 import { formatMonth } from "@/lib/formatters"
+import { useShop } from "@/hooks/use-shop"
 
 const chartConfig = {
   cumulativeCustomers: {
@@ -38,15 +39,17 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function CustomerGrowthLineChart() {
+  const { shopId } = useShop()
   const [months, setMonths] = React.useState<number>(12)
   const [data, setData] = React.useState<CustomerGrowth[]>([])
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     async function loadData() {
+      if (!shopId) return
       try {
         setLoading(true)
-        const growthData = await AnalyticsRepository.getCustomerGrowth(months)
+        const growthData = await AnalyticsRepository.getCustomerGrowth(shopId, months)
         setData(growthData)
       } catch (error) {
         console.error("Failed to load customer growth data", error)
@@ -55,7 +58,7 @@ export function CustomerGrowthLineChart() {
       }
     }
     loadData()
-  }, [months])
+  }, [shopId, months])
 
   const chartData = React.useMemo(() => {
     return data.map((item) => ({

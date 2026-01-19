@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select"
 import { AnalyticsRepository, type AverageOrderValue } from "@/lib/db/repositories/analytics-repository"
 import { formatCurrency, formatMonth } from "@/lib/formatters"
+import { useShop } from "@/hooks/use-shop"
 
 const chartConfig = {
   avgOrderValue: {
@@ -34,15 +35,17 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function AverageOrderValueLineChart() {
+  const { shopId } = useShop()
   const [months, setMonths] = React.useState<number>(12)
   const [data, setData] = React.useState<AverageOrderValue[]>([])
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     async function loadData() {
+      if (!shopId) return
       try {
         setLoading(true)
-        const avgData = await AnalyticsRepository.getAverageOrderValue(months)
+        const avgData = await AnalyticsRepository.getAverageOrderValue(shopId, months)
         setData(avgData)
       } catch (error) {
         console.error("Failed to load average order value data", error)
@@ -51,7 +54,7 @@ export function AverageOrderValueLineChart() {
       }
     }
     loadData()
-  }, [months])
+  }, [shopId, months])
 
   const chartData = React.useMemo(() => {
     return data.map((item) => ({

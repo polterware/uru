@@ -17,6 +17,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart"
 import { AnalyticsRepository, type CategoryDistribution } from "@/lib/db/repositories/analytics-repository"
+import { useShop } from "@/hooks/use-shop"
 
 const chartConfig = {
   productCount: {
@@ -26,15 +27,17 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function CategoryDistributionPieChart() {
+  const { shopId } = useShop()
   const [data, setData] = React.useState<CategoryDistribution[]>([])
   const [loading, setLoading] = React.useState(true)
   const [limit, setLimit] = React.useState<number>(20)
 
   React.useEffect(() => {
     async function loadData() {
+      if (!shopId) return
       try {
         setLoading(true)
-        const distributionData = await AnalyticsRepository.getCategoryDistribution()
+        const distributionData = await AnalyticsRepository.getCategoryDistribution(shopId)
         setData(distributionData)
       } catch (error) {
         console.error("Failed to load category distribution data", error)
@@ -43,7 +46,7 @@ export function CategoryDistributionPieChart() {
       }
     }
     loadData()
-  }, [])
+  }, [shopId])
 
   const sortedData = React.useMemo(() => {
     return [...data].sort((a, b) => b.productCount - a.productCount)

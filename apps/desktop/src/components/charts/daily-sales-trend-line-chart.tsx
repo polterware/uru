@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select"
 import { AnalyticsRepository, type DailySalesTrend } from "@/lib/db/repositories/analytics-repository"
 import { formatCurrency } from "@/lib/formatters"
+import { useShop } from "@/hooks/use-shop"
 
 const chartConfig = {
   dailyRevenue: {
@@ -38,15 +39,17 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function DailySalesTrendLineChart() {
+  const { shopId } = useShop()
   const [days, setDays] = React.useState<number>(90)
   const [data, setData] = React.useState<DailySalesTrend[]>([])
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     async function loadData() {
+      if (!shopId) return
       try {
         setLoading(true)
-        const trendData = await AnalyticsRepository.getDailySalesTrend(days)
+        const trendData = await AnalyticsRepository.getDailySalesTrend(shopId, days)
         setData(trendData)
       } catch (error) {
         console.error("Failed to load daily sales trend data", error)
@@ -55,7 +58,7 @@ export function DailySalesTrendLineChart() {
       }
     }
     loadData()
-  }, [days])
+  }, [shopId, days])
 
   const chartData = React.useMemo(() => {
     return data.map((d) => ({

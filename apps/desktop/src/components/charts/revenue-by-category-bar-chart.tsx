@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/chart"
 import { AnalyticsRepository, type RevenueByCategory } from "@/lib/db/repositories/analytics-repository"
 import { formatCurrency } from "@/lib/formatters"
+import { useShop } from "@/hooks/use-shop"
 
 const chartConfig = {
   totalRevenue: {
@@ -27,14 +28,16 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function RevenueByCategoryBarChart() {
+  const { shopId } = useShop()
   const [data, setData] = React.useState<RevenueByCategory[]>([])
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     async function loadData() {
+      if (!shopId) return
       try {
         setLoading(true)
-        const categoryData = await AnalyticsRepository.getRevenueByCategory()
+        const categoryData = await AnalyticsRepository.getRevenueByCategory(shopId)
         setData(categoryData)
       } catch (error) {
         console.error("Failed to load revenue by category data", error)
@@ -43,7 +46,7 @@ export function RevenueByCategoryBarChart() {
       }
     }
     loadData()
-  }, [])
+  }, [shopId])
 
   const chartData = React.useMemo(() => {
     return data.map((item) => ({

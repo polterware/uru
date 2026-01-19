@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select"
 import { AnalyticsRepository, type PaymentMethodDistribution } from "@/lib/db/repositories/analytics-repository"
 import { formatCurrency } from "@/lib/formatters"
+import { useShop } from "@/hooks/use-shop"
 
 const paymentMethodColors: Record<string, string> = {
   pix: "var(--chart-1)",
@@ -35,15 +36,17 @@ const paymentMethodColors: Record<string, string> = {
 }
 
 export function PaymentMethodDistributionPieChart() {
+  const { shopId } = useShop()
   const [days, setDays] = React.useState<number>(30)
   const [data, setData] = React.useState<PaymentMethodDistribution[]>([])
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     async function loadData() {
+      if (!shopId) return
       try {
         setLoading(true)
-        const distributionData = await AnalyticsRepository.getPaymentMethodDistribution(days)
+        const distributionData = await AnalyticsRepository.getPaymentMethodDistribution(shopId, days)
         setData(distributionData)
       } catch (error) {
         console.error("Failed to load payment method distribution data", error)
@@ -52,7 +55,7 @@ export function PaymentMethodDistributionPieChart() {
       }
     }
     loadData()
-  }, [days])
+  }, [shopId, days])
 
   const chartConfig = React.useMemo(() => {
     const config: ChartConfig = {}

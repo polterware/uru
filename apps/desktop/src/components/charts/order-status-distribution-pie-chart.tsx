@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select"
 import { AnalyticsRepository, type OrderStatusDistribution } from "@/lib/db/repositories/analytics-repository"
 import { formatCurrency } from "@/lib/formatters"
+import { useShop } from "@/hooks/use-shop"
 
 const paymentStatusColors: Record<string, string> = {
   paid: "var(--chart-1)",
@@ -41,15 +42,17 @@ const paymentStatusLabels: Record<string, string> = {
 }
 
 export function OrderStatusDistributionPieChart() {
+  const { shopId } = useShop()
   const [days, setDays] = React.useState<number>(30)
   const [data, setData] = React.useState<OrderStatusDistribution[]>([])
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     async function loadData() {
+      if (!shopId) return
       try {
         setLoading(true)
-        const distributionData = await AnalyticsRepository.getOrderStatusDistribution(days)
+        const distributionData = await AnalyticsRepository.getOrderStatusDistribution(shopId, days)
         setData(distributionData)
       } catch (error) {
         console.error("Failed to load order status distribution data", error)
@@ -58,7 +61,7 @@ export function OrderStatusDistributionPieChart() {
       }
     }
     loadData()
-  }, [days])
+  }, [shopId, days])
 
   const chartConfig = React.useMemo(() => {
     const config: ChartConfig = {}
