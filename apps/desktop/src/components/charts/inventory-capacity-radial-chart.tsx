@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { AnalyticsRepository, type InventoryCapacity } from "@/lib/db/repositories/analytics-repository"
+import { useShop } from "@/hooks/use-shop"
 
 const chartConfig = {
   usagePercentage: {
@@ -38,15 +39,17 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function InventoryCapacityRadialChart() {
+  const { shopId } = useShop()
   const [capacityLimit, setCapacityLimit] = React.useState<number>(10000)
   const [data, setData] = React.useState<InventoryCapacity | null>(null)
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     async function loadData() {
+      if (!shopId) return
       try {
         setLoading(true)
-        const capacityData = await AnalyticsRepository.getInventoryCapacity(capacityLimit)
+        const capacityData = await AnalyticsRepository.getInventoryCapacity(shopId, capacityLimit)
         setData(capacityData)
       } catch (error) {
         console.error("Failed to load inventory capacity data", error)
@@ -55,7 +58,7 @@ export function InventoryCapacityRadialChart() {
       }
     }
     loadData()
-  }, [capacityLimit])
+  }, [shopId, capacityLimit])
 
   const getCapacityColor = () => {
     if (!data) return "var(--chart-1)"

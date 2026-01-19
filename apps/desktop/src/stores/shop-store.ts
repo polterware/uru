@@ -16,7 +16,6 @@ interface ShopState {
   createShopFromTemplate: (data: CreateShopDTO, templateCode?: string) => Promise<Shop>
   updateShop: (id: string, data: UpdateShopDTO) => Promise<Shop>
   deleteShop: (id: string) => Promise<void>
-  setDefaultShop: (id: string) => Promise<void>
 }
 
 export const useShopStore = create<ShopState>((set, get) => ({
@@ -45,11 +44,10 @@ export const useShopStore = create<ShopState>((set, get) => ({
     try {
       const shops = await ShopsRepository.list()
       
-      // If no active shop is set, try to get the default shop or first shop
+      // If no active shop is set, use the first shop
       let activeShopId = get().activeShopId
       if (!activeShopId) {
-        const defaultShop = shops.find((s) => s.is_default) || shops[0]
-        activeShopId = defaultShop?.id || null
+        activeShopId = shops[0]?.id || null
       }
 
       // Load active shop if we have an activeShopId
@@ -123,19 +121,6 @@ export const useShopStore = create<ShopState>((set, get) => ({
       set({ shops, activeShopId, activeShop, isLoading: false })
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to delete shop"
-      set({ error: errorMessage, isLoading: false })
-      throw error
-    }
-  },
-
-  setDefaultShop: async (id: string) => {
-    set({ isLoading: true, error: null })
-    try {
-      const shop = await ShopsRepository.setDefault(id)
-      const shops = get().shops.map((s) => ({ ...s, is_default: s.id === id }))
-      set({ shops, isLoading: false })
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to set default shop"
       set({ error: errorMessage, isLoading: false })
       throw error
     }

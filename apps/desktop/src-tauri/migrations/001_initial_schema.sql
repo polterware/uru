@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS shops (
     name TEXT NOT NULL,
     legal_name TEXT,
     slug TEXT UNIQUE NOT NULL,
-    is_default INTEGER DEFAULT 0,
     status TEXT DEFAULT 'active',
     features_config TEXT, -- JSONB
     mail_config TEXT, -- JSONB

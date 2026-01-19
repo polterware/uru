@@ -46,11 +46,6 @@ impl AnalyticsService {
             }
         }
         
-        // Se não especificou shop_id, usar shop padrão
-        if let Ok(Some(shop)) = self.shop_service.get_default_shop().await {
-            return shop.features_config;
-        }
-        
         None
     }
 
@@ -59,12 +54,7 @@ impl AnalyticsService {
             return Ok(shop_id);
         }
         
-        // Se não especificou shop_id, usar shop padrão
-        if let Ok(Some(shop)) = self.shop_service.get_default_shop().await {
-            return Ok(shop.id);
-        }
-        
-        Err("No shop_id provided and no default shop found".to_string())
+        Err("No shop_id provided".to_string())
     }
 
     pub async fn get_dashboard_stats(

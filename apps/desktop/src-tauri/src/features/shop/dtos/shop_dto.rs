@@ -11,7 +11,6 @@ pub struct CreateShopDTO {
     pub timezone: String,
     pub locale: String,
     pub legal_name: Option<String>,
-    pub is_default: Option<bool>,
     pub status: Option<String>,
     pub features_config: Option<String>,
     pub mail_config: Option<String>,
@@ -29,7 +28,6 @@ impl CreateShopDTO {
             name: self.name,
             legal_name: self.legal_name,
             slug: self.slug,
-            is_default: self.is_default.unwrap_or(false),
             status: self.status.unwrap_or_else(|| "active".to_string()),
             features_config: self.features_config,
             mail_config: self.mail_config,
@@ -53,7 +51,6 @@ pub struct UpdateShopDTO {
     pub name: Option<String>,
     pub legal_name: Option<String>,
     pub slug: Option<String>,
-    pub is_default: Option<bool>,
     pub status: Option<String>,
     pub features_config: Option<String>,
     pub mail_config: Option<String>,
@@ -77,9 +74,6 @@ impl UpdateShopDTO {
         }
         if let Some(slug) = self.slug {
             shop.slug = slug;
-        }
-        if let Some(is_default) = self.is_default {
-            shop.is_default = is_default;
         }
         if let Some(status) = self.status {
             shop.status = status;

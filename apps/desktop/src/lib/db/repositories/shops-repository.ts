@@ -5,7 +5,6 @@ export type Shop = {
   name: string
   legal_name: string | null
   slug: string
-  is_default: boolean
   status: string
   features_config: string | null
   mail_config: string | null
@@ -28,7 +27,6 @@ export type CreateShopDTO = {
   timezone: string
   locale: string
   legal_name?: string
-  is_default?: boolean
   status?: string
   features_config?: string
   mail_config?: string
@@ -43,7 +41,6 @@ export type UpdateShopDTO = {
   name?: string
   legal_name?: string
   slug?: string
-  is_default?: boolean
   status?: string
   features_config?: string
   mail_config?: string
@@ -63,10 +60,6 @@ export const ShopsRepository = {
 
   async getById(id: string): Promise<Shop | null> {
     return invoke("get_shop", { id })
-  },
-
-  async getDefault(): Promise<Shop | null> {
-    return invoke("get_default_shop")
   },
 
   async create(payload: CreateShopDTO): Promise<Shop> {
@@ -89,9 +82,5 @@ export const ShopsRepository = {
 
   async delete(id: string): Promise<void> {
     return invoke("delete_shop", { id })
-  },
-
-  async setDefault(id: string): Promise<Shop> {
-    return invoke("set_default_shop", { id })
   },
 }

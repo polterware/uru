@@ -16,11 +16,12 @@ import { useShops } from "@/hooks/use-shops"
 
 export function ShopSwitcher() {
   const navigate = useNavigate()
-  const { shop, setActiveShop } = useShop()
+  const { shop } = useShop()
   const { shops } = useShops()
 
-  const handleSelectShop = async (shopId: string) => {
-    await setActiveShop(shopId)
+  const handleSelectShop = (shopId: string) => {
+    // Navigate first - the URL is the source of truth
+    // The __root.tsx will sync the store when the URL changes
     navigate({ to: "/shops/$shopId/", params: { shopId } })
   }
 
@@ -46,12 +47,7 @@ export function ShopSwitcher() {
           >
             <div className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />
-              <div className="flex flex-col">
-                <span>{s.name}</span>
-                {s.is_default && (
-                  <span className="text-xs text-muted-foreground">Default</span>
-                )}
-              </div>
+              <span>{s.name}</span>
             </div>
             {shop?.id === s.id && <CheckCircle2 className="h-4 w-4 text-primary" />}
           </DropdownMenuItem>

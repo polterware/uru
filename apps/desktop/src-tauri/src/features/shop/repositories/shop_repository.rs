@@ -13,11 +13,11 @@ impl ShopsRepository {
     pub async fn create(&self, shop: Shop) -> Result<Shop> {
         let sql = r#"
             INSERT INTO shops (
-                id, name, legal_name, slug, is_default, status,
+                id, name, legal_name, slug, status,
                 features_config, mail_config, storage_config, settings, branding,
                 currency, timezone, locale, owner_id, _status, created_at, updated_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
             RETURNING *
         "#;
 
@@ -26,7 +26,6 @@ impl ShopsRepository {
         .bind(shop.name)
         .bind(shop.legal_name)
         .bind(shop.slug)
-        .bind(shop.is_default)
         .bind(shop.status)
         .bind(shop.features_config)
         .bind(shop.mail_config)
@@ -47,9 +46,9 @@ impl ShopsRepository {
     pub async fn update(&self, shop: Shop) -> Result<Shop> {
         let sql = r#"
             UPDATE shops SET
-                name = $2, legal_name = $3, slug = $4, is_default = $5, status = $6,
-                features_config = $7, mail_config = $8, storage_config = $9, settings = $10, branding = $11,
-                currency = $12, timezone = $13, locale = $14, owner_id = $15, _status = $16, updated_at = $17
+                name = $2, legal_name = $3, slug = $4, status = $5,
+                features_config = $6, mail_config = $7, storage_config = $8, settings = $9, branding = $10,
+                currency = $11, timezone = $12, locale = $13, owner_id = $14, _status = $15, updated_at = $16
             WHERE id = $1
             RETURNING *
         "#;
@@ -59,7 +58,6 @@ impl ShopsRepository {
         .bind(shop.name)
         .bind(shop.legal_name)
         .bind(shop.slug)
-        .bind(shop.is_default)
         .bind(shop.status)
         .bind(shop.features_config)
         .bind(shop.mail_config)

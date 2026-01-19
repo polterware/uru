@@ -52,18 +52,3 @@ pub async fn list_shops(pool: State<'_, SqlitePool>) -> Result<Vec<Shop>, String
     let service = ShopService::new(pool.inner().clone());
     service.list_shops().await
 }
-
-#[tauri::command]
-pub async fn get_default_shop(pool: State<'_, SqlitePool>) -> Result<Option<Shop>, String> {
-    let service = ShopService::new(pool.inner().clone());
-    service.get_default_shop().await
-}
-
-#[tauri::command]
-pub async fn set_default_shop(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<Shop, String> {
-    let service = ShopService::new(pool.inner().clone());
-    service.set_default_shop(&id).await
-}

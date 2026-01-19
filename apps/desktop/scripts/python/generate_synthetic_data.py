@@ -270,28 +270,27 @@ class SyntheticDataGenerator:
     def generate_shops(self, cursor: sqlite3.Cursor):
         """Generate shop records."""
         shops_data = [
-            ("Loja Principal", "loja-principal", True),
-            ("Filial Centro", "filial-centro", False),
-            ("Filial Shopping", "filial-shopping", False),
+            ("Loja Principal", "loja-principal"),
+            ("Filial Centro", "filial-centro"),
+            ("Filial Shopping", "filial-shopping"),
         ]
 
-        for name, slug, is_default in shops_data:
+        for name, slug in shops_data:
             shop_id = self._uuid()
             self.shop_ids.append(shop_id)
 
             cursor.execute(
                 """
-                INSERT INTO shops (id, name, legal_name, slug, is_default, status, 
+                INSERT INTO shops (id, name, legal_name, slug, status, 
                     features_config, mail_config, storage_config, settings, branding,
                     currency, timezone, locale, owner_id, _status, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 (
                     shop_id,
                     name,
                     f"{name} LTDA",
                     slug,
-                    1 if is_default else 0,
                     "active",
                     self._json({"inventory": True, "orders": True, "customers": True}),
                     self._json({"smtp_host": "smtp.example.com", "smtp_port": 587}),

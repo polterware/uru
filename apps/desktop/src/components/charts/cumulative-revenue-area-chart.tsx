@@ -48,11 +48,15 @@ export function CumulativeRevenueAreaChart() {
 
   React.useEffect(() => {
     async function loadData() {
-      if (!shopId) return
+      if (!shopId) {
+        console.log("[CumulativeRevenueAreaChart] No shopId available")
+        return
+      }
+      console.log("[CumulativeRevenueAreaChart] Loading data for shopId:", shopId)
       try {
         setLoading(true)
         const revenueData = await AnalyticsRepository.getCumulativeRevenue(shopId, timeRange)
-        console.log("Cumulative revenue data:", revenueData)
+        console.log("[CumulativeRevenueAreaChart] Data loaded:", revenueData.length, "records")
         setData(revenueData || [])
       } catch (error) {
         console.error("Failed to load cumulative revenue data", error)

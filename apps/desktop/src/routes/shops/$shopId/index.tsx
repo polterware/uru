@@ -52,8 +52,10 @@ function ShopDashboardRoute() {
 
   React.useEffect(() => {
     async function loadData() {
+      console.log("[ShopDashboardRoute] Loading dashboard data for shopId:", shopId)
       try {
         const dashboardStats = await AnalyticsRepository.getDashboardStats(shopId)
+        console.log("[ShopDashboardRoute] Dashboard stats loaded:", dashboardStats)
         setStats(dashboardStats)
       } catch (error) {
         console.error("Failed to load dashboard data", error)
@@ -63,6 +65,8 @@ function ShopDashboardRoute() {
     }
     if (shopId) {
       loadData()
+    } else {
+      console.log("[ShopDashboardRoute] No shopId available")
     }
   }, [timeRange, shopId])
 

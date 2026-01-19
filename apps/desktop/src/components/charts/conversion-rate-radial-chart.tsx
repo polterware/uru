@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { AnalyticsRepository, type ConversionRate } from "@/lib/db/repositories/analytics-repository"
+import { useShop } from "@/hooks/use-shop"
 
 const chartConfig = {
   conversionRate: {
@@ -38,15 +39,17 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function ConversionRateRadialChart() {
+  const { shopId } = useShop()
   const [days, setDays] = React.useState<number>(30)
   const [data, setData] = React.useState<ConversionRate | null>(null)
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     async function loadData() {
+      if (!shopId) return
       try {
         setLoading(true)
-        const conversionData = await AnalyticsRepository.getConversionRate(days)
+        const conversionData = await AnalyticsRepository.getConversionRate(shopId, days)
         setData(conversionData)
       } catch (error) {
         console.error("Failed to load conversion rate data", error)
@@ -55,7 +58,7 @@ export function ConversionRateRadialChart() {
       }
     }
     loadData()
-  }, [days])
+  }, [shopId, days])
 
   const getConversionColor = () => {
     if (!data) return "var(--chart-1)"

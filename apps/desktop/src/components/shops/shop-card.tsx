@@ -37,7 +37,7 @@ interface ShopCardProps {
 }
 
 export function ShopCard({ shop }: ShopCardProps) {
-  const { deleteShop, setDefaultShop } = useShops()
+  const { deleteShop } = useShops()
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
   const [isDeleting, setIsDeleting] = React.useState(false)
 
@@ -58,16 +58,6 @@ export function ShopCard({ shop }: ShopCardProps) {
       toast.error(errorMessage)
     } finally {
       setIsDeleting(false)
-    }
-  }
-
-  const handleSetDefault = async () => {
-    try {
-      await setDefaultShop(shop.id)
-      toast.success("Default shop updated")
-    } catch (error) {
-      console.error("Failed to set default shop:", error)
-      toast.error("Failed to set default shop")
     }
   }
 
@@ -112,10 +102,6 @@ export function ShopCard({ shop }: ShopCardProps) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSetDefault}>
-                    Set as Default
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={() => setDeleteDialogOpen(true)}
                     className="text-destructive"
@@ -127,7 +113,7 @@ export function ShopCard({ shop }: ShopCardProps) {
               </DropdownMenu>
             </div>
             <CardDescription>
-              {shop.slug} {shop.is_default && <Badge variant="secondary">Default</Badge>}
+              {shop.slug}
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -9,7 +9,6 @@ pub struct Shop {
     pub name: String,
     pub legal_name: Option<String>,
     pub slug: String,
-    pub is_default: bool, // Mapped from INTEGER (0/1)
     pub status: String,
     pub features_config: Option<String>, // JSONB stored as TEXT
     pub mail_config: Option<String>,     // JSONB stored as TEXT

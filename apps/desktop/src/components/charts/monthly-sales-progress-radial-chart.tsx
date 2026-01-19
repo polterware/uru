@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select"
 import { AnalyticsRepository, type MonthlySalesProgress } from "@/lib/db/repositories/analytics-repository"
 import { formatCurrency } from "@/lib/formatters"
+import { useShop } from "@/hooks/use-shop"
 
 const chartConfig = {
   progress: {
@@ -39,15 +40,17 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function MonthlySalesProgressRadialChart() {
+  const { shopId } = useShop()
   const [targetRevenue, setTargetRevenue] = React.useState<number>(100000)
   const [data, setData] = React.useState<MonthlySalesProgress | null>(null)
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
     async function loadData() {
+      if (!shopId) return
       try {
         setLoading(true)
-        const progressData = await AnalyticsRepository.getMonthlySalesProgress(targetRevenue)
+        const progressData = await AnalyticsRepository.getMonthlySalesProgress(shopId, targetRevenue)
         setData(progressData)
       } catch (error) {
         console.error("Failed to load monthly sales progress data", error)
@@ -56,7 +59,7 @@ export function MonthlySalesProgressRadialChart() {
       }
     }
     loadData()
-  }, [targetRevenue])
+  }, [shopId, targetRevenue])
 
   const progressPercentage = React.useMemo(() => {
     if (!data) return 0

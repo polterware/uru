@@ -234,11 +234,19 @@ impl AnalyticsRepository {
                 COALESCE(SUM(CASE WHEN inventory_levels.quantity_on_hand <= $1 THEN 1 ELSE 0 END), 0) AS low_stock_items,
                 COALESCE(SUM(inventory_levels.quantity_on_hand * COALESCE(products.cost_price, products.price, 0)), 0) AS total_inventory_value
             FROM inventory_levels
-            LEFT JOIN products ON products.id = inventory_levels.product_id
-            LEFT JOIN product_categories pc ON pc.product_id = products.id
-            LEFT JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
+            INNER JOIN products ON products.id = inventory_levels.product_id
             WHERE inventory_levels._status != 'deleted'
-              AND c.shop_id = $2
+              AND (
+                  EXISTS (
+                      SELECT 1 FROM product_categories pc
+                      INNER JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
+                      WHERE pc.product_id = products.id AND c.shop_id = $2
+                  )
+                  OR EXISTS (
+                      SELECT 1 FROM brands b
+                      WHERE b.id = products.brand_id AND b._status != 'deleted' AND b.shop_id = $2
+                  )
+              )
         "#;
 
         sqlx::query_as::<_, DashboardStatsRow>(sql)
@@ -268,11 +276,19 @@ impl AnalyticsRepository {
                 FROM inventory_movements im
                 INNER JOIN inventory_levels il ON il.id = im.inventory_level_id
                 INNER JOIN products p ON p.id = il.product_id
-                LEFT JOIN product_categories pc ON pc.product_id = p.id
-                LEFT JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
                 WHERE im._status != 'deleted'
-                  AND c.shop_id = $2
                   AND im.created_at >= $1
+                  AND (
+                      EXISTS (
+                          SELECT 1 FROM product_categories pc
+                          INNER JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
+                          WHERE pc.product_id = p.id AND c.shop_id = $2
+                      )
+                      OR EXISTS (
+                          SELECT 1 FROM brands b
+                          WHERE b.id = p.brand_id AND b._status != 'deleted' AND b.shop_id = $2
+                      )
+                  )
                 GROUP BY bucket
                 ORDER BY bucket ASC
                 "#
@@ -287,10 +303,18 @@ impl AnalyticsRepository {
                 FROM inventory_movements im
                 INNER JOIN inventory_levels il ON il.id = im.inventory_level_id
                 INNER JOIN products p ON p.id = il.product_id
-                LEFT JOIN product_categories pc ON pc.product_id = p.id
-                LEFT JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
                 WHERE im._status != 'deleted'
-                  AND c.shop_id = $1
+                  AND (
+                      EXISTS (
+                          SELECT 1 FROM product_categories pc
+                          INNER JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
+                          WHERE pc.product_id = p.id AND c.shop_id = $1
+                      )
+                      OR EXISTS (
+                          SELECT 1 FROM brands b
+                          WHERE b.id = p.brand_id AND b._status != 'deleted' AND b.shop_id = $1
+                      )
+                  )
                 GROUP BY bucket
                 ORDER BY bucket ASC
                 "#
@@ -411,11 +435,19 @@ impl AnalyticsRepository {
             FROM inventory_movements im
             INNER JOIN inventory_levels il ON il.id = im.inventory_level_id
             INNER JOIN products p ON p.id = il.product_id
-            LEFT JOIN product_categories pc ON pc.product_id = p.id
-            LEFT JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
             WHERE im._status != 'deleted'
-              AND c.shop_id = $2
               AND im.created_at >= date('now', '-' || $1 || ' days')
+              AND (
+                  EXISTS (
+                      SELECT 1 FROM product_categories pc
+                      INNER JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
+                      WHERE pc.product_id = p.id AND c.shop_id = $2
+                  )
+                  OR EXISTS (
+                      SELECT 1 FROM brands b
+                      WHERE b.id = p.brand_id AND b._status != 'deleted' AND b.shop_id = $2
+                  )
+              )
             GROUP BY DATE(im.created_at)
             ORDER BY date ASC
         "#;
@@ -573,11 +605,19 @@ impl AnalyticsRepository {
                     SUM(il.quantity_on_hand) AS total_quantity
                 FROM inventory_levels il
                 INNER JOIN products p ON p.id = il.product_id
-                INNER JOIN product_categories pc ON pc.product_id = p.id
-                INNER JOIN categories c ON c.id = pc.category_id
                 WHERE il._status != 'deleted'
                   AND il.stock_status = 'sellable'
-                  AND c.shop_id = $1
+                  AND (
+                      EXISTS (
+                          SELECT 1 FROM product_categories pc
+                          INNER JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
+                          WHERE pc.product_id = p.id AND c.shop_id = $1
+                      )
+                      OR EXISTS (
+                          SELECT 1 FROM brands b
+                          WHERE b.id = p.brand_id AND b._status != 'deleted' AND b.shop_id = $1
+                      )
+                  )
                 GROUP BY il.product_id
             )
             SELECT 
@@ -920,11 +960,19 @@ impl AnalyticsRepository {
                 LEFT JOIN transactions t ON t.id = ti.transaction_id AND t.type = 'sale'
                 LEFT JOIN customers cu ON cu.id = t.customer_id
                 LEFT JOIN orders o ON o.customer_id = cu.id AND o._status != 'deleted' AND o.shop_id = $3
-                LEFT JOIN product_categories pc ON pc.product_id = p.id
-                LEFT JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
                 LEFT JOIN inventory_levels il ON il.product_id = p.id AND il._status != 'deleted'
                 WHERE p._status != 'deleted'
-                  AND c.shop_id = $3
+                  AND (
+                      EXISTS (
+                          SELECT 1 FROM product_categories pc
+                          INNER JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
+                          WHERE pc.product_id = p.id AND c.shop_id = $3
+                      )
+                      OR EXISTS (
+                          SELECT 1 FROM brands b
+                          WHERE b.id = p.brand_id AND b._status != 'deleted' AND b.shop_id = $3
+                      )
+                  )
                   AND (t.created_at >= date('now', '-' || $1 || ' days') OR t.created_at IS NULL)
                 GROUP BY p.id, COALESCE(ti.name_snapshot, p.name)
                 HAVING total_quantity_sold > 0
@@ -1036,11 +1084,19 @@ impl AnalyticsRepository {
                     $2 AS capacity_limit
                 FROM inventory_levels il
                 INNER JOIN products p ON p.id = il.product_id
-                LEFT JOIN product_categories pc ON pc.product_id = p.id
-                LEFT JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
                 WHERE il._status != 'deleted'
                   AND il.stock_status = 'sellable'
-                  AND c.shop_id = $1
+                  AND (
+                      EXISTS (
+                          SELECT 1 FROM product_categories pc
+                          INNER JOIN categories c ON c.id = pc.category_id AND c._status != 'deleted'
+                          WHERE pc.product_id = p.id AND c.shop_id = $1
+                      )
+                      OR EXISTS (
+                          SELECT 1 FROM brands b
+                          WHERE b.id = p.brand_id AND b._status != 'deleted' AND b.shop_id = $1
+                      )
+                  )
             )
             SELECT 
                 current_stock,
