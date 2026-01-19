@@ -207,31 +207,60 @@ impl InquiryService {
 
     pub async fn create_inquiry(&self, payload: CreateInquiryDTO) -> Result<Inquiry, String> {
         let (inquiry, messages) = payload.into_models();
-        let created_inquiry = self
-            .repo
-            .create(inquiry)
+        
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| format!("Erro ao iniciar transação: {}", e))?;
+
+        // Create inquiry
+        let created_inquiry = InquiriesRepository::create_with_tx(&mut tx, inquiry)
             .await
             .map_err(|e| format!("Erro ao criar inquiry: {}", e))?;
 
+        // Create messages if any
         if !messages.is_empty() {
-            self.messages_repo
-                .create_many(messages)
-                .await
-                .map_err(|e| format!("Erro ao criar mensagens: {}", e))?;
+            for message in messages {
+                InquiryMessagesRepository::create_with_tx(&mut tx, message)
+                    .await
+                    .map_err(|e| format!("Erro ao criar mensagens: {}", e))?;
+            }
         }
+
+        tx.commit()
+            .await
+            .map_err(|e| format!("Erro ao confirmar transação: {}", e))?;
 
         Ok(created_inquiry)
     }
 
     pub async fn delete_inquiry(&self, id: &str) -> Result<(), String> {
-        self.messages_repo
-            .delete_by_inquiry_id(id)
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| format!("Erro ao iniciar transação: {}", e))?;
+
+        // Delete messages
+        sqlx::query("DELETE FROM inquiry_messages WHERE inquiry_id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
             .map_err(|e| format!("Erro ao deletar mensagens: {}", e))?;
-        self.repo
-            .delete(id)
+
+        // Delete inquiry
+        sqlx::query("DELETE FROM inquiries WHERE id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
-            .map_err(|e| format!("Erro ao deletar inquiry: {}", e))
+            .map_err(|e| format!("Erro ao deletar inquiry: {}", e))?;
+
+        tx.commit()
+            .await
+            .map_err(|e| format!("Erro ao confirmar exclusão: {}", e))?;
+
+        Ok(())
     }
 
     pub async fn get_inquiry(&self, id: &str) -> Result<Option<Inquiry>, String> {

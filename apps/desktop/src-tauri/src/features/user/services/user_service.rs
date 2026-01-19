@@ -80,22 +80,45 @@ impl UserService {
     }
 
     pub async fn delete_user(&self, id: &str) -> Result<(), String> {
-        self.identities_repo
-            .delete_by_user_id(id)
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| format!("Failed to start transaction: {}", e))?;
+
+        // Delete identities
+        sqlx::query("DELETE FROM user_identities WHERE user_id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
             .map_err(|e| format!("Failed to delete identities: {}", e))?;
-        self.roles_repo
-            .delete_by_user_id(id)
+
+        // Delete roles
+        sqlx::query("DELETE FROM user_roles WHERE user_id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
             .map_err(|e| format!("Failed to delete roles: {}", e))?;
-        self.sessions_repo
-            .delete_by_user_id(id)
+
+        // Delete sessions
+        sqlx::query("DELETE FROM user_sessions WHERE user_id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
             .map_err(|e| format!("Failed to delete sessions: {}", e))?;
-        self.repo
-            .delete(id)
+
+        // Delete user
+        sqlx::query("DELETE FROM users WHERE id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
-            .map_err(|e| format!("Failed to delete user: {}", e))
+            .map_err(|e| format!("Failed to delete user: {}", e))?;
+
+        tx.commit()
+            .await
+            .map_err(|e| format!("Failed to commit transaction: {}", e))?;
+
+        Ok(())
     }
 
     pub async fn get_user(&self, id: &str) -> Result<Option<User>, String> {

@@ -58,14 +58,31 @@ impl ProductService {
     }
 
     pub async fn delete_product(&self, id: &str) -> Result<(), String> {
-        self.categories_repo
-            .delete_by_product_id(id)
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| format!("Failed to start transaction: {}", e))?;
+
+        // Delete product categories
+        sqlx::query("DELETE FROM product_categories WHERE product_id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
             .map_err(|e| format!("Failed to delete product categories: {}", e))?;
-        self.repo
-            .delete(id)
+        
+        // Delete product
+        sqlx::query("DELETE FROM products WHERE id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
-            .map_err(|e| format!("Failed to delete product: {}", e))
+            .map_err(|e| format!("Failed to delete product: {}", e))?;
+
+        tx.commit()
+            .await
+            .map_err(|e| format!("Failed to commit transaction: {}", e))?;
+
+        Ok(())
     }
 
     pub async fn get_product(&self, id: &str) -> Result<Option<Product>, String> {

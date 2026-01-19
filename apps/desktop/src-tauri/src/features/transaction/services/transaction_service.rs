@@ -40,18 +40,76 @@ impl TransactionService {
             .ok_or("Location ID is required".to_string())?;
         let (transaction, items) = payload.into_models();
 
-        let created_transaction = self
-            .repo
-            .create(transaction)
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| format!("Erro ao iniciar transação: {}", e))?;
+
+        // Create transaction
+        let created_transaction = sqlx::query_as::<_, Transaction>(r#"
+            INSERT INTO transactions (
+                id, type, status, channel, customer_id, supplier_id, staff_id,
+                currency, total_items, total_shipping, total_discount, total_net,
+                shipping_method, shipping_address, billing_address, _status,
+                created_at, updated_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+            RETURNING *
+        "#)
+            .bind(&transaction.id)
+            .bind(&transaction.r#type)
+            .bind(&transaction.status)
+            .bind(&transaction.channel)
+            .bind(&transaction.customer_id)
+            .bind(&transaction.supplier_id)
+            .bind(&transaction.staff_id)
+            .bind(&transaction.currency)
+            .bind(&transaction.total_items)
+            .bind(&transaction.total_shipping)
+            .bind(&transaction.total_discount)
+            .bind(&transaction.total_net)
+            .bind(&transaction.shipping_method)
+            .bind(&transaction.shipping_address)
+            .bind(&transaction.billing_address)
+            .bind(&transaction.sync_status)
+            .bind(&transaction.created_at)
+            .bind(&transaction.updated_at)
+            .fetch_one(&mut *tx)
             .await
             .map_err(|e| format!("Erro ao criar transação: {}", e))?;
 
+        // Create items if any
         if !items.is_empty() {
-            self.items_repo
-                .create_many(items)
-                .await
-                .map_err(|e| format!("Erro ao criar itens da transação: {}", e))?;
+            for item in items {
+                sqlx::query(r#"
+                    INSERT INTO transaction_items (
+                        id, transaction_id, product_id, sku_snapshot, name_snapshot,
+                        quantity, unit_price, unit_cost, attributes_snapshot, tax_details,
+                        _status, created_at, updated_at
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                "#)
+                    .bind(item.id)
+                    .bind(item.transaction_id)
+                    .bind(item.product_id)
+                    .bind(item.sku_snapshot)
+                    .bind(item.name_snapshot)
+                    .bind(item.quantity)
+                    .bind(item.unit_price)
+                    .bind(item.unit_cost)
+                    .bind(item.attributes_snapshot)
+                    .bind(item.tax_details)
+                    .bind(item.sync_status)
+                    .bind(item.created_at)
+                    .bind(item.updated_at)
+                    .execute(&mut *tx)
+                    .await
+                    .map_err(|e| format!("Erro ao criar itens da transação: {}", e))?;
+            }
         }
+
+        tx.commit()
+            .await
+            .map_err(|e| format!("Erro ao confirmar transação: {}", e))?;
 
         Ok(created_transaction)
     }
@@ -199,18 +257,38 @@ impl TransactionService {
     }
 
     pub async fn delete_transaction(&self, id: &str) -> Result<(), String> {
-        self.items_repo
-            .delete_by_transaction_id(id)
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| format!("Erro ao iniciar transação: {}", e))?;
+
+        // Delete transaction items
+        sqlx::query("DELETE FROM transaction_items WHERE transaction_id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
             .map_err(|e| format!("Erro ao deletar itens da transação: {}", e))?;
-        self.movements_repo
-            .delete_by_transaction_id(id)
+
+        // Delete inventory movements
+        sqlx::query("DELETE FROM inventory_movements WHERE transaction_id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
             .map_err(|e| format!("Erro ao deletar movimentos da transação: {}", e))?;
-        self.repo
-            .delete(id)
+
+        // Delete transaction
+        sqlx::query("DELETE FROM transactions WHERE id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
-            .map_err(|e| format!("Erro ao deletar transação: {}", e))
+            .map_err(|e| format!("Erro ao deletar transação: {}", e))?;
+
+        tx.commit()
+            .await
+            .map_err(|e| format!("Erro ao confirmar exclusão: {}", e))?;
+
+        Ok(())
     }
 
     pub async fn get_transaction(&self, id: &str) -> Result<Option<Transaction>, String> {

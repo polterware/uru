@@ -269,18 +269,38 @@ impl ShipmentService {
     }
 
     pub async fn delete_shipment(&self, id: &str) -> Result<(), String> {
-        self.items_repo
-            .delete_by_shipment_id(id)
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| format!("Erro ao iniciar transação: {}", e))?;
+
+        // Delete items
+        sqlx::query("DELETE FROM shipment_items WHERE shipment_id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
             .map_err(|e| format!("Erro ao deletar itens do envio: {}", e))?;
-        self.events_repo
-            .delete_by_shipment_id(id)
+
+        // Delete events
+        sqlx::query("DELETE FROM shipment_events WHERE shipment_id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
-            .map_err(|e| format!("Erro ao deletear eventos do envio: {}", e))?;
-        self.repo
-            .delete(id)
+            .map_err(|e| format!("Erro ao deletar eventos do envio: {}", e))?;
+
+        // Delete shipment
+        sqlx::query("DELETE FROM shipments WHERE id = $1")
+            .bind(id)
+            .execute(&mut *tx)
             .await
-            .map_err(|e| format!("Erro ao deletar envio: {}", e))
+            .map_err(|e| format!("Erro ao deletar envio: {}", e))?;
+
+        tx.commit()
+            .await
+            .map_err(|e| format!("Erro ao confirmar exclusão: {}", e))?;
+
+        Ok(())
     }
 
     pub async fn get_shipment(&self, id: &str) -> Result<Option<Shipment>, String> {
