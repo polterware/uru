@@ -87,6 +87,19 @@ export function StockStatusBarChart() {
     )
   }
 
+  if (data.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Produtos por Status de Estoque</CardTitle>
+          <CardDescription>
+            Nenhum dado de estoque disponível. Certifique-se de que há produtos com categorias associadas à loja.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    )
+  }
+
   return (
     <Card className="py-0">
       <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">

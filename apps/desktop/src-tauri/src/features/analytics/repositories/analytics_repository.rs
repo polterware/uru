@@ -585,27 +585,39 @@ impl AnalyticsRepository {
     pub async fn get_stock_status(
         &self,
         features_config: Option<&str>,
+        shop_id: Option<String>,
     ) -> sqlx::Result<Vec<StockStatusRow>> {
         self.check_module_required(features_config, "inventory")?;
-        let sql = r#"
+        let sql = if shop_id.is_some() {
+            r#"
+            WITH product_stock AS (
+                SELECT 
+                    il.product_id,
+                    SUM(il.quantity_on_hand) AS total_quantity
+                FROM inventory_levels il
+                INNER JOIN products p ON p.id = il.product_id
+                INNER JOIN product_categories pc ON pc.product_id = p.id
+                INNER JOIN categories c ON c.id = pc.category_id
+                WHERE il._status != 'deleted'
+                  AND il.stock_status = 'sellable'
+                  AND c.shop_id = $1
+                GROUP BY il.product_id
+            )
             SELECT 
                 CASE 
-                    WHEN SUM(il.quantity_on_hand) = 0 THEN 'Out of Stock'
-                    WHEN SUM(il.quantity_on_hand) < 10 THEN 'Low Stock'
-                    WHEN SUM(il.quantity_on_hand) < 50 THEN 'Medium Stock'
+                    WHEN ps.total_quantity = 0 THEN 'Out of Stock'
+                    WHEN ps.total_quantity < 10 THEN 'Low Stock'
+                    WHEN ps.total_quantity < 50 THEN 'Medium Stock'
                     ELSE 'High Stock'
                 END AS stock_status,
-                COUNT(DISTINCT il.product_id) AS product_count,
-                SUM(il.quantity_on_hand) AS total_quantity
-            FROM inventory_levels il
-            INNER JOIN products p ON p.id = il.product_id
-            WHERE il._status != 'deleted'
-              AND il.stock_status = 'sellable'
+                COUNT(*) AS product_count,
+                SUM(ps.total_quantity) AS total_quantity
+            FROM product_stock ps
             GROUP BY 
                 CASE 
-                    WHEN SUM(il.quantity_on_hand) = 0 THEN 'Out of Stock'
-                    WHEN SUM(il.quantity_on_hand) < 10 THEN 'Low Stock'
-                    WHEN SUM(il.quantity_on_hand) < 50 THEN 'Medium Stock'
+                    WHEN ps.total_quantity = 0 THEN 'Out of Stock'
+                    WHEN ps.total_quantity < 10 THEN 'Low Stock'
+                    WHEN ps.total_quantity < 50 THEN 'Medium Stock'
                     ELSE 'High Stock'
                 END
             ORDER BY 
@@ -615,11 +627,51 @@ impl AnalyticsRepository {
                     WHEN 'Medium Stock' THEN 3
                     ELSE 4
                 END
-        "#;
+        "#
+        } else {
+            r#"
+            WITH product_stock AS (
+                SELECT 
+                    il.product_id,
+                    SUM(il.quantity_on_hand) AS total_quantity
+                FROM inventory_levels il
+                INNER JOIN products p ON p.id = il.product_id
+                WHERE il._status != 'deleted'
+                  AND il.stock_status = 'sellable'
+                GROUP BY il.product_id
+            )
+            SELECT 
+                CASE 
+                    WHEN ps.total_quantity = 0 THEN 'Out of Stock'
+                    WHEN ps.total_quantity < 10 THEN 'Low Stock'
+                    WHEN ps.total_quantity < 50 THEN 'Medium Stock'
+                    ELSE 'High Stock'
+                END AS stock_status,
+                COUNT(*) AS product_count,
+                SUM(ps.total_quantity) AS total_quantity
+            FROM product_stock ps
+            GROUP BY 
+                CASE 
+                    WHEN ps.total_quantity = 0 THEN 'Out of Stock'
+                    WHEN ps.total_quantity < 10 THEN 'Low Stock'
+                    WHEN ps.total_quantity < 50 THEN 'Medium Stock'
+                    ELSE 'High Stock'
+                END
+            ORDER BY 
+                CASE stock_status
+                    WHEN 'Out of Stock' THEN 1
+                    WHEN 'Low Stock' THEN 2
+                    WHEN 'Medium Stock' THEN 3
+                    ELSE 4
+                END
+        "#
+        };
 
-        sqlx::query_as::<_, StockStatusRow>(sql)
-            .fetch_all(&self.pool)
-            .await
+        let mut query = sqlx::query_as::<_, StockStatusRow>(sql);
+        if let Some(ref id) = shop_id {
+            query = query.bind(id);
+        }
+        query.fetch_all(&self.pool).await
     }
 
     // ============================================================

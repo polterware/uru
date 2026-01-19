@@ -270,11 +270,11 @@ impl AnalyticsService {
         &self,
         shop_id: Option<String>,
     ) -> Result<Vec<StockStatusDto>, String> {
-        let features_config = self.get_features_config(shop_id).await;
+        let features_config = self.get_features_config(shop_id.clone()).await;
         let features_config_str = features_config.as_deref();
         let rows = self
             .repo
-            .get_stock_status(features_config_str)
+            .get_stock_status(features_config_str, shop_id)
             .await
             .map_err(|e| format!("Failed to fetch stock status: {}", e))?;
 
