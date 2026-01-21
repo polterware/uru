@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopsIndexRouteImport } from './routes/shops/index'
 import { Route as ShopsNewRouteImport } from './routes/shops/new'
 import { Route as ShopsShopIdIndexRouteImport } from './routes/shops/$shopId/index'
+import { Route as ShopsShopIdAddModuleRouteImport } from './routes/shops/$shopId/add-module'
 import { Route as ShopsShopIdTransactionsIndexRouteImport } from './routes/shops/$shopId/transactions/index'
 import { Route as ShopsShopIdRefundsIndexRouteImport } from './routes/shops/$shopId/refunds/index'
 import { Route as ShopsShopIdProductsIndexRouteImport } from './routes/shops/$shopId/products/index'
@@ -79,6 +80,11 @@ const ShopsNewRoute = ShopsNewRouteImport.update({
 const ShopsShopIdIndexRoute = ShopsShopIdIndexRouteImport.update({
   id: '/shops/$shopId/',
   path: '/shops/$shopId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopsShopIdAddModuleRoute = ShopsShopIdAddModuleRouteImport.update({
+  id: '/shops/$shopId/add-module',
+  path: '/shops/$shopId/add-module',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShopsShopIdTransactionsIndexRoute =
@@ -287,6 +293,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/shops/new': typeof ShopsNewRoute
   '/shops/': typeof ShopsIndexRoute
+  '/shops/$shopId/add-module': typeof ShopsShopIdAddModuleRoute
   '/shops/$shopId/': typeof ShopsShopIdIndexRoute
   '/shops/$shopId/brands/new': typeof ShopsShopIdBrandsNewRoute
   '/shops/$shopId/categories/new': typeof ShopsShopIdCategoriesNewRoute
@@ -330,6 +337,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/shops/new': typeof ShopsNewRoute
   '/shops': typeof ShopsIndexRoute
+  '/shops/$shopId/add-module': typeof ShopsShopIdAddModuleRoute
   '/shops/$shopId': typeof ShopsShopIdIndexRoute
   '/shops/$shopId/brands/new': typeof ShopsShopIdBrandsNewRoute
   '/shops/$shopId/categories/new': typeof ShopsShopIdCategoriesNewRoute
@@ -374,6 +382,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/shops/new': typeof ShopsNewRoute
   '/shops/': typeof ShopsIndexRoute
+  '/shops/$shopId/add-module': typeof ShopsShopIdAddModuleRoute
   '/shops/$shopId/': typeof ShopsShopIdIndexRoute
   '/shops/$shopId/brands/new': typeof ShopsShopIdBrandsNewRoute
   '/shops/$shopId/categories/new': typeof ShopsShopIdCategoriesNewRoute
@@ -419,6 +428,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shops/new'
     | '/shops/'
+    | '/shops/$shopId/add-module'
     | '/shops/$shopId/'
     | '/shops/$shopId/brands/new'
     | '/shops/$shopId/categories/new'
@@ -462,6 +472,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shops/new'
     | '/shops'
+    | '/shops/$shopId/add-module'
     | '/shops/$shopId'
     | '/shops/$shopId/brands/new'
     | '/shops/$shopId/categories/new'
@@ -505,6 +516,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/shops/new'
     | '/shops/'
+    | '/shops/$shopId/add-module'
     | '/shops/$shopId/'
     | '/shops/$shopId/brands/new'
     | '/shops/$shopId/categories/new'
@@ -549,6 +561,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   ShopsNewRoute: typeof ShopsNewRoute
   ShopsIndexRoute: typeof ShopsIndexRoute
+  ShopsShopIdAddModuleRoute: typeof ShopsShopIdAddModuleRoute
   ShopsShopIdIndexRoute: typeof ShopsShopIdIndexRoute
   ShopsShopIdBrandsNewRoute: typeof ShopsShopIdBrandsNewRoute
   ShopsShopIdCategoriesNewRoute: typeof ShopsShopIdCategoriesNewRoute
@@ -629,6 +642,13 @@ declare module '@tanstack/react-router' {
       path: '/shops/$shopId'
       fullPath: '/shops/$shopId/'
       preLoaderRoute: typeof ShopsShopIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shops/$shopId/add-module': {
+      id: '/shops/$shopId/add-module'
+      path: '/shops/$shopId/add-module'
+      fullPath: '/shops/$shopId/add-module'
+      preLoaderRoute: typeof ShopsShopIdAddModuleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shops/$shopId/transactions/': {
@@ -885,6 +905,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   ShopsNewRoute: ShopsNewRoute,
   ShopsIndexRoute: ShopsIndexRoute,
+  ShopsShopIdAddModuleRoute: ShopsShopIdAddModuleRoute,
   ShopsShopIdIndexRoute: ShopsShopIdIndexRoute,
   ShopsShopIdBrandsNewRoute: ShopsShopIdBrandsNewRoute,
   ShopsShopIdCategoriesNewRoute: ShopsShopIdCategoriesNewRoute,

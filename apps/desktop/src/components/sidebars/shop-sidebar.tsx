@@ -11,6 +11,7 @@ import {
   Layers,
   MapPin,
   Package,
+  Plus,
   Receipt,
   ShoppingCart,
   Tag,
@@ -210,6 +211,16 @@ export function ShopSidebar() {
 
             {/* Sales Modules */}
             {enabledSales.map((module) => renderModule(module))}
+
+            {/* Add Module */}
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link to={buildUrl("/shops/$shopId/add-module")}>
+                  <Plus className="size-4" />
+                  <span>Add Module</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
 
             {/* Shop Settings */}
             <SidebarMenuItem>
