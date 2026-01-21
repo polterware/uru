@@ -10,11 +10,14 @@ import {
   Inbox,
   Layers,
   MapPin,
+  MessageSquare,
   Package,
   Plus,
   Receipt,
   ShoppingCart,
+  Star,
   Tag,
+  Truck,
   Undo2,
   Users,
   UsersRound,
@@ -112,6 +115,22 @@ const menuStructure: Record<string, ModuleConfig[]> = {
         { title: "Movements", url: "/shops/$shopId/inventory/movements", icon: ArrowRightLeft },
       ],
     },
+    {
+      code: "shipping",
+      title: "Shipping",
+      icon: Truck,
+      items: [
+        { title: "Shipments", url: "/shops/$shopId/shipments", icon: Truck },
+      ],
+    },
+    {
+      code: "locations",
+      title: "Locations",
+      icon: MapPin,
+      items: [
+        { title: "Locations", url: "/shops/$shopId/locations", icon: MapPin },
+      ],
+    },
   ],
   sales: [
     {
@@ -120,6 +139,24 @@ const menuStructure: Record<string, ModuleConfig[]> = {
       icon: Receipt,
       items: [
         { title: "Checkouts", url: "/shops/$shopId/checkouts", icon: Receipt },
+      ],
+    },
+  ],
+  marketing: [
+    {
+      code: "reviews",
+      title: "Reviews",
+      icon: Star,
+      items: [
+        { title: "Reviews", url: "/shops/$shopId/reviews", icon: Star },
+      ],
+    },
+    {
+      code: "inquiries",
+      title: "Inquiries",
+      icon: MessageSquare,
+      items: [
+        { title: "Inquiries", url: "/shops/$shopId/inquiries", icon: MessageSquare },
       ],
     },
   ],
@@ -140,6 +177,7 @@ export function ShopSidebar() {
   const enabledCore = getEnabledModules("core")
   const enabledLogistics = getEnabledModules("logistics")
   const enabledSales = getEnabledModules("sales")
+  const enabledMarketing = getEnabledModules("marketing")
 
   const buildUrl = (url: string) => {
     return url.replace("$shopId", shopId)
@@ -148,11 +186,25 @@ export function ShopSidebar() {
   const renderModule = (module: ModuleConfig) => {
     const ModuleIcon = module.icon
 
+    if (module.items.length === 1) {
+      const item = module.items[0]
+      return (
+        <SidebarMenuItem key={module.code}>
+          <SidebarMenuButton asChild tooltip={module.title}>
+            <Link to={buildUrl(item.url)}>
+              <ModuleIcon className="size-4" />
+              <span>{module.title}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      )
+    }
+
     return (
       <SidebarMenuItem key={module.code}>
         <Collapsible defaultOpen className="group/collapsible">
           <CollapsibleTrigger asChild>
-            <SidebarMenuButton>
+            <SidebarMenuButton tooltip={module.title}>
               <ModuleIcon className="size-4" />
               <span>{module.title}</span>
               <ChevronRight className="ml-auto size-4 group-data-[state=open]/collapsible:hidden" />
@@ -211,6 +263,9 @@ export function ShopSidebar() {
 
             {/* Sales Modules */}
             {enabledSales.map((module) => renderModule(module))}
+
+            {/* Marketing Modules */}
+            {enabledMarketing.map((module) => renderModule(module))}
 
             {/* Add Module */}
             <SidebarMenuItem>

@@ -11,12 +11,15 @@ import {
   Inbox,
   Layers,
   MapPin,
+  MessageSquare,
   Package,
   Receipt,
   Settings,
   ShoppingCart,
   Smartphone,
+  Star,
   Tag,
+  Truck,
   Undo2,
   Users,
   UsersRound,
@@ -111,7 +114,7 @@ const salesItems = [
   },
 ]
 
-const inventoryItems = [
+const logisticsItems = [
   {
     title: "Inventory",
     url: "/inventory",
@@ -121,6 +124,29 @@ const inventoryItems = [
     title: "Movements",
     url: "/movements",
     icon: Activity,
+  },
+  {
+    title: "Shipments",
+    url: "/shipments",
+    icon: Truck,
+  },
+  {
+    title: "Locations",
+    url: "/locations",
+    icon: MapPin,
+  },
+]
+
+const marketingItems = [
+  {
+    title: "Reviews",
+    url: "/reviews",
+    icon: Star,
+  },
+  {
+    title: "Inquiries",
+    url: "/inquiries",
+    icon: MessageSquare,
   },
 ]
 
@@ -294,20 +320,48 @@ export function AppSidebar() {
               </Collapsible>
             </SidebarMenuItem>
 
-            {/* Inventory Section */}
+            {/* Logistics Section */}
             <SidebarMenuItem>
               <Collapsible defaultOpen className="group/collapsible">
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton>
-                    <Inbox className="size-4" />
-                    <span>Inventory</span>
+                    <Truck className="size-4" />
+                    <span>Logistics</span>
                     <ChevronRight className="ml-auto size-4 group-data-[state=open]/collapsible:hidden" />
                     <ChevronDown className="ml-auto size-4 hidden group-data-[state=open]/collapsible:block" />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {inventoryItems.map((item) => (
+                    {logisticsItems.map((item) => (
+                      <SidebarMenuSubItem key={item.title}>
+                        <SidebarMenuSubButton asChild>
+                          <Link to={item.url}>
+                            <item.icon />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </Collapsible>
+            </SidebarMenuItem>
+
+            {/* Marketing Section */}
+            <SidebarMenuItem>
+              <Collapsible defaultOpen className="group/collapsible">
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton>
+                    <Star className="size-4" />
+                    <span>Marketing</span>
+                    <ChevronRight className="ml-auto size-4 group-data-[state=open]/collapsible:hidden" />
+                    <ChevronDown className="ml-auto size-4 hidden group-data-[state=open]/collapsible:block" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {marketingItems.map((item) => (
                       <SidebarMenuSubItem key={item.title}>
                         <SidebarMenuSubButton asChild>
                           <Link to={item.url}>

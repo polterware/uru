@@ -10,6 +10,10 @@ export const LocationsRepository = {
     return invoke("list_locations");
   },
 
+  async listByShop(shopId: string): Promise<Location[]> {
+    return invoke("list_locations_by_shop", { shopId });
+  },
+
   async getById(id: string): Promise<Location | null> {
     return invoke("get_location", { id });
   },
