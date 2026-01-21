@@ -66,23 +66,28 @@ export function RefundsTable() {
   const [deleteId, setDeleteId] = React.useState<string | null>(null)
 
   const loadData = React.useCallback(async () => {
+    if (!shopId) return
+
     try {
       setIsLoading(true)
       const [refunds, paymentsData] = await Promise.all([
         RefundsRepository.list(),
-        PaymentsRepository.list(),
+        PaymentsRepository.listByShop(shopId),
       ])
 
       const paymentsMap = new Map(paymentsData.map((p) => [p.id, p]))
 
-      const enrichedRefunds = refunds.map((refund) => {
-        const payment = paymentsMap.get(refund.payment_id)
-        return {
-          ...refund,
-          payment_method: payment?.method,
-          payment_amount: payment?.amount,
-        }
-      })
+      // Filter refunds to only include those related to shop payments
+      const enrichedRefunds = refunds
+        .filter((refund) => paymentsMap.has(refund.payment_id))
+        .map((refund) => {
+          const payment = paymentsMap.get(refund.payment_id)
+          return {
+            ...refund,
+            payment_method: payment?.method,
+            payment_amount: payment?.amount,
+          }
+        })
 
       setData(enrichedRefunds)
     } catch (error) {
@@ -91,7 +96,7 @@ export function RefundsTable() {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [shopId])
 
   React.useEffect(() => {
     loadData()

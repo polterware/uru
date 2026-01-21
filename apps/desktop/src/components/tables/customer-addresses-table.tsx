@@ -46,21 +46,26 @@ export function CustomerAddressesTable() {
   const [deleteId, setDeleteId] = React.useState<string | null>(null)
 
   const loadData = React.useCallback(async () => {
+    if (!shopId) return
+
     try {
       setIsLoading(true)
       const [addresses, customersList] = await Promise.all([
         CustomerAddressesRepository.list(),
-        CustomersRepository.list(),
+        CustomersRepository.listByShop(shopId),
       ])
 
       const customersMap = new Map<string, Customer>()
       customersList.forEach((c) => customersMap.set(c.id, c))
       setCustomers(customersMap)
 
-      const enrichedAddresses = addresses.map((address) => ({
-        ...address,
-        customer: customersMap.get(address.customer_id),
-      }))
+      // Filter addresses to only include those belonging to shop customers
+      const enrichedAddresses = addresses
+        .filter((address) => customersMap.has(address.customer_id))
+        .map((address) => ({
+          ...address,
+          customer: customersMap.get(address.customer_id),
+        }))
       setData(enrichedAddresses)
     } catch (error) {
       console.error("Failed to load customer addresses:", error)
@@ -68,7 +73,7 @@ export function CustomerAddressesTable() {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [shopId])
 
   React.useEffect(() => {
     loadData()

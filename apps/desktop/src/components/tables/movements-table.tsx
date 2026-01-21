@@ -29,12 +29,14 @@ export function MovementsTable() {
   const [isLoading, setIsLoading] = React.useState(true)
 
   const loadData = React.useCallback(async () => {
+    if (!shopId) return
+
     try {
       setIsLoading(true)
       const [movements, inventoryLevels, products, locations] = await Promise.all([
         InventoryMovementsRepository.list(),
-        InventoryLevelsRepository.list(),
-        ProductsRepository.list(),
+        InventoryLevelsRepository.listByShop(shopId),
+        ProductsRepository.listFiltered({ shop_id: shopId }),
         LocationsRepository.list(),
       ])
 
@@ -42,19 +44,22 @@ export function MovementsTable() {
       const productMap = new Map(products.map((p) => [p.id, p]))
       const locationMap = new Map(locations.map((l) => [l.id, l]))
 
-      const enrichedData = movements.map((movement) => {
-        const level = movement.inventory_level_id
-          ? levelMap.get(movement.inventory_level_id)
-          : null
-        const product = level ? productMap.get(level.product_id) : null
-        const location = level ? locationMap.get(level.location_id) : null
+      // Filter movements to only include those for shop inventory levels
+      const enrichedData = movements
+        .filter((movement) => movement.inventory_level_id && levelMap.has(movement.inventory_level_id))
+        .map((movement) => {
+          const level = movement.inventory_level_id
+            ? levelMap.get(movement.inventory_level_id)
+            : null
+          const product = level ? productMap.get(level.product_id) : null
+          const location = level ? locationMap.get(level.location_id) : null
 
-        return {
-          ...movement,
-          product_name: product?.name || "Unknown Product",
-          location_name: location?.name || "Unknown Location",
-        }
-      })
+          return {
+            ...movement,
+            product_name: product?.name || "Unknown Product",
+            location_name: location?.name || "Unknown Location",
+          }
+        })
 
       setData(enrichedData)
     } catch (error) {
@@ -63,7 +68,7 @@ export function MovementsTable() {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [shopId])
 
   React.useEffect(() => {
     loadData()

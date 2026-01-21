@@ -71,23 +71,28 @@ export function CustomerGroupMembershipsTable() {
   const [isAdding, setIsAdding] = React.useState(false)
 
   const loadData = React.useCallback(async () => {
+    if (!shopId) return
+
     try {
       setIsLoading(true)
-      const [customersList, groupsList] = await Promise.all([
-        CustomersRepository.list(),
+      const [customersList, allGroupsList] = await Promise.all([
+        CustomersRepository.listByShop(shopId),
         CustomerGroupsRepository.list(),
       ])
+
+      // Filter groups by shop_id
+      const groupsList = allGroupsList.filter((g: CustomerGroup) => g.shop_id === shopId)
 
       setCustomers(customersList)
       setGroups(groupsList)
 
       const customersMap = new Map<string, Customer>()
-      customersList.forEach((c) => customersMap.set(c.id, c))
+      customersList.forEach((c: Customer) => customersMap.set(c.id, c))
 
       const groupsMap = new Map<string, CustomerGroup>()
-      groupsList.forEach((g) => groupsMap.set(g.id, g))
+      groupsList.forEach((g: CustomerGroup) => groupsMap.set(g.id, g))
 
-      // Collect all memberships from all customers
+      // Collect all memberships from shop customers only
       const allMemberships: MembershipRow[] = []
       for (const customer of customersList) {
         try {
@@ -113,7 +118,7 @@ export function CustomerGroupMembershipsTable() {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [shopId])
 
   React.useEffect(() => {
     loadData()

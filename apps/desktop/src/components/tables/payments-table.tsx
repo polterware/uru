@@ -72,9 +72,11 @@ export function PaymentsTable() {
   const [deleteId, setDeleteId] = React.useState<string | null>(null)
 
   const loadData = React.useCallback(async () => {
+    if (!shopId) return
+
     try {
       setIsLoading(true)
-      const payments = await PaymentsRepository.list()
+      const payments = await PaymentsRepository.listByShop(shopId)
       setData(payments)
     } catch (error) {
       console.error("Failed to load payments:", error)
@@ -82,7 +84,7 @@ export function PaymentsTable() {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [shopId])
 
   React.useEffect(() => {
     loadData()
