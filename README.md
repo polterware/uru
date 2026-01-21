@@ -1,3 +1,5 @@
+![Header](header.png)
+
 # Urú: The Local-First Inventory Cloud
 
 > **Manage your inventory in real-time across multiple devices using your own Local Network. No cloud subscriptions, no internet interaction required.**
