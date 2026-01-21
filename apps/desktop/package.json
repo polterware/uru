@@ -47,7 +47,7 @@
     "uuid": "^7.0.3",
     "vite-tsconfig-paths": "^5.1.4",
     "zustand": "^5.0.10",
-    "@uru/types": "*"
+    "@uru/types": "workspace:*"
   },
   "devDependencies": {
     "@tanstack/devtools-vite": "^0.3.11",
