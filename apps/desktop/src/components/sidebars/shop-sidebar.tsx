@@ -143,6 +143,14 @@ const menuStructure: Record<string, ModuleConfig[]> = {
         { title: "Checkouts", url: "/shops/$shopId/checkouts", icon: Receipt },
       ],
     },
+    {
+      code: "pos",
+      title: "POS",
+      icon: CreditCard,
+      items: [
+        { title: "Sessions", url: "/shops/$shopId/pos-sessions", icon: CreditCard },
+      ],
+    },
   ],
   marketing: [
     {

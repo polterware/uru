@@ -460,7 +460,7 @@ class SyntheticDataGenerator:
         # Módulos Opcionais - Vendas
         sales_modules = [
             ("mod-checkout", "checkout", "Checkout", "Carrinho de compras e checkout", "sales", '["products", "customers"]', '["checkouts"]'),
-            ("mod-pos", "pos", "Ponto de Venda", "Sistema de ponto de venda (PDV)", "sales", '["transactions", "inventory"]', "[]"),
+            ("mod-pos", "pos", "Ponto de Venda", "Sistema de ponto de venda (PDV)", "sales", '["transactions", "inventory"]', '["pos_sessions"]'),
         ]
 
         # Módulos Opcionais - Marketing e Suporte
