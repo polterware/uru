@@ -21,6 +21,7 @@ import { Route as ShopsShopIdShipmentsIndexRouteImport } from './routes/shops/$s
 import { Route as ShopsShopIdReviewsIndexRouteImport } from './routes/shops/$shopId/reviews/index'
 import { Route as ShopsShopIdRefundsIndexRouteImport } from './routes/shops/$shopId/refunds/index'
 import { Route as ShopsShopIdProductsIndexRouteImport } from './routes/shops/$shopId/products/index'
+import { Route as ShopsShopIdPosSessionsIndexRouteImport } from './routes/shops/$shopId/pos-sessions/index'
 import { Route as ShopsShopIdPaymentsIndexRouteImport } from './routes/shops/$shopId/payments/index'
 import { Route as ShopsShopIdOrdersIndexRouteImport } from './routes/shops/$shopId/orders/index'
 import { Route as ShopsShopIdLocationsIndexRouteImport } from './routes/shops/$shopId/locations/index'
@@ -33,6 +34,7 @@ import { Route as ShopsShopIdBrandsIndexRouteImport } from './routes/shops/$shop
 import { Route as ShopsShopIdTransactionsNewRouteImport } from './routes/shops/$shopId/transactions/new'
 import { Route as ShopsShopIdRefundsNewRouteImport } from './routes/shops/$shopId/refunds/new'
 import { Route as ShopsShopIdProductsNewRouteImport } from './routes/shops/$shopId/products/new'
+import { Route as ShopsShopIdPosSessionsNewRouteImport } from './routes/shops/$shopId/pos-sessions/new'
 import { Route as ShopsShopIdPaymentsNewRouteImport } from './routes/shops/$shopId/payments/new'
 import { Route as ShopsShopIdOrdersNewRouteImport } from './routes/shops/$shopId/orders/new'
 import { Route as ShopsShopIdInventoryNewRouteImport } from './routes/shops/$shopId/inventory/new'
@@ -46,6 +48,7 @@ import { Route as ShopsShopIdCustomersAddressesIndexRouteImport } from './routes
 import { Route as ShopsShopIdTransactionsTransactionIdEditRouteImport } from './routes/shops/$shopId/transactions/$transactionId/edit'
 import { Route as ShopsShopIdRefundsRefundIdEditRouteImport } from './routes/shops/$shopId/refunds/$refundId/edit'
 import { Route as ShopsShopIdProductsProductIdEditRouteImport } from './routes/shops/$shopId/products/$productId/edit'
+import { Route as ShopsShopIdPosSessionsPosSessionIdEditRouteImport } from './routes/shops/$shopId/pos-sessions/$posSessionId/edit'
 import { Route as ShopsShopIdPaymentsPaymentIdEditRouteImport } from './routes/shops/$shopId/payments/$paymentId/edit'
 import { Route as ShopsShopIdOrdersOrderIdEditRouteImport } from './routes/shops/$shopId/orders/$orderId/edit'
 import { Route as ShopsShopIdInventoryInventoryLevelIdEditRouteImport } from './routes/shops/$shopId/inventory/$inventoryLevelId/edit'
@@ -119,6 +122,12 @@ const ShopsShopIdProductsIndexRoute =
     path: '/shops/$shopId/products/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ShopsShopIdPosSessionsIndexRoute =
+  ShopsShopIdPosSessionsIndexRouteImport.update({
+    id: '/shops/$shopId/pos-sessions/',
+    path: '/shops/$shopId/pos-sessions/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ShopsShopIdPaymentsIndexRoute =
   ShopsShopIdPaymentsIndexRouteImport.update({
     id: '/shops/$shopId/payments/',
@@ -187,6 +196,12 @@ const ShopsShopIdProductsNewRoute = ShopsShopIdProductsNewRouteImport.update({
   path: '/shops/$shopId/products/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopsShopIdPosSessionsNewRoute =
+  ShopsShopIdPosSessionsNewRouteImport.update({
+    id: '/shops/$shopId/pos-sessions/new',
+    path: '/shops/$shopId/pos-sessions/new',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ShopsShopIdPaymentsNewRoute = ShopsShopIdPaymentsNewRouteImport.update({
   id: '/shops/$shopId/payments/new',
   path: '/shops/$shopId/payments/new',
@@ -257,6 +272,12 @@ const ShopsShopIdProductsProductIdEditRoute =
   ShopsShopIdProductsProductIdEditRouteImport.update({
     id: '/shops/$shopId/products/$productId/edit',
     path: '/shops/$shopId/products/$productId/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ShopsShopIdPosSessionsPosSessionIdEditRoute =
+  ShopsShopIdPosSessionsPosSessionIdEditRouteImport.update({
+    id: '/shops/$shopId/pos-sessions/$posSessionId/edit',
+    path: '/shops/$shopId/pos-sessions/$posSessionId/edit',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ShopsShopIdPaymentsPaymentIdEditRoute =
@@ -330,6 +351,7 @@ export interface FileRoutesByFullPath {
   '/shops/$shopId/inventory/new': typeof ShopsShopIdInventoryNewRoute
   '/shops/$shopId/orders/new': typeof ShopsShopIdOrdersNewRoute
   '/shops/$shopId/payments/new': typeof ShopsShopIdPaymentsNewRoute
+  '/shops/$shopId/pos-sessions/new': typeof ShopsShopIdPosSessionsNewRoute
   '/shops/$shopId/products/new': typeof ShopsShopIdProductsNewRoute
   '/shops/$shopId/refunds/new': typeof ShopsShopIdRefundsNewRoute
   '/shops/$shopId/transactions/new': typeof ShopsShopIdTransactionsNewRoute
@@ -342,6 +364,7 @@ export interface FileRoutesByFullPath {
   '/shops/$shopId/locations/': typeof ShopsShopIdLocationsIndexRoute
   '/shops/$shopId/orders/': typeof ShopsShopIdOrdersIndexRoute
   '/shops/$shopId/payments/': typeof ShopsShopIdPaymentsIndexRoute
+  '/shops/$shopId/pos-sessions/': typeof ShopsShopIdPosSessionsIndexRoute
   '/shops/$shopId/products/': typeof ShopsShopIdProductsIndexRoute
   '/shops/$shopId/refunds/': typeof ShopsShopIdRefundsIndexRoute
   '/shops/$shopId/reviews/': typeof ShopsShopIdReviewsIndexRoute
@@ -355,6 +378,7 @@ export interface FileRoutesByFullPath {
   '/shops/$shopId/inventory/$inventoryLevelId/edit': typeof ShopsShopIdInventoryInventoryLevelIdEditRoute
   '/shops/$shopId/orders/$orderId/edit': typeof ShopsShopIdOrdersOrderIdEditRoute
   '/shops/$shopId/payments/$paymentId/edit': typeof ShopsShopIdPaymentsPaymentIdEditRoute
+  '/shops/$shopId/pos-sessions/$posSessionId/edit': typeof ShopsShopIdPosSessionsPosSessionIdEditRoute
   '/shops/$shopId/products/$productId/edit': typeof ShopsShopIdProductsProductIdEditRoute
   '/shops/$shopId/refunds/$refundId/edit': typeof ShopsShopIdRefundsRefundIdEditRoute
   '/shops/$shopId/transactions/$transactionId/edit': typeof ShopsShopIdTransactionsTransactionIdEditRoute
@@ -378,6 +402,7 @@ export interface FileRoutesByTo {
   '/shops/$shopId/inventory/new': typeof ShopsShopIdInventoryNewRoute
   '/shops/$shopId/orders/new': typeof ShopsShopIdOrdersNewRoute
   '/shops/$shopId/payments/new': typeof ShopsShopIdPaymentsNewRoute
+  '/shops/$shopId/pos-sessions/new': typeof ShopsShopIdPosSessionsNewRoute
   '/shops/$shopId/products/new': typeof ShopsShopIdProductsNewRoute
   '/shops/$shopId/refunds/new': typeof ShopsShopIdRefundsNewRoute
   '/shops/$shopId/transactions/new': typeof ShopsShopIdTransactionsNewRoute
@@ -390,6 +415,7 @@ export interface FileRoutesByTo {
   '/shops/$shopId/locations': typeof ShopsShopIdLocationsIndexRoute
   '/shops/$shopId/orders': typeof ShopsShopIdOrdersIndexRoute
   '/shops/$shopId/payments': typeof ShopsShopIdPaymentsIndexRoute
+  '/shops/$shopId/pos-sessions': typeof ShopsShopIdPosSessionsIndexRoute
   '/shops/$shopId/products': typeof ShopsShopIdProductsIndexRoute
   '/shops/$shopId/refunds': typeof ShopsShopIdRefundsIndexRoute
   '/shops/$shopId/reviews': typeof ShopsShopIdReviewsIndexRoute
@@ -403,6 +429,7 @@ export interface FileRoutesByTo {
   '/shops/$shopId/inventory/$inventoryLevelId/edit': typeof ShopsShopIdInventoryInventoryLevelIdEditRoute
   '/shops/$shopId/orders/$orderId/edit': typeof ShopsShopIdOrdersOrderIdEditRoute
   '/shops/$shopId/payments/$paymentId/edit': typeof ShopsShopIdPaymentsPaymentIdEditRoute
+  '/shops/$shopId/pos-sessions/$posSessionId/edit': typeof ShopsShopIdPosSessionsPosSessionIdEditRoute
   '/shops/$shopId/products/$productId/edit': typeof ShopsShopIdProductsProductIdEditRoute
   '/shops/$shopId/refunds/$refundId/edit': typeof ShopsShopIdRefundsRefundIdEditRoute
   '/shops/$shopId/transactions/$transactionId/edit': typeof ShopsShopIdTransactionsTransactionIdEditRoute
@@ -427,6 +454,7 @@ export interface FileRoutesById {
   '/shops/$shopId/inventory/new': typeof ShopsShopIdInventoryNewRoute
   '/shops/$shopId/orders/new': typeof ShopsShopIdOrdersNewRoute
   '/shops/$shopId/payments/new': typeof ShopsShopIdPaymentsNewRoute
+  '/shops/$shopId/pos-sessions/new': typeof ShopsShopIdPosSessionsNewRoute
   '/shops/$shopId/products/new': typeof ShopsShopIdProductsNewRoute
   '/shops/$shopId/refunds/new': typeof ShopsShopIdRefundsNewRoute
   '/shops/$shopId/transactions/new': typeof ShopsShopIdTransactionsNewRoute
@@ -439,6 +467,7 @@ export interface FileRoutesById {
   '/shops/$shopId/locations/': typeof ShopsShopIdLocationsIndexRoute
   '/shops/$shopId/orders/': typeof ShopsShopIdOrdersIndexRoute
   '/shops/$shopId/payments/': typeof ShopsShopIdPaymentsIndexRoute
+  '/shops/$shopId/pos-sessions/': typeof ShopsShopIdPosSessionsIndexRoute
   '/shops/$shopId/products/': typeof ShopsShopIdProductsIndexRoute
   '/shops/$shopId/refunds/': typeof ShopsShopIdRefundsIndexRoute
   '/shops/$shopId/reviews/': typeof ShopsShopIdReviewsIndexRoute
@@ -452,6 +481,7 @@ export interface FileRoutesById {
   '/shops/$shopId/inventory/$inventoryLevelId/edit': typeof ShopsShopIdInventoryInventoryLevelIdEditRoute
   '/shops/$shopId/orders/$orderId/edit': typeof ShopsShopIdOrdersOrderIdEditRoute
   '/shops/$shopId/payments/$paymentId/edit': typeof ShopsShopIdPaymentsPaymentIdEditRoute
+  '/shops/$shopId/pos-sessions/$posSessionId/edit': typeof ShopsShopIdPosSessionsPosSessionIdEditRoute
   '/shops/$shopId/products/$productId/edit': typeof ShopsShopIdProductsProductIdEditRoute
   '/shops/$shopId/refunds/$refundId/edit': typeof ShopsShopIdRefundsRefundIdEditRoute
   '/shops/$shopId/transactions/$transactionId/edit': typeof ShopsShopIdTransactionsTransactionIdEditRoute
@@ -477,6 +507,7 @@ export interface FileRouteTypes {
     | '/shops/$shopId/inventory/new'
     | '/shops/$shopId/orders/new'
     | '/shops/$shopId/payments/new'
+    | '/shops/$shopId/pos-sessions/new'
     | '/shops/$shopId/products/new'
     | '/shops/$shopId/refunds/new'
     | '/shops/$shopId/transactions/new'
@@ -489,6 +520,7 @@ export interface FileRouteTypes {
     | '/shops/$shopId/locations/'
     | '/shops/$shopId/orders/'
     | '/shops/$shopId/payments/'
+    | '/shops/$shopId/pos-sessions/'
     | '/shops/$shopId/products/'
     | '/shops/$shopId/refunds/'
     | '/shops/$shopId/reviews/'
@@ -502,6 +534,7 @@ export interface FileRouteTypes {
     | '/shops/$shopId/inventory/$inventoryLevelId/edit'
     | '/shops/$shopId/orders/$orderId/edit'
     | '/shops/$shopId/payments/$paymentId/edit'
+    | '/shops/$shopId/pos-sessions/$posSessionId/edit'
     | '/shops/$shopId/products/$productId/edit'
     | '/shops/$shopId/refunds/$refundId/edit'
     | '/shops/$shopId/transactions/$transactionId/edit'
@@ -525,6 +558,7 @@ export interface FileRouteTypes {
     | '/shops/$shopId/inventory/new'
     | '/shops/$shopId/orders/new'
     | '/shops/$shopId/payments/new'
+    | '/shops/$shopId/pos-sessions/new'
     | '/shops/$shopId/products/new'
     | '/shops/$shopId/refunds/new'
     | '/shops/$shopId/transactions/new'
@@ -537,6 +571,7 @@ export interface FileRouteTypes {
     | '/shops/$shopId/locations'
     | '/shops/$shopId/orders'
     | '/shops/$shopId/payments'
+    | '/shops/$shopId/pos-sessions'
     | '/shops/$shopId/products'
     | '/shops/$shopId/refunds'
     | '/shops/$shopId/reviews'
@@ -550,6 +585,7 @@ export interface FileRouteTypes {
     | '/shops/$shopId/inventory/$inventoryLevelId/edit'
     | '/shops/$shopId/orders/$orderId/edit'
     | '/shops/$shopId/payments/$paymentId/edit'
+    | '/shops/$shopId/pos-sessions/$posSessionId/edit'
     | '/shops/$shopId/products/$productId/edit'
     | '/shops/$shopId/refunds/$refundId/edit'
     | '/shops/$shopId/transactions/$transactionId/edit'
@@ -573,6 +609,7 @@ export interface FileRouteTypes {
     | '/shops/$shopId/inventory/new'
     | '/shops/$shopId/orders/new'
     | '/shops/$shopId/payments/new'
+    | '/shops/$shopId/pos-sessions/new'
     | '/shops/$shopId/products/new'
     | '/shops/$shopId/refunds/new'
     | '/shops/$shopId/transactions/new'
@@ -585,6 +622,7 @@ export interface FileRouteTypes {
     | '/shops/$shopId/locations/'
     | '/shops/$shopId/orders/'
     | '/shops/$shopId/payments/'
+    | '/shops/$shopId/pos-sessions/'
     | '/shops/$shopId/products/'
     | '/shops/$shopId/refunds/'
     | '/shops/$shopId/reviews/'
@@ -598,6 +636,7 @@ export interface FileRouteTypes {
     | '/shops/$shopId/inventory/$inventoryLevelId/edit'
     | '/shops/$shopId/orders/$orderId/edit'
     | '/shops/$shopId/payments/$paymentId/edit'
+    | '/shops/$shopId/pos-sessions/$posSessionId/edit'
     | '/shops/$shopId/products/$productId/edit'
     | '/shops/$shopId/refunds/$refundId/edit'
     | '/shops/$shopId/transactions/$transactionId/edit'
@@ -622,6 +661,7 @@ export interface RootRouteChildren {
   ShopsShopIdInventoryNewRoute: typeof ShopsShopIdInventoryNewRoute
   ShopsShopIdOrdersNewRoute: typeof ShopsShopIdOrdersNewRoute
   ShopsShopIdPaymentsNewRoute: typeof ShopsShopIdPaymentsNewRoute
+  ShopsShopIdPosSessionsNewRoute: typeof ShopsShopIdPosSessionsNewRoute
   ShopsShopIdProductsNewRoute: typeof ShopsShopIdProductsNewRoute
   ShopsShopIdRefundsNewRoute: typeof ShopsShopIdRefundsNewRoute
   ShopsShopIdTransactionsNewRoute: typeof ShopsShopIdTransactionsNewRoute
@@ -634,6 +674,7 @@ export interface RootRouteChildren {
   ShopsShopIdLocationsIndexRoute: typeof ShopsShopIdLocationsIndexRoute
   ShopsShopIdOrdersIndexRoute: typeof ShopsShopIdOrdersIndexRoute
   ShopsShopIdPaymentsIndexRoute: typeof ShopsShopIdPaymentsIndexRoute
+  ShopsShopIdPosSessionsIndexRoute: typeof ShopsShopIdPosSessionsIndexRoute
   ShopsShopIdProductsIndexRoute: typeof ShopsShopIdProductsIndexRoute
   ShopsShopIdRefundsIndexRoute: typeof ShopsShopIdRefundsIndexRoute
   ShopsShopIdReviewsIndexRoute: typeof ShopsShopIdReviewsIndexRoute
@@ -647,6 +688,7 @@ export interface RootRouteChildren {
   ShopsShopIdInventoryInventoryLevelIdEditRoute: typeof ShopsShopIdInventoryInventoryLevelIdEditRoute
   ShopsShopIdOrdersOrderIdEditRoute: typeof ShopsShopIdOrdersOrderIdEditRoute
   ShopsShopIdPaymentsPaymentIdEditRoute: typeof ShopsShopIdPaymentsPaymentIdEditRoute
+  ShopsShopIdPosSessionsPosSessionIdEditRoute: typeof ShopsShopIdPosSessionsPosSessionIdEditRoute
   ShopsShopIdProductsProductIdEditRoute: typeof ShopsShopIdProductsProductIdEditRoute
   ShopsShopIdRefundsRefundIdEditRoute: typeof ShopsShopIdRefundsRefundIdEditRoute
   ShopsShopIdTransactionsTransactionIdEditRoute: typeof ShopsShopIdTransactionsTransactionIdEditRoute
@@ -741,6 +783,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopsShopIdProductsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shops/$shopId/pos-sessions/': {
+      id: '/shops/$shopId/pos-sessions/'
+      path: '/shops/$shopId/pos-sessions'
+      fullPath: '/shops/$shopId/pos-sessions/'
+      preLoaderRoute: typeof ShopsShopIdPosSessionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shops/$shopId/payments/': {
       id: '/shops/$shopId/payments/'
       path: '/shops/$shopId/payments'
@@ -823,6 +872,13 @@ declare module '@tanstack/react-router' {
       path: '/shops/$shopId/products/new'
       fullPath: '/shops/$shopId/products/new'
       preLoaderRoute: typeof ShopsShopIdProductsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shops/$shopId/pos-sessions/new': {
+      id: '/shops/$shopId/pos-sessions/new'
+      path: '/shops/$shopId/pos-sessions/new'
+      fullPath: '/shops/$shopId/pos-sessions/new'
+      preLoaderRoute: typeof ShopsShopIdPosSessionsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shops/$shopId/payments/new': {
@@ -916,6 +972,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopsShopIdProductsProductIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shops/$shopId/pos-sessions/$posSessionId/edit': {
+      id: '/shops/$shopId/pos-sessions/$posSessionId/edit'
+      path: '/shops/$shopId/pos-sessions/$posSessionId/edit'
+      fullPath: '/shops/$shopId/pos-sessions/$posSessionId/edit'
+      preLoaderRoute: typeof ShopsShopIdPosSessionsPosSessionIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shops/$shopId/payments/$paymentId/edit': {
       id: '/shops/$shopId/payments/$paymentId/edit'
       path: '/shops/$shopId/payments/$paymentId/edit'
@@ -998,6 +1061,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopsShopIdInventoryNewRoute: ShopsShopIdInventoryNewRoute,
   ShopsShopIdOrdersNewRoute: ShopsShopIdOrdersNewRoute,
   ShopsShopIdPaymentsNewRoute: ShopsShopIdPaymentsNewRoute,
+  ShopsShopIdPosSessionsNewRoute: ShopsShopIdPosSessionsNewRoute,
   ShopsShopIdProductsNewRoute: ShopsShopIdProductsNewRoute,
   ShopsShopIdRefundsNewRoute: ShopsShopIdRefundsNewRoute,
   ShopsShopIdTransactionsNewRoute: ShopsShopIdTransactionsNewRoute,
@@ -1010,6 +1074,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopsShopIdLocationsIndexRoute: ShopsShopIdLocationsIndexRoute,
   ShopsShopIdOrdersIndexRoute: ShopsShopIdOrdersIndexRoute,
   ShopsShopIdPaymentsIndexRoute: ShopsShopIdPaymentsIndexRoute,
+  ShopsShopIdPosSessionsIndexRoute: ShopsShopIdPosSessionsIndexRoute,
   ShopsShopIdProductsIndexRoute: ShopsShopIdProductsIndexRoute,
   ShopsShopIdRefundsIndexRoute: ShopsShopIdRefundsIndexRoute,
   ShopsShopIdReviewsIndexRoute: ShopsShopIdReviewsIndexRoute,
@@ -1027,6 +1092,8 @@ const rootRouteChildren: RootRouteChildren = {
     ShopsShopIdInventoryInventoryLevelIdEditRoute,
   ShopsShopIdOrdersOrderIdEditRoute: ShopsShopIdOrdersOrderIdEditRoute,
   ShopsShopIdPaymentsPaymentIdEditRoute: ShopsShopIdPaymentsPaymentIdEditRoute,
+  ShopsShopIdPosSessionsPosSessionIdEditRoute:
+    ShopsShopIdPosSessionsPosSessionIdEditRoute,
   ShopsShopIdProductsProductIdEditRoute: ShopsShopIdProductsProductIdEditRoute,
   ShopsShopIdRefundsRefundIdEditRoute: ShopsShopIdRefundsRefundIdEditRoute,
   ShopsShopIdTransactionsTransactionIdEditRoute:

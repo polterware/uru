@@ -89,6 +89,13 @@ use crate::features::shipment::commands::shipment_commands::{
 use crate::features::review::commands::review_commands::{
     list_reviews_by_shop, list_reviews, delete_review, get_review, create_review, update_review,
 };
+use crate::features::pos_session::commands::pos_session_commands::{
+    create_pos_session, update_pos_session, close_pos_session, delete_pos_session,
+    get_pos_session, list_pos_sessions, list_pos_sessions_by_shop, get_open_pos_session_by_operator,
+};
+use crate::features::user::commands::user_commands::{
+    create_user, update_user, delete_user, get_user, list_users,
+};
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
 use tauri::Manager;
 use std::fs;
@@ -283,13 +290,28 @@ pub fn run() {
             get_shop_template_by_code,
             list_shop_templates,
             list_shop_templates_by_category,
+            // POS Sessions
+            create_pos_session,
+            update_pos_session,
+            close_pos_session,
+            delete_pos_session,
+            get_pos_session,
+            list_pos_sessions,
+            list_pos_sessions_by_shop,
+            get_open_pos_session_by_operator,
             // Shops
             create_shop,
             create_shop_from_template,
             update_shop,
             delete_shop,
             get_shop,
-            list_shops
+            list_shops,
+            // Users
+            create_user,
+            update_user,
+            delete_user,
+            get_user,
+            list_users
         ])
         .setup(|app| {
             let app_data_dir = app.path().app_data_dir()?;

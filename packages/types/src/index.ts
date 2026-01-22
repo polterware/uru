@@ -26,3 +26,5 @@ export * from "./reviews";
 export * from "./product-metrics";
 export * from "./inquiries";
 export * from "./inquiry-messages";
+export * from "./pos-sessions";
+export * from "./users";

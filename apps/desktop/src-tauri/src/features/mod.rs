@@ -1,5 +1,5 @@
-pub mod audit_log;
 pub mod analytics;
+pub mod audit_log;
 pub mod brand;
 pub mod category;
 pub mod checkout;
@@ -13,6 +13,7 @@ pub mod location;
 pub mod module;
 pub mod order;
 pub mod payment;
+pub mod pos_session;
 pub mod product;
 pub mod refund;
 pub mod review;

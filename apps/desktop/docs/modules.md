@@ -68,7 +68,7 @@ Estes módulos formam a base do sistema e não podem ser desativados.
 ### 🏪 Ponto de Venda (`mod-pos`)
 
 **Descrição:** Sistema de ponto de venda (PDV).
-**Tabelas:** _Nenhuma_
+**Tabelas:** `pos_sessions`
 
 ---
 

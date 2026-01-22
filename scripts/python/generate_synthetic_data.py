@@ -47,6 +47,7 @@ class SyntheticDataGenerator:
         self.inquiry_ids: list[str] = []
         self.inventory_level_ids: list[str] = []
         self.shipment_ids: list[str] = []
+        self.pos_session_ids: list[str] = []
 
         # Configuration for data volume
         self.config = {
@@ -67,6 +68,7 @@ class SyntheticDataGenerator:
             "reviews": 400,
             "inventory_levels": 1500,
             "shipments": 600,
+            "pos_sessions": 100,
         }
 
     def _uuid(self) -> str:
@@ -182,6 +184,7 @@ class SyntheticDataGenerator:
             self.generate_user_identities(cursor)
             self.generate_user_sessions(cursor)
             self.generate_checkouts(cursor)
+            self.generate_pos_sessions(cursor)
 
             # Level 3: Third level dependencies
             print("\n[Level 3] Generating third level dependencies...")
@@ -250,6 +253,7 @@ class SyntheticDataGenerator:
             "inquiry_messages",
             "reviews",
             "product_metrics",
+            "pos_sessions",
             "modules",
             "shop_templates",
         ]
@@ -1351,6 +1355,87 @@ class SyntheticDataGenerator:
             )
 
         print(f"  ✓ Generated {count} checkouts")
+
+    def generate_pos_sessions(self, cursor: sqlite3.Cursor):
+        """Generate POS session records."""
+        count = self.config["pos_sessions"]
+        statuses = ["closed", "closed", "closed", "closed", "open", "cancelled"]
+
+        # Filter locations to only include stores
+        cursor.execute("SELECT id FROM locations WHERE type = 'store'")
+        store_location_ids = [row[0] for row in cursor.fetchall()]
+        if not store_location_ids:
+            store_location_ids = self.location_ids  # Fallback
+
+        for i in range(count):
+            pos_session_id = self._uuid()
+            self.pos_session_ids.append(pos_session_id)
+
+            shop_id = random.choice(self.shop_ids)
+            operator_id = random.choice(self.user_ids)
+            location_id = random.choice(store_location_ids) if store_location_ids else None
+
+            status = random.choice(statuses)
+            opened_at = self._timestamp(60)
+
+            # Generate financial values
+            opening_cash = round(random.uniform(100, 500), 2)
+            total_sales = round(random.uniform(500, 5000), 2) if status != "open" else round(random.uniform(0, 2000), 2)
+            total_returns = round(total_sales * random.uniform(0, 0.1), 2) if status != "open" else 0
+            total_cash_in = round(random.uniform(0, 200), 2) if random.random() > 0.7 else 0
+            total_cash_out = round(random.uniform(0, 300), 2) if random.random() > 0.7 else 0
+            transaction_count = random.randint(10, 100) if status != "open" else random.randint(0, 30)
+
+            # Calculate expected and actual closing amounts
+            expected_cash = round(opening_cash + total_sales - total_returns + total_cash_in - total_cash_out, 2)
+            closing_cash = round(expected_cash + random.uniform(-20, 20), 2) if status == "closed" else None
+            cash_difference = round(closing_cash - expected_cash, 2) if closing_cash else None
+
+            closed_at = self._timestamp(30) if status == "closed" else None
+            closed_by = random.choice(self.user_ids) if status == "closed" else None
+
+            cursor.execute(
+                """
+                INSERT INTO pos_sessions (
+                    id, shop_id, location_id, operator_id, terminal_id, session_number,
+                    status, opening_cash_amount, opening_notes, opened_at,
+                    closing_cash_amount, closing_notes, closed_at, closed_by,
+                    total_sales, total_returns, total_cash_in, total_cash_out,
+                    transaction_count, expected_cash_amount, cash_difference,
+                    metadata, _status, created_at, updated_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+                (
+                    pos_session_id,
+                    shop_id,
+                    location_id,
+                    operator_id,
+                    f"TERM-{random.randint(1, 10):02d}",
+                    i + 1,
+                    status,
+                    opening_cash,
+                    f"Abertura de caixa - Turno {'manhã' if random.random() > 0.5 else 'tarde'}",
+                    opened_at,
+                    closing_cash,
+                    f"Fechamento normal" if status == "closed" else None,
+                    closed_at,
+                    closed_by,
+                    total_sales if status != "open" else 0,
+                    total_returns,
+                    total_cash_in,
+                    total_cash_out,
+                    transaction_count,
+                    expected_cash if status == "closed" else None,
+                    cash_difference,
+                    self._json({"shift": random.choice(["morning", "afternoon", "night"])}),
+                    "created",
+                    opened_at,
+                    closed_at or self._timestamp(1),
+                ),
+            )
+
+        print(f"  ✓ Generated {count} pos sessions")
 
     # ==========================================================================
     # LEVEL 3: THIRD LEVEL DEPENDENCIES
