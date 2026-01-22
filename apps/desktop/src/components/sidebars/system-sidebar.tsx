@@ -1,4 +1,3 @@
-import * as React from "react"
 import { Link } from "@tanstack/react-router"
 import {
   Building2,
@@ -54,17 +53,17 @@ export function SystemSidebar() {
     <Sidebar>
       <SidebarHeader>
         <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton size="lg" asChild>
-                <Link to="/">
-                  <Building2 className="size-4" />
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">System</span>
-                    <span className="truncate text-xs">Management</span>
-                  </div>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <Link to="/">
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate text-2xl" style={{ fontFamily: 'Baskerville, serif' }}>
+                    Urú
+                  </span>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
