@@ -465,10 +465,7 @@ class SyntheticDataGenerator:
             ("mod-inquiries", "inquiries", "Atendimento", "Sistema de atendimento ao cliente (SAC)", "marketing", '["customers"]', '["inquiries"]'),
         ]
 
-        # Módulos Opcionais - Analytics
-        analytics_modules = [
-            ("mod-analytics", "analytics", "Analytics", "Analytics e relatórios (sempre disponível)", "analytics", "[]"),
-        ]
+
 
         count = 0
 
@@ -580,33 +577,6 @@ class SyntheticDataGenerator:
             )
             count += 1
 
-        # Insert analytics modules
-        for module_id, code, name, description, category, tables_used in analytics_modules:
-            cursor.execute(
-                """
-                INSERT OR IGNORE INTO modules (id, code, name, description, category, tables_used,
-                    required_modules, conflicts_with, is_core, version, metadata, _status, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-                (
-                    module_id,
-                    code,
-                    name,
-                    description,
-                    category,
-                    tables_used,
-                    "[]",
-                    "[]",
-                    0,
-                    "1.0.0",
-                    "{}",
-                    "created",
-                    self._timestamp(365),
-                    self._timestamp(30),
-                ),
-            )
-            count += 1
-
         print(f"  ✓ Generated {count} modules")
 
     def generate_shop_templates(self, cursor: sqlite3.Cursor):
@@ -618,7 +588,7 @@ class SyntheticDataGenerator:
                 "Loja Virtual",
                 "Loja online com checkout, estoque e entregas",
                 "ecommerce",
-                '{"products": true, "customers": true, "transactions": true, "orders": true, "payments": true, "shipping": true, "checkout": true, "inventory": true, "inquiries": true, "reviews": true, "analytics": true, "pos": false, "locations": false}',
+                '{"products": true, "customers": true, "transactions": true, "orders": true, "payments": true, "shipping": true, "checkout": true, "inventory": true, "inquiries": true, "reviews": true, "pos": false, "locations": false}',
                 '{"allow_guest_checkout": true, "require_shipping": true}',
                 '["shipping", "checkout", "inventory", "reviews", "inquiries"]',
             ),
@@ -628,7 +598,7 @@ class SyntheticDataGenerator:
                 "Loja Física",
                 "Loja física com PDV e controle de estoque",
                 "retail",
-                '{"products": true, "customers": true, "transactions": true, "orders": true, "payments": true, "pos": true, "inventory": true, "locations": true, "inquiries": true, "analytics": true, "shipping": false, "checkout": false, "reviews": false}',
+                '{"products": true, "customers": true, "transactions": true, "orders": true, "payments": true, "pos": true, "inventory": true, "locations": true, "inquiries": true, "shipping": false, "checkout": false, "reviews": false}',
                 '{"require_shipping": false, "allow_offline_sales": true}',
                 '["pos", "inventory", "locations"]',
             ),
@@ -638,7 +608,7 @@ class SyntheticDataGenerator:
                 "Marketplace",
                 "Marketplace multi-vendedor completo",
                 "ecommerce",
-                '{"products": true, "customers": true, "transactions": true, "orders": true, "payments": true, "shipping": true, "checkout": true, "inventory": true, "locations": true, "inquiries": true, "reviews": true, "analytics": true, "pos": false}',
+                '{"products": true, "customers": true, "transactions": true, "orders": true, "payments": true, "shipping": true, "checkout": true, "inventory": true, "locations": true, "inquiries": true, "reviews": true, "pos": false}',
                 '{"multi_vendor": true, "allow_guest_checkout": true, "require_shipping": true}',
                 '["shipping", "checkout", "inventory", "locations", "reviews", "inquiries"]',
             ),
@@ -648,7 +618,7 @@ class SyntheticDataGenerator:
                 "Loja Híbrida",
                 "Loja física e virtual com todos os recursos",
                 "retail",
-                '{"products": true, "customers": true, "transactions": true, "orders": true, "payments": true, "shipping": true, "checkout": true, "inventory": true, "pos": true, "locations": true, "inquiries": true, "reviews": true, "analytics": true}',
+                '{"products": true, "customers": true, "transactions": true, "orders": true, "payments": true, "shipping": true, "checkout": true, "inventory": true, "pos": true, "locations": true, "inquiries": true, "reviews": true}',
                 '{"allow_guest_checkout": true, "require_shipping": true, "allow_offline_sales": true}',
                 '["shipping", "checkout", "inventory", "pos", "locations", "reviews", "inquiries"]',
             ),
@@ -658,7 +628,7 @@ class SyntheticDataGenerator:
                 "Consultoria",
                 "Serviços e consultoria sem necessidade de estoque ou entrega",
                 "services",
-                '{"products": true, "customers": true, "transactions": true, "orders": true, "payments": true, "inquiries": true, "analytics": true, "shipping": false, "inventory": false, "checkout": false, "pos": false, "reviews": false, "locations": false}',
+                '{"products": true, "customers": true, "transactions": true, "orders": true, "payments": true, "inquiries": true, "shipping": false, "inventory": false, "checkout": false, "pos": false, "reviews": false, "locations": false}',
                 '{"product_type_default": "service", "require_shipping": false}',
                 '["inquiries"]',
             ),
@@ -668,7 +638,7 @@ class SyntheticDataGenerator:
                 "Aula Virtual",
                 "Plataforma de educação e cursos online",
                 "education",
-                '{"products": true, "customers": true, "transactions": true, "orders": true, "payments": true, "checkout": true, "inquiries": true, "reviews": true, "analytics": true, "shipping": false, "inventory": false, "pos": false, "locations": false}',
+                '{"products": true, "customers": true, "transactions": true, "orders": true, "payments": true, "checkout": true, "inquiries": true, "reviews": true, "shipping": false, "inventory": false, "pos": false, "locations": false}',
                 '{"product_type_default": "digital", "require_shipping": false, "allow_guest_checkout": false}',
                 '["checkout", "reviews", "inquiries"]',
             ),
