@@ -65,7 +65,7 @@ export function RatingDistributionBarChart() {
     const fullData = [5, 4, 3, 2, 1].map((rating) => {
       const existing = data.find((d) => d.rating === rating)
       return {
-        rating: `${rating} ⭐`,
+        rating: `${rating} `,
         ratingNum: rating,
         count: existing?.count ?? 0,
         percentage: existing?.percentage ?? 0,
