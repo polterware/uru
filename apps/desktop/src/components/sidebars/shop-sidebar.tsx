@@ -14,6 +14,7 @@ import {
   Package,
   Plus,
   Receipt,
+  Settings,
   ShoppingCart,
   Star,
   Tag,
@@ -27,6 +28,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -202,7 +204,7 @@ export function ShopSidebar() {
 
     return (
       <SidebarMenuItem key={module.code}>
-        <Collapsible defaultOpen className="group/collapsible">
+        <Collapsible className="group/collapsible">
           <CollapsibleTrigger asChild>
             <SidebarMenuButton tooltip={module.title}>
               <ModuleIcon className="size-4" />
@@ -245,12 +247,23 @@ export function ShopSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
+            <SidebarGroupLabel>General</SidebarGroupLabel>
             {/* Dashboard */}
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link to={buildUrl("/shops/$shopId")}>
                   <Home className="size-4" />
                   <span>Dashboard</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarGroupLabel>Modules</SidebarGroupLabel>
+            {/* Add Module */}
+            <SidebarMenuItem>
+              <SidebarMenuButton variant={"outline"} asChild>
+                <Link to={buildUrl("/shops/$shopId/add-module")}>
+                  <Settings className="size-4" />
+                  <span>Manage Modules</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -267,16 +280,7 @@ export function ShopSidebar() {
             {/* Marketing Modules */}
             {enabledMarketing.map((module) => renderModule(module))}
 
-            {/* Add Module */}
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link to={buildUrl("/shops/$shopId/add-module")}>
-                  <Plus className="size-4" />
-                  <span>Add Module</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
+            <SidebarGroupLabel>Settings</SidebarGroupLabel>
             {/* Shop Settings */}
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
