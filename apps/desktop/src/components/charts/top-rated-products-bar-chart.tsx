@@ -90,16 +90,7 @@ export function TopRatedProductsBarChart() {
     )
   }
 
-  if (chartData.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Produtos Mais Bem Avaliados</CardTitle>
-          <CardDescription>Nenhum produto com reviews encontrado</CardDescription>
-        </CardHeader>
-      </Card>
-    )
-  }
+
 
   return (
     <Card className="py-0">
@@ -153,66 +144,72 @@ export function TopRatedProductsBarChart() {
         </div>
       </CardHeader>
       <CardContent className="px-2 sm:p-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[300px] w-full"
-        >
-          <BarChart
-            accessibilityLayer
-            data={chartData}
-            layout="vertical"
-            margin={{
-              left: 12,
-              right: 12,
-              top: 12,
-              bottom: 12,
-            }}
+        {chartData.length === 0 ? (
+          <div className="flex h-[300px] items-center justify-center">
+            <p className="text-muted-foreground">Nenhum produto com reviews encontrado</p>
+          </div>
+        ) : (
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-[300px] w-full"
           >
-            <XAxis type="number" domain={[0, 5]} tickLine={false} axisLine={false} />
-            <YAxis
-              dataKey="productName"
-              type="category"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              width={150}
-              tickFormatter={(value) => {
-                return value.length > 20 ? `${value.substring(0, 20)}...` : value
+            <BarChart
+              accessibilityLayer
+              data={chartData}
+              layout="vertical"
+              margin={{
+                left: 12,
+                right: 12,
+                top: 12,
+                bottom: 12,
               }}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  className="w-[200px]"
-                  formatter={(value, name) => {
-                    if (name === "averageRating") {
-                      return `${Number(value).toFixed(1)} ⭐`
-                    }
-                    return value
-                  }}
-                  labelFormatter={(value) => {
-                    const product = chartData.find((p) => p.productName === value)
-                    return (
-                      <div>
-                        <div className="font-semibold">{value}</div>
-                        {product && (
-                          <div className="text-xs text-muted-foreground">
-                            {product.reviewCount} avaliações • #{product.ratingRank}
-                          </div>
-                        )}
-                      </div>
-                    )
-                  }}
-                />
-              }
-            />
-            <Bar
-              dataKey="averageRating"
-              fill="var(--color-averageRating)"
-              radius={[0, 4, 4, 0]}
-            />
-          </BarChart>
-        </ChartContainer>
+            >
+              <XAxis type="number" domain={[0, 5]} tickLine={false} axisLine={false} />
+              <YAxis
+                dataKey="productName"
+                type="category"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                width={150}
+                tickFormatter={(value) => {
+                  return value.length > 20 ? `${value.substring(0, 20)}...` : value
+                }}
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    className="w-[200px]"
+                    formatter={(value, name) => {
+                      if (name === "averageRating") {
+                        return `${Number(value).toFixed(1)} ⭐`
+                      }
+                      return value
+                    }}
+                    labelFormatter={(value) => {
+                      const product = chartData.find((p) => p.productName === value)
+                      return (
+                        <div>
+                          <div className="font-semibold">{value}</div>
+                          {product && (
+                            <div className="text-xs text-muted-foreground">
+                              {product.reviewCount} avaliações • #{product.ratingRank}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    }}
+                  />
+                }
+              />
+              <Bar
+                dataKey="averageRating"
+                fill="var(--color-averageRating)"
+                radius={[0, 4, 4, 0]}
+              />
+            </BarChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   )
