@@ -10,6 +10,10 @@ export const CustomerGroupsRepository = {
     return invoke('list_customer_groups')
   },
 
+  async listByShop(shopId: string): Promise<CustomerGroup[]> {
+    return invoke('list_customer_groups_by_shop', { shopId })
+  },
+
   async getById(id: string): Promise<CustomerGroup | null> {
     return invoke('get_customer_group', { id })
   },

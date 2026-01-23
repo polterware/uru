@@ -6,6 +6,7 @@ use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateCustomerDTO {
+    pub shop_id: String, // Required for multi-tenancy
     pub r#type: String,
     pub email: Option<String>,
     pub phone: Option<String>,
@@ -35,6 +36,7 @@ impl CreateCustomerDTO {
 
         let customer = Customer {
             id: customer_id.clone(),
+            shop_id: self.shop_id,
             r#type: self.r#type,
             email: self.email,
             phone: self.phone,
@@ -103,6 +105,7 @@ impl CreateCustomerDTO {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateCustomerDTO {
     pub id: String,
+    pub shop_id: String, // Required for multi-tenancy verification
     pub r#type: Option<String>,
     pub email: Option<String>,
     pub phone: Option<String>,
@@ -128,6 +131,7 @@ impl UpdateCustomerDTO {
         let now = Utc::now();
         Customer {
             id: self.id,
+            shop_id: self.shop_id,
             r#type: self.r#type.unwrap_or_else(|| "individual".to_string()),
             email: self.email,
             phone: self.phone,
@@ -149,7 +153,7 @@ impl UpdateCustomerDTO {
             notes: self.notes,
             metadata: self.metadata,
             custom_attributes: self.custom_attributes,
-            sync_status: Some("updated".to_string()),
+            sync_status: Some("modified".to_string()),
             created_at: None,
             updated_at: Some(now),
         }

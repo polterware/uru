@@ -22,9 +22,10 @@ impl LocationService {
     }
 
     pub async fn update_location(&self, payload: UpdateLocationDTO) -> Result<Location, String> {
+        let shop_id = payload.shop_id.clone();
         let existing = self
             .repo
-            .get_by_id(&payload.id)
+            .get_by_id_for_shop(&shop_id, &payload.id)
             .await
             .map_err(|e| format!("Failed to fetch location: {}", e))?
             .ok_or_else(|| format!("Location not found: {}", payload.id))?;
@@ -36,31 +37,38 @@ impl LocationService {
             .map_err(|e| format!("Failed to update location: {}", e))
     }
 
-    pub async fn delete_location(&self, id: &str) -> Result<(), String> {
+    pub async fn delete_location(&self, shop_id: &str, id: &str) -> Result<(), String> {
         self.repo
-            .delete(id)
+            .delete(shop_id, id)
             .await
             .map_err(|e| format!("Failed to delete location: {}", e))
     }
 
-    pub async fn get_location(&self, id: &str) -> Result<Option<Location>, String> {
+    pub async fn get_location(&self, shop_id: &str, id: &str) -> Result<Option<Location>, String> {
         self.repo
-            .get_by_id(id)
+            .get_by_id_for_shop(shop_id, id)
             .await
             .map_err(|e| format!("Failed to fetch location: {}", e))
     }
 
-    pub async fn list_locations(&self) -> Result<Vec<Location>, String> {
+    pub async fn list_locations(&self, shop_id: &str) -> Result<Vec<Location>, String> {
         self.repo
-            .get_all()
+            .list_by_shop(shop_id)
             .await
             .map_err(|e| format!("Failed to list locations: {}", e))
     }
 
-    pub async fn get_shop_locations(&self, shop_id: &str) -> Result<Vec<Location>, String> {
+    pub async fn list_locations_by_type(&self, shop_id: &str, location_type: &str) -> Result<Vec<Location>, String> {
         self.repo
-            .list_by_shop(shop_id)
+            .list_by_type(shop_id, location_type)
             .await
-            .map_err(|e| format!("Failed to list shop locations: {}", e))
+            .map_err(|e| format!("Failed to list locations by type: {}", e))
+    }
+
+    pub async fn list_sellable_locations(&self, shop_id: &str) -> Result<Vec<Location>, String> {
+        self.repo
+            .list_sellable(shop_id)
+            .await
+            .map_err(|e| format!("Failed to list sellable locations: {}", e))
     }
 }

@@ -76,18 +76,19 @@ CREATE TABLE IF NOT EXISTS categories (
     UNIQUE (shop_id, slug)
 );
 
--- 4. Produtos (Depende de Brands, Categories)
+-- 4. Produtos (Depende de Shops, Brands, Categories)
 CREATE TABLE IF NOT EXISTS products (
     id TEXT PRIMARY KEY,
-    sku TEXT UNIQUE NOT NULL,
+    shop_id TEXT NOT NULL REFERENCES shops(id) ON DELETE RESTRICT, -- Multi-tenancy
+    sku TEXT NOT NULL,
     type TEXT NOT NULL CHECK (type IN ('physical', 'digital', 'service', 'bundle')),
     status TEXT DEFAULT 'draft',
     name TEXT NOT NULL,
-    slug TEXT UNIQUE,
+    slug TEXT NOT NULL,
     gtin_ean TEXT,
-    price REAL NOT NULL,
-    promotional_price REAL,
-    cost_price REAL,
+    price REAL NOT NULL CHECK (price >= 0),
+    promotional_price REAL CHECK (promotional_price IS NULL OR promotional_price >= 0),
+    cost_price REAL CHECK (cost_price IS NULL OR cost_price >= 0),
     currency TEXT DEFAULT 'BRL',
     tax_ncm TEXT,
     is_shippable INTEGER DEFAULT 1,
@@ -100,9 +101,11 @@ CREATE TABLE IF NOT EXISTS products (
     category_id TEXT REFERENCES categories(id) ON DELETE SET NULL, -- Produto sem categoria é válido
     brand_id TEXT REFERENCES brands(id) ON DELETE SET NULL, -- Produto sem marca é válido
     parent_id TEXT REFERENCES products(id) ON DELETE SET NULL, -- Variante órfã vira produto principal
-    _status TEXT DEFAULT 'created',
+    _status TEXT DEFAULT 'created' CHECK (_status IN ('created', 'synced', 'modified', 'deleted')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (shop_id, sku),  -- SKU único por loja
+    UNIQUE (shop_id, slug)  -- Slug único por loja
 );
 
 -- 5. Product Categories (Join Table) - CASCADE em ambos
@@ -116,16 +119,18 @@ CREATE TABLE IF NOT EXISTS product_categories (
     PRIMARY KEY (product_id, category_id)
 );
 
--- 6. Locais
+-- 6. Locais (Depende de Shops)
 CREATE TABLE IF NOT EXISTS locations (
     id TEXT PRIMARY KEY,
+    shop_id TEXT NOT NULL REFERENCES shops(id) ON DELETE RESTRICT, -- Multi-tenancy
     name TEXT NOT NULL,
     type TEXT NOT NULL CHECK (type IN ('warehouse', 'store', 'transit', 'virtual')),
     is_sellable INTEGER DEFAULT 1,
     address_data TEXT, -- JSONB
-    _status TEXT DEFAULT 'created',
+    _status TEXT DEFAULT 'created' CHECK (_status IN ('created', 'synced', 'modified', 'deleted')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (shop_id, name)  -- Nome único por loja
 );
 
 -- 7. Níveis de Estoque (Inventory Levels)
@@ -147,11 +152,12 @@ CREATE TABLE IF NOT EXISTS inventory_levels (
     UNIQUE (product_id, location_id, batch_number, serial_number, stock_status)
 );
 
--- 8. Clientes
+-- 8. Clientes (Depende de Shops)
 CREATE TABLE IF NOT EXISTS customers (
     id TEXT PRIMARY KEY,
-    type TEXT NOT NULL DEFAULT 'individual',
-    email TEXT UNIQUE,
+    shop_id TEXT NOT NULL REFERENCES shops(id) ON DELETE RESTRICT, -- Multi-tenancy
+    type TEXT NOT NULL DEFAULT 'individual' CHECK (type IN ('individual', 'company')),
+    email TEXT,
     phone TEXT,
     first_name TEXT,
     last_name TEXT,
@@ -159,21 +165,23 @@ CREATE TABLE IF NOT EXISTS customers (
     tax_id TEXT,
     tax_id_type TEXT,
     state_tax_id TEXT,
-    status TEXT DEFAULT 'active',
+    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'blocked')),
     currency TEXT DEFAULT 'BRL',
     language TEXT DEFAULT 'pt',
     tags TEXT, -- TEXT[]
     accepts_marketing INTEGER DEFAULT 0,
-    customer_group_id TEXT, -- FK definida após customer_groups
-    total_spent REAL DEFAULT 0,
-    orders_count INTEGER DEFAULT 0,
+    customer_group_id TEXT REFERENCES customer_groups(id) ON DELETE SET NULL, -- FK para grupos
+    total_spent REAL DEFAULT 0 CHECK (total_spent >= 0),
+    orders_count INTEGER DEFAULT 0 CHECK (orders_count >= 0),
     last_order_at DATETIME,
     notes TEXT,
     metadata TEXT, -- JSONB
     custom_attributes TEXT, -- JSONB
-    _status TEXT DEFAULT 'created',
+    _status TEXT DEFAULT 'created' CHECK (_status IN ('created', 'synced', 'modified', 'deleted')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (shop_id, email),  -- Email único por loja
+    UNIQUE (shop_id, tax_id)  -- CPF/CNPJ único por loja
 );
 
 -- 9. Grupos de Clientes (Customer Groups) - Depende de Shops
@@ -252,24 +260,25 @@ CREATE TABLE IF NOT EXISTS users (
     status TEXT DEFAULT 'active'
 );
 
--- 13. Transações (Transactions)
+-- 13. Transações (Transactions) - Depende de Shops
 CREATE TABLE IF NOT EXISTS transactions (
     id TEXT PRIMARY KEY,
+    shop_id TEXT NOT NULL REFERENCES shops(id) ON DELETE RESTRICT, -- Multi-tenancy
     type TEXT NOT NULL CHECK (type IN ('sale', 'purchase', 'transfer', 'return', 'adjustment')),
-    status TEXT NOT NULL DEFAULT 'draft',
+    status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'pending', 'completed', 'cancelled', 'failed')),
     channel TEXT,
     customer_id TEXT REFERENCES customers(id) ON DELETE SET NULL, -- Manter transação sem cliente
     supplier_id TEXT, -- Sem tabela de suppliers definida no DDL
     staff_id TEXT REFERENCES users(id) ON DELETE SET NULL, -- Manter transação sem staff
     currency TEXT DEFAULT 'BRL',
-    total_items REAL DEFAULT 0,
-    total_shipping REAL DEFAULT 0,
-    total_discount REAL DEFAULT 0,
+    total_items REAL DEFAULT 0 CHECK (total_items >= 0),
+    total_shipping REAL DEFAULT 0 CHECK (total_shipping >= 0),
+    total_discount REAL DEFAULT 0 CHECK (total_discount >= 0),
     total_net REAL DEFAULT 0,
     shipping_method TEXT,
     shipping_address TEXT, -- JSONB
     billing_address TEXT,  -- JSONB
-    _status TEXT DEFAULT 'created',
+    _status TEXT DEFAULT 'created' CHECK (_status IN ('created', 'synced', 'modified', 'deleted')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -558,27 +567,29 @@ CREATE TABLE IF NOT EXISTS user_roles (
     PRIMARY KEY (user_id, role_id)
 );
 
--- 27. Inquéritos (Inquiries)
+-- 27. Inquéritos (Inquiries) - Depende de Shops
 CREATE TABLE IF NOT EXISTS inquiries (
     id TEXT PRIMARY KEY,
-    protocol_number TEXT UNIQUE NOT NULL,
-    type TEXT DEFAULT 'general',
-    status TEXT DEFAULT 'new',
-    priority TEXT DEFAULT 'normal',
-    source TEXT DEFAULT 'web_form',
+    shop_id TEXT NOT NULL REFERENCES shops(id) ON DELETE RESTRICT, -- Multi-tenancy
+    protocol_number TEXT NOT NULL,
+    type TEXT DEFAULT 'general' CHECK (type IN ('general', 'support', 'complaint', 'return', 'exchange', 'question')),
+    status TEXT DEFAULT 'new' CHECK (status IN ('new', 'open', 'pending', 'resolved', 'closed')),
+    priority TEXT DEFAULT 'normal' CHECK (priority IN ('low', 'normal', 'high', 'urgent')),
+    source TEXT DEFAULT 'web_form' CHECK (source IN ('web_form', 'email', 'phone', 'chat', 'social', 'in_store')),
     customer_id TEXT REFERENCES customers(id) ON DELETE SET NULL,
     requester_data TEXT NOT NULL, -- JSONB
     department TEXT,
     assigned_staff_id TEXT REFERENCES users(id) ON DELETE SET NULL, -- Inquiry sem responsável
     subject TEXT,
-    related_order_id TEXT,
-    related_product_id TEXT,
+    related_order_id TEXT REFERENCES orders(id) ON DELETE SET NULL,
+    related_product_id TEXT REFERENCES products(id) ON DELETE SET NULL,
     metadata TEXT, -- JSONB
     sla_due_at DATETIME,
     resolved_at DATETIME,
-    _status TEXT DEFAULT 'created',
+    _status TEXT DEFAULT 'created' CHECK (_status IN ('created', 'synced', 'modified', 'deleted')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (shop_id, protocol_number)  -- Protocolo único por loja
 );
 
 -- 28. Mensagens de Inquérito - CASCADE ao deletar inquiry
@@ -945,13 +956,19 @@ END;
 -- ============================================================
 
 -- Índices para buscas frequentes
-CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku);
-CREATE INDEX IF NOT EXISTS idx_products_status ON products(status) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_products_shop ON products(shop_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_products_sku ON products(shop_id, sku) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_products_slug ON products(shop_id, slug) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_products_status ON products(shop_id, status) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand_id) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_products_parent ON products(parent_id) WHERE _status != 'deleted';
-CREATE INDEX IF NOT EXISTS idx_products_type ON products(type) WHERE _status != 'deleted';
-CREATE INDEX IF NOT EXISTS idx_products_created ON products(created_at) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_products_type ON products(shop_id, type) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_products_created ON products(shop_id, created_at) WHERE _status != 'deleted';
+
+CREATE INDEX IF NOT EXISTS idx_locations_shop ON locations(shop_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_locations_type ON locations(shop_id, type) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_locations_name ON locations(shop_id, name) WHERE _status != 'deleted';
 
 CREATE INDEX IF NOT EXISTS idx_inventory_levels_product ON inventory_levels(product_id) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_inventory_levels_location ON inventory_levels(location_id) WHERE _status != 'deleted';
@@ -960,16 +977,19 @@ CREATE INDEX IF NOT EXISTS idx_inventory_levels_expiry ON inventory_levels(expir
 CREATE INDEX IF NOT EXISTS idx_inventory_levels_serial ON inventory_levels(serial_number) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_inventory_levels_batch ON inventory_levels(batch_number) WHERE _status != 'deleted';
 
-CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email) WHERE _status != 'deleted';
-CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone) WHERE _status != 'deleted';
-CREATE INDEX IF NOT EXISTS idx_customers_status ON customers(status) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_customers_shop ON customers(shop_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(shop_id, email) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(shop_id, phone) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_customers_status ON customers(shop_id, status) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_customers_tax_id ON customers(shop_id, tax_id) WHERE _status != 'deleted';
 
-CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type) WHERE _status != 'deleted';
-CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(status) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_transactions_shop ON transactions(shop_id) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(shop_id, type) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(shop_id, status) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_transactions_customer ON transactions(customer_id) WHERE _status != 'deleted';
-CREATE INDEX IF NOT EXISTS idx_transactions_created ON transactions(created_at) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_transactions_created ON transactions(shop_id, created_at) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_transactions_staff ON transactions(staff_id) WHERE _status != 'deleted';
-CREATE INDEX IF NOT EXISTS idx_transactions_channel ON transactions(channel) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_transactions_channel ON transactions(shop_id, channel) WHERE _status != 'deleted';
 
 CREATE INDEX IF NOT EXISTS idx_orders_customer ON orders(customer_id) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status) WHERE _status != 'deleted';
@@ -1003,8 +1023,12 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON users(email) WHERE _status != 'del
 CREATE INDEX IF NOT EXISTS idx_user_sessions_token_hash ON user_sessions(token_hash) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_user_sessions_user ON user_sessions(user_id) WHERE _status != 'deleted';
 
+CREATE INDEX IF NOT EXISTS idx_inquiries_shop ON inquiries(shop_id) WHERE _status != 'deleted';
 CREATE INDEX IF NOT EXISTS idx_inquiries_customer ON inquiries(customer_id) WHERE _status != 'deleted';
-CREATE INDEX IF NOT EXISTS idx_inquiries_status ON inquiries(status) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_inquiries_status ON inquiries(shop_id, status) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_inquiries_protocol ON inquiries(shop_id, protocol_number) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_inquiries_priority ON inquiries(shop_id, priority) WHERE _status != 'deleted';
+CREATE INDEX IF NOT EXISTS idx_inquiries_assigned ON inquiries(assigned_staff_id) WHERE _status != 'deleted';
 
 CREATE INDEX IF NOT EXISTS idx_inquiry_messages_inquiry ON inquiry_messages(inquiry_id) WHERE _status != 'deleted';
 
@@ -1023,21 +1047,6 @@ CREATE INDEX IF NOT EXISTS idx_customer_groups_shop ON customer_groups(shop_id) 
 
 CREATE INDEX IF NOT EXISTS idx_audit_logs_table ON audit_logs(table_name, created_at);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_record ON audit_logs(record_id);
-
--- ============================================================
--- TABELA DE CONFIGURACOES (Settings)
--- ============================================================
-
-CREATE TABLE IF NOT EXISTS settings (
-    id TEXT PRIMARY KEY,
-    key TEXT UNIQUE NOT NULL,
-    value TEXT,
-    _status TEXT DEFAULT 'created',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX IF NOT EXISTS idx_settings_key ON settings(key) WHERE _status != 'deleted';
 
 -- ============================================================
 -- TABELA DE MODULOS (Modules) - Sistema de Módulos

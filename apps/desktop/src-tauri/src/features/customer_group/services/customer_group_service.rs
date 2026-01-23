@@ -72,4 +72,11 @@ impl CustomerGroupService {
             .await
             .map_err(|e| format!("Failed to list customer groups: {}", e))
     }
+
+    pub async fn list_groups_by_shop(&self, shop_id: &str) -> Result<Vec<CustomerGroup>, String> {
+        self.repo
+            .list_by_shop(shop_id)
+            .await
+            .map_err(|e| format!("Failed to list customer groups by shop: {}", e))
+    }
 }

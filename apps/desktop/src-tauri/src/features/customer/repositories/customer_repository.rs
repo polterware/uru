@@ -14,21 +14,22 @@ impl CustomerRepository {
     pub async fn create(&self, customer: Customer) -> Result<Customer> {
         let sql = r#"
             INSERT INTO customers (
-                id, type, email, phone, first_name, last_name, company_name,
+                id, shop_id, type, email, phone, first_name, last_name, company_name,
                 tax_id, tax_id_type, state_tax_id, status, currency, language,
                 tags, accepts_marketing, customer_group_id, total_spent,
                 orders_count, last_order_at, notes, metadata, custom_attributes,
                 _status, created_at, updated_at
             ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
-                $14, $15, $16, $17, $18, $19, $20, $21, $22,
-                $23, $24, $25
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,
+                $15, $16, $17, $18, $19, $20, $21, $22, $23,
+                $24, $25, $26
             )
             RETURNING *
         "#;
 
         sqlx::query_as::<_, Customer>(sql)
             .bind(&customer.id)
+            .bind(&customer.shop_id)
             .bind(&customer.r#type)
             .bind(&customer.email)
             .bind(&customer.phone)
@@ -140,10 +141,9 @@ impl CustomerRepository {
 
     pub async fn list_by_shop(&self, shop_id: &str) -> Result<Vec<Customer>> {
         let sql = r#"
-            SELECT DISTINCT c.* FROM customers c
-            INNER JOIN orders o ON o.customer_id = c.id
-            WHERE o.shop_id = $1
-            ORDER BY c.created_at DESC
+            SELECT * FROM customers
+            WHERE shop_id = $1 AND _status != 'deleted'
+            ORDER BY created_at DESC
         "#;
         sqlx::query_as::<_, Customer>(sql)
             .bind(shop_id)
@@ -151,18 +151,60 @@ impl CustomerRepository {
             .await
     }
 
-    pub async fn search(&self, query_str: &str) -> Result<Vec<Customer>> {
+    pub async fn search(&self, shop_id: &str, query_str: &str) -> Result<Vec<Customer>> {
         let sql = r#"
             SELECT * FROM customers
-            WHERE first_name LIKE $1
-               OR last_name LIKE $1
-               OR email LIKE $1
-               OR company_name LIKE $1
+            WHERE shop_id = $1
+              AND _status != 'deleted'
+              AND (first_name LIKE $2
+                   OR last_name LIKE $2
+                   OR email LIKE $2
+                   OR company_name LIKE $2
+                   OR tax_id LIKE $2
+                   OR phone LIKE $2)
+            ORDER BY created_at DESC
         "#;
         let search_pattern = format!("%{}%", query_str);
         sqlx::query_as::<_, Customer>(sql)
+            .bind(shop_id)
             .bind(search_pattern)
             .fetch_all(&self.pool)
+            .await
+    }
+
+    /// Get a customer by ID, ensuring it belongs to the specified shop
+    pub async fn get_by_id_for_shop(&self, shop_id: &str, id: &str) -> Result<Option<Customer>> {
+        let sql = "SELECT * FROM customers WHERE id = $1 AND shop_id = $2 AND _status != 'deleted'";
+        sqlx::query_as::<_, Customer>(sql)
+            .bind(id)
+            .bind(shop_id)
+            .fetch_optional(&self.pool)
+            .await
+    }
+
+    /// Find customer by email within a shop
+    pub async fn find_by_email(&self, shop_id: &str, email: &str) -> Result<Option<Customer>> {
+        let sql = r#"
+            SELECT * FROM customers
+            WHERE shop_id = $1 AND email = $2 AND _status != 'deleted'
+        "#;
+        sqlx::query_as::<_, Customer>(sql)
+            .bind(shop_id)
+            .bind(email)
+            .fetch_optional(&self.pool)
+            .await
+    }
+
+    /// Find customer by tax_id (CPF/CNPJ) within a shop
+    pub async fn find_by_tax_id(&self, shop_id: &str, tax_id: &str) -> Result<Option<Customer>> {
+        let sql = r#"
+            SELECT * FROM customers
+            WHERE shop_id = $1 AND tax_id = $2 AND _status != 'deleted'
+        "#;
+        sqlx::query_as::<_, Customer>(sql)
+            .bind(shop_id)
+            .bind(tax_id)
+            .fetch_optional(&self.pool)
             .await
     }
 

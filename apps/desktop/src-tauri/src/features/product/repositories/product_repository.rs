@@ -13,18 +13,19 @@ impl ProductRepository {
     pub async fn create(&self, product: Product) -> Result<Product> {
         let sql = r#"
             INSERT INTO products (
-                id, sku, type, status, name, slug, gtin_ean, price, promotional_price, cost_price,
+                id, shop_id, sku, type, status, name, slug, gtin_ean, price, promotional_price, cost_price,
                 currency, tax_ncm, is_shippable, weight_g, width_mm, height_mm, depth_mm,
                 attributes, metadata, category_id, brand_id, parent_id, _status, created_at, updated_at
             ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
-                $18, $19, $20, $21, $22, $23, $24, $25
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18,
+                $19, $20, $21, $22, $23, $24, $25, $26
             )
             RETURNING *
         "#;
 
         sqlx::query_as::<_, Product>(sql)
             .bind(&product.id)
+            .bind(&product.shop_id)
             .bind(&product.sku)
             .bind(&product.r#type)
             .bind(&product.status)
@@ -60,18 +61,19 @@ impl ProductRepository {
     ) -> Result<Product> {
         let sql = r#"
             INSERT INTO products (
-                id, sku, type, status, name, slug, gtin_ean, price, promotional_price, cost_price,
+                id, shop_id, sku, type, status, name, slug, gtin_ean, price, promotional_price, cost_price,
                 currency, tax_ncm, is_shippable, weight_g, width_mm, height_mm, depth_mm,
                 attributes, metadata, category_id, brand_id, parent_id, _status, created_at, updated_at
             ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
-                $18, $19, $20, $21, $22, $23, $24, $25
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18,
+                $19, $20, $21, $22, $23, $24, $25, $26
             )
             RETURNING *
         "#;
 
         sqlx::query_as::<_, Product>(sql)
             .bind(&product.id)
+            .bind(&product.shop_id)
             .bind(&product.sku)
             .bind(&product.r#type)
             .bind(&product.status)
@@ -183,11 +185,9 @@ impl ProductRepository {
 
     pub async fn list_by_shop(&self, shop_id: &str) -> Result<Vec<Product>> {
         let sql = r#"
-            SELECT p.* FROM products p
-            LEFT JOIN categories c ON c.id = p.category_id
-            LEFT JOIN brands b ON b.id = p.brand_id
-            WHERE c.shop_id = $1 OR b.shop_id = $1
-            ORDER BY p.created_at DESC
+            SELECT * FROM products
+            WHERE shop_id = $1 AND _status != 'deleted'
+            ORDER BY created_at DESC
         "#;
         sqlx::query_as::<_, Product>(sql)
             .bind(shop_id)
@@ -198,7 +198,7 @@ impl ProductRepository {
     #[allow(clippy::too_many_arguments)]
     pub async fn list_filtered(
         &self,
-        shop_id: Option<&str>,
+        shop_id: &str, // Now required for proper multi-tenancy
         status: Option<&str>,
         category_id: Option<&str>,
         brand_id: Option<&str>,
@@ -210,62 +210,53 @@ impl ProductRepository {
         offset: i64,
     ) -> Result<Vec<Product>> {
         let mut builder = QueryBuilder::<Sqlite>::new(
-            "SELECT p.* FROM products p \
-             LEFT JOIN categories c ON c.id = p.category_id \
-             LEFT JOIN brands b ON b.id = p.brand_id \
-             WHERE 1 = 1",
+            "SELECT * FROM products WHERE shop_id = ",
         );
-
-        if let Some(shop_id) = shop_id {
-            builder.push(" AND (c.shop_id = ");
-            builder.push_bind(shop_id);
-            builder.push(" OR b.shop_id = ");
-            builder.push_bind(shop_id);
-            builder.push(")");
-        }
+        builder.push_bind(shop_id);
+        builder.push(" AND _status != 'deleted'");
 
         if let Some(status) = status {
-            builder.push(" AND p.status = ");
+            builder.push(" AND status = ");
             builder.push_bind(status);
         }
 
         if let Some(category_id) = category_id {
-            builder.push(" AND p.category_id = ");
+            builder.push(" AND category_id = ");
             builder.push_bind(category_id);
         }
 
         if let Some(brand_id) = brand_id {
-            builder.push(" AND p.brand_id = ");
+            builder.push(" AND brand_id = ");
             builder.push_bind(brand_id);
         }
 
         if let Some(query) = query {
             let pattern = format!("%{}%", query);
-            builder.push(" AND (p.name LIKE ");
+            builder.push(" AND (name LIKE ");
             builder.push_bind(pattern.clone());
-            builder.push(" OR p.sku LIKE ");
+            builder.push(" OR sku LIKE ");
             builder.push_bind(pattern.clone());
-            builder.push(" OR p.gtin_ean LIKE ");
+            builder.push(" OR gtin_ean LIKE ");
             builder.push_bind(pattern);
             builder.push(")");
         }
 
         if let Some(is_shippable) = is_shippable {
-            builder.push(" AND p.is_shippable = ");
+            builder.push(" AND is_shippable = ");
             builder.push_bind(is_shippable);
         }
 
         if let Some(min_price) = min_price {
-            builder.push(" AND p.price >= ");
+            builder.push(" AND price >= ");
             builder.push_bind(min_price);
         }
 
         if let Some(max_price) = max_price {
-            builder.push(" AND p.price <= ");
+            builder.push(" AND price <= ");
             builder.push_bind(max_price);
         }
 
-        builder.push(" ORDER BY p.created_at DESC");
+        builder.push(" ORDER BY created_at DESC");
         builder.push(" LIMIT ");
         builder.push_bind(limit);
         builder.push(" OFFSET ");
@@ -275,12 +266,29 @@ impl ProductRepository {
         query.fetch_all(&self.pool).await
     }
 
-    pub async fn search(&self, query_str: &str) -> Result<Vec<Product>> {
-        let sql = "SELECT * FROM products WHERE name LIKE $1 OR sku LIKE $1 OR gtin_ean LIKE $1";
+    pub async fn search(&self, shop_id: &str, query_str: &str) -> Result<Vec<Product>> {
+        let sql = r#"
+            SELECT * FROM products
+            WHERE shop_id = $1
+              AND _status != 'deleted'
+              AND (name LIKE $2 OR sku LIKE $2 OR gtin_ean LIKE $2)
+            ORDER BY created_at DESC
+        "#;
         let search_pattern = format!("%{}%", query_str);
         sqlx::query_as::<_, Product>(sql)
+            .bind(shop_id)
             .bind(search_pattern)
             .fetch_all(&self.pool)
+            .await
+    }
+
+    /// Get a product by ID, ensuring it belongs to the specified shop
+    pub async fn get_by_id_for_shop(&self, shop_id: &str, id: &str) -> Result<Option<Product>> {
+        let sql = "SELECT * FROM products WHERE id = $1 AND shop_id = $2 AND _status != 'deleted'";
+        sqlx::query_as::<_, Product>(sql)
+            .bind(id)
+            .bind(shop_id)
+            .fetch_optional(&self.pool)
             .await
     }
 }

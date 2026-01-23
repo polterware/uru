@@ -411,6 +411,8 @@ class SyntheticDataGenerator:
             location_id = self._uuid()
             self.location_ids.append(location_id)
 
+            shop_id = random.choice(self.shop_ids)
+
             address_data = {
                 "street": self.fake.street_address(),
                 "city": self.fake.city(),
@@ -421,12 +423,13 @@ class SyntheticDataGenerator:
 
             cursor.execute(
                 """
-                INSERT INTO locations (id, name, type, is_sellable, address_data,
+                INSERT INTO locations (id, shop_id, name, type, is_sellable, address_data,
                     _status, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 (
                     location_id,
+                    shop_id,
                     name,
                     loc_type,
                     1 if loc_type in ["warehouse", "store"] else 0,
@@ -947,20 +950,22 @@ class SyntheticDataGenerator:
             customer_id = self._uuid()
             self.customer_ids.append(customer_id)
 
+            shop_id = random.choice(self.shop_ids)
             customer_type = random.choice(["individual", "individual", "individual", "company"])
             is_company = customer_type == "company"
 
             cursor.execute(
                 """
-                INSERT INTO customers (id, type, email, phone, first_name, last_name,
+                INSERT INTO customers (id, shop_id, type, email, phone, first_name, last_name,
                     company_name, tax_id, tax_id_type, state_tax_id, status, currency,
                     language, tags, accepts_marketing, customer_group_id, total_spent,
                     orders_count, last_order_at, notes, metadata, custom_attributes,
                     _status, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 (
                     customer_id,
+                    shop_id,
                     customer_type,
                     self.fake.unique.email(),
                     self.fake.phone_number(),
@@ -1039,6 +1044,7 @@ class SyntheticDataGenerator:
             product_id = self._uuid()
             self.product_ids.append(product_id)
 
+            shop_id = random.choice(self.shop_ids)
             name = f"{random.choice(adjectives)} {random.choice(nouns)} {random.randint(100, 999)}"
             sku = f"SKU-{i:06d}"
             slug = self._slug(name) + f"-{i}"
@@ -1047,14 +1053,15 @@ class SyntheticDataGenerator:
 
             cursor.execute(
                 """
-                INSERT INTO products (id, sku, type, status, name, slug, gtin_ean, price,
+                INSERT INTO products (id, shop_id, sku, type, status, name, slug, gtin_ean, price,
                     promotional_price, cost_price, currency, tax_ncm, is_shippable,
                     weight_g, width_mm, height_mm, depth_mm, attributes, metadata,
                     category_id, brand_id, parent_id, _status, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 (
                     product_id,
+                    shop_id,
                     sku,
                     product_type,
                     random.choice(statuses),
@@ -1537,6 +1544,7 @@ class SyntheticDataGenerator:
             transaction_id = self._uuid()
             self.transaction_ids.append(transaction_id)
 
+            shop_id = random.choice(self.shop_ids)
             total_items = round(random.uniform(50, 5000), 2)
             total_shipping = round(random.uniform(0, 100), 2) if random.random() > 0.3 else 0
             total_discount = round(total_items * random.uniform(0, 0.2), 2) if random.random() > 0.5 else 0
@@ -1544,13 +1552,14 @@ class SyntheticDataGenerator:
 
             cursor.execute(
                 """
-                INSERT INTO transactions (id, type, status, channel, customer_id, supplier_id,
+                INSERT INTO transactions (id, shop_id, type, status, channel, customer_id, supplier_id,
                     staff_id, currency, total_items, total_shipping, total_discount, total_net,
                     shipping_method, shipping_address, billing_address, _status, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 (
                     transaction_id,
+                    shop_id,
                     random.choice(transaction_types),
                     random.choice(statuses),
                     random.choice(channels),
@@ -1684,7 +1693,7 @@ class SyntheticDataGenerator:
     def generate_inquiries(self, cursor: sqlite3.Cursor):
         """Generate inquiry records."""
         count = self.config["inquiries"]
-        inquiry_types = ["general", "order", "product", "shipping", "return", "complaint"]
+        inquiry_types = ["general", "support", "complaint", "return", "exchange", "question"]
         statuses = ["new", "open", "pending", "resolved", "closed"]
         priorities = ["low", "normal", "normal", "high", "urgent"]
         sources = ["web_form", "email", "phone", "chat", "social"]
@@ -1694,16 +1703,19 @@ class SyntheticDataGenerator:
             inquiry_id = self._uuid()
             self.inquiry_ids.append(inquiry_id)
 
+            shop_id = random.choice(self.shop_ids)
+
             cursor.execute(
                 """
-                INSERT INTO inquiries (id, protocol_number, type, status, priority, source,
+                INSERT INTO inquiries (id, shop_id, protocol_number, type, status, priority, source,
                     customer_id, requester_data, department, assigned_staff_id, subject,
                     related_order_id, related_product_id, metadata, sla_due_at, resolved_at,
                     _status, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 (
                     inquiry_id,
+                    shop_id,
                     f"INQ-{2024}{i:06d}",
                     random.choice(inquiry_types),
                     random.choice(statuses),

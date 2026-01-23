@@ -5,10 +5,11 @@ use chrono::{DateTime, Utc};
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
 pub struct Transaction {
     pub id: String,
+    pub shop_id: String, // Multi-tenancy
     #[serde(rename = "type")]
     #[sqlx(rename = "type")]
     pub r#type: String, // 'sale', 'purchase', 'transfer', 'return', 'adjustment'
-    pub status: String, // DEFAULT 'draft'
+    pub status: String, // 'draft', 'pending', 'completed', 'cancelled', 'failed'
     pub channel: Option<String>,
     pub customer_id: Option<String>,
     pub supplier_id: Option<String>,

@@ -11,11 +11,12 @@ pub struct CreateProductCategoryDTO {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateProductDTO {
+    pub shop_id: String, // Required for multi-tenancy
     pub sku: String,
     pub r#type: String,
     pub status: Option<String>,
     pub name: String,
-    pub slug: Option<String>,
+    pub slug: String, // Now required
     pub gtin_ean: Option<String>,
     pub price: f64,
     pub promotional_price: Option<f64>,
@@ -38,6 +39,7 @@ pub struct CreateProductDTO {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateProductDTO {
     pub id: String,
+    pub shop_id: String, // Required for multi-tenancy verification
     pub sku: Option<String>,
     pub r#type: Option<String>,
     pub status: Option<String>,
@@ -63,7 +65,7 @@ pub struct UpdateProductDTO {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProductListFilterDTO {
-    pub shop_id: Option<String>,
+    pub shop_id: String, // Required for multi-tenancy
     pub status: Option<String>,
     pub category_id: Option<String>,
     pub brand_id: Option<String>,
@@ -82,6 +84,7 @@ impl CreateProductDTO {
 
         let product = Product {
             id: product_id.clone(),
+            shop_id: self.shop_id,
             sku: self.sku,
             r#type: self.r#type,
             status: self.status.or(Some("draft".to_string())),
@@ -130,11 +133,12 @@ impl UpdateProductDTO {
         let now = Utc::now();
         let product = Product {
             id: self.id,
+            shop_id: self.shop_id,
             sku: self.sku.unwrap_or_default(),
             r#type: self.r#type.unwrap_or_default(),
             status: self.status,
             name: self.name.unwrap_or_default(),
-            slug: self.slug,
+            slug: self.slug.unwrap_or_default(),
             gtin_ean: self.gtin_ean,
             price: self.price.unwrap_or_default(),
             promotional_price: self.promotional_price,
@@ -151,7 +155,7 @@ impl UpdateProductDTO {
             category_id: self.category_id,
             brand_id: self.brand_id,
             parent_id: self.parent_id,
-            sync_status: Some("updated".to_string()),
+            sync_status: Some("modified".to_string()),
             created_at: None,
             updated_at: Some(now),
         };

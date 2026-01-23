@@ -5,13 +5,14 @@ use sqlx::FromRow;
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
 pub struct Product {
     pub id: String,
+    pub shop_id: String, // Multi-tenancy
     pub sku: String,
     #[serde(rename = "type")]
     #[sqlx(rename = "type")]
     pub r#type: String, // 'physical', 'digital', 'service', 'bundle'
     pub status: Option<String>, // DEFAULT 'draft'
     pub name: String,
-    pub slug: Option<String>,
+    pub slug: String,
     pub gtin_ean: Option<String>,
     pub price: f64,
     pub promotional_price: Option<f64>,

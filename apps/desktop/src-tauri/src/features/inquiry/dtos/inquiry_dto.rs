@@ -5,6 +5,7 @@ use crate::features::inquiry::models::inquiry_model::{Inquiry, InquiryMessage};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateInquiryDTO {
+    pub shop_id: String, // Required for multi-tenancy
     pub r#type: Option<String>,
     pub priority: Option<String>,
     pub source: Option<String>,
@@ -26,11 +27,12 @@ impl CreateInquiryDTO {
 
         let inquiry = Inquiry {
             id: inquiry_id.clone(),
+            shop_id: self.shop_id,
             protocol_number,
             r#type: self.r#type,
-            status: Some("open".to_string()),
-            priority: self.priority.or(Some("medium".to_string())),
-            source: self.source.or(Some("manual".to_string())),
+            status: Some("new".to_string()),
+            priority: self.priority.or(Some("normal".to_string())),
+            source: self.source.or(Some("web_form".to_string())),
             customer_id: self.customer_id,
             requester_data: self.requester_data,
             department: self.department,

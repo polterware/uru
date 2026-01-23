@@ -5,13 +5,14 @@ use chrono::{DateTime, Utc};
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
 pub struct Inquiry {
     pub id: String,
+    pub shop_id: String, // Multi-tenancy
     pub protocol_number: String,
     #[serde(rename = "type")]
     #[sqlx(rename = "type")]
-    pub r#type: Option<String>,
-    pub status: Option<String>,
-    pub priority: Option<String>,
-    pub source: Option<String>,
+    pub r#type: Option<String>, // 'general', 'support', 'complaint', 'return', 'exchange', 'question'
+    pub status: Option<String>, // 'new', 'open', 'pending', 'resolved', 'closed'
+    pub priority: Option<String>, // 'low', 'normal', 'high', 'urgent'
+    pub source: Option<String>, // 'web_form', 'email', 'phone', 'chat', 'social', 'in_store'
     pub customer_id: Option<String>,
     pub requester_data: String, // JSON
     pub department: Option<String>,

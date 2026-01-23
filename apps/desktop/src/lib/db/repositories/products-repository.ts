@@ -11,6 +11,10 @@ export const ProductsRepository = {
     return invoke("list_products");
   },
 
+  async listByShop(shopId: string): Promise<Product[]> {
+    return invoke("list_products_by_shop", { shopId });
+  },
+
   async listFiltered(filters: ProductListFilter): Promise<Product[]> {
     return invoke("list_products_filtered", { filters });
   },

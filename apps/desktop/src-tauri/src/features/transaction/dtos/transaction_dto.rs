@@ -11,6 +11,7 @@ pub struct CreateTransactionItemDTO {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateTransactionDTO {
+    pub shop_id: String, // Required for multi-tenancy
     pub r#type: String,
     pub status: Option<String>,
     pub channel: Option<String>,
@@ -34,6 +35,7 @@ impl CreateTransactionDTO {
 
         let transaction = Transaction {
             id: transaction_id.clone(),
+            shop_id: self.shop_id,
             r#type: self.r#type,
             status: self.status.unwrap_or_else(|| "draft".to_string()),
             channel: self.channel,

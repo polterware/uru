@@ -116,7 +116,7 @@ impl ProductService {
 
         self.repo
             .list_filtered(
-                filters.shop_id.as_deref(),
+                &filters.shop_id, // Now required
                 filters.status.as_deref(),
                 filters.category_id.as_deref(),
                 filters.brand_id.as_deref(),
@@ -129,5 +129,19 @@ impl ProductService {
             )
             .await
             .map_err(|e| format!("Failed to list filtered products: {}", e))
+    }
+
+    pub async fn search_products(&self, shop_id: &str, query: &str) -> Result<Vec<Product>, String> {
+        self.repo
+            .search(shop_id, query)
+            .await
+            .map_err(|e| format!("Failed to search products: {}", e))
+    }
+
+    pub async fn get_product_for_shop(&self, shop_id: &str, id: &str) -> Result<Option<Product>, String> {
+        self.repo
+            .get_by_id_for_shop(shop_id, id)
+            .await
+            .map_err(|e| format!("Failed to fetch product: {}", e))
     }
 }

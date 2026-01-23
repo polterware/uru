@@ -57,7 +57,7 @@ use crate::features::customer_address::commands::customer_address_commands::{
 };
 use crate::features::customer_group::commands::customer_group_commands::{
     create_customer_group, update_customer_group, delete_customer_group,
-    get_customer_group, list_customer_groups,
+    get_customer_group, list_customer_groups, list_customer_groups_by_shop,
 };
 use crate::features::customer_group_membership::commands::customer_group_membership_commands::{
     assign_customer_groups, list_customer_group_memberships_by_customer,
@@ -67,9 +67,7 @@ use crate::features::transaction::commands::transaction_commands::{
     create_transaction, update_transaction, delete_transaction, get_transaction, list_transactions, list_transactions_by_shop,
     update_transaction_status, complete_sale_transaction, cancel_transaction,
 };
-use crate::features::setting::commands::setting_commands::{
-    get_setting, set_setting, get_all_settings, delete_setting,
-};
+
 use crate::features::transaction::commands::transaction_item_commands::{
     create_transaction_item, update_transaction_item, delete_transaction_item,
     get_transaction_item, list_transaction_items, list_transaction_items_by_transaction,
@@ -83,7 +81,8 @@ use crate::features::inventory::commands::inventory_movement_commands::{
     list_inventory_movements_by_transaction, list_inventory_movements_by_level,
 };
 use crate::features::location::commands::location_commands::{
-    create_location, update_location, delete_location, get_location, list_locations, list_locations_by_shop,
+    create_location, update_location, delete_location, get_location, list_locations,
+    list_locations_by_type, list_sellable_locations,
 };
 use crate::features::shipment::commands::shipment_commands::{
     create_shipment, update_shipment, delete_shipment, get_shipment, list_shipments, list_shipments_by_shop,
@@ -217,6 +216,7 @@ pub fn run() {
             delete_customer_group,
             get_customer_group,
             list_customer_groups,
+            list_customer_groups_by_shop,
             // Customer Group Memberships
             assign_customer_groups,
             list_customer_group_memberships_by_customer,
@@ -239,11 +239,7 @@ pub fn run() {
             get_transaction_item,
             list_transaction_items,
             list_transaction_items_by_transaction,
-            // Settings
-            get_setting,
-            set_setting,
-            get_all_settings,
-            delete_setting,
+
             // Inventory Levels
             create_inventory_level,
             update_inventory_level,
@@ -265,7 +261,8 @@ pub fn run() {
             delete_location,
             get_location,
             list_locations,
-            list_locations_by_shop,
+            list_locations_by_type,
+            list_sellable_locations,
             // Shipments
             create_shipment,
             update_shipment,
@@ -359,6 +356,9 @@ pub fn run() {
                     .await
             })?;
             app.manage(pool);
+
+            // Register store plugin for app settings
+            app.handle().plugin(tauri_plugin_store::Builder::new().build())?;
 
             if cfg!(debug_assertions) {
                 app.handle().plugin(

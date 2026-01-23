@@ -5,9 +5,10 @@ use chrono::{DateTime, Utc};
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
 pub struct Customer {
     pub id: String,
+    pub shop_id: String, // Multi-tenancy
     #[serde(rename = "type")]
     #[sqlx(rename = "type")]
-    pub r#type: String, // 'individual'
+    pub r#type: String, // 'individual', 'company'
     pub email: Option<String>,
     pub phone: Option<String>,
     pub first_name: Option<String>,
@@ -16,7 +17,7 @@ pub struct Customer {
     pub tax_id: Option<String>,
     pub tax_id_type: Option<String>,
     pub state_tax_id: Option<String>,
-    pub status: Option<String>, // 'active'
+    pub status: Option<String>, // 'active', 'inactive', 'blocked'
     pub currency: Option<String>, // 'BRL'
     pub language: Option<String>, // 'pt'
     pub tags: Option<String>, // TEXT[]

@@ -14,18 +14,19 @@ impl TransactionsRepository {
     pub async fn create(&self, transaction: Transaction) -> Result<Transaction> {
         let sql = r#"
             INSERT INTO transactions (
-                id, type, status, channel, customer_id, supplier_id, staff_id,
+                id, shop_id, type, status, channel, customer_id, supplier_id, staff_id,
                 currency, total_items, total_shipping, total_discount, total_net,
                 shipping_method, shipping_address, billing_address, _status,
                 created_at, updated_at
             ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
             )
             RETURNING *
         "#;
 
         sqlx::query_as::<_, Transaction>(sql)
             .bind(&transaction.id)
+            .bind(&transaction.shop_id)
             .bind(&transaction.r#type)
             .bind(&transaction.status)
             .bind(&transaction.channel)
@@ -115,14 +116,50 @@ impl TransactionsRepository {
 
     pub async fn list_by_shop(&self, shop_id: &str) -> Result<Vec<Transaction>> {
         let sql = r#"
-            SELECT DISTINCT t.* FROM transactions t
-            INNER JOIN customers c ON c.id = t.customer_id
-            INNER JOIN orders o ON o.customer_id = c.id
-            WHERE o.shop_id = $1
-            ORDER BY t.created_at DESC
+            SELECT * FROM transactions
+            WHERE shop_id = $1 AND _status != 'deleted'
+            ORDER BY created_at DESC
         "#;
         sqlx::query_as::<_, Transaction>(sql)
             .bind(shop_id)
+            .fetch_all(&self.pool)
+            .await
+    }
+
+    /// Get a transaction by ID, ensuring it belongs to the specified shop
+    pub async fn get_by_id_for_shop(&self, shop_id: &str, id: &str) -> Result<Option<Transaction>> {
+        let sql = "SELECT * FROM transactions WHERE id = $1 AND shop_id = $2 AND _status != 'deleted'";
+        sqlx::query_as::<_, Transaction>(sql)
+            .bind(id)
+            .bind(shop_id)
+            .fetch_optional(&self.pool)
+            .await
+    }
+
+    /// List transactions by type for a specific shop
+    pub async fn list_by_type(&self, shop_id: &str, transaction_type: &str) -> Result<Vec<Transaction>> {
+        let sql = r#"
+            SELECT * FROM transactions
+            WHERE shop_id = $1 AND type = $2 AND _status != 'deleted'
+            ORDER BY created_at DESC
+        "#;
+        sqlx::query_as::<_, Transaction>(sql)
+            .bind(shop_id)
+            .bind(transaction_type)
+            .fetch_all(&self.pool)
+            .await
+    }
+
+    /// List transactions by status for a specific shop
+    pub async fn list_by_status(&self, shop_id: &str, status: &str) -> Result<Vec<Transaction>> {
+        let sql = r#"
+            SELECT * FROM transactions
+            WHERE shop_id = $1 AND status = $2 AND _status != 'deleted'
+            ORDER BY created_at DESC
+        "#;
+        sqlx::query_as::<_, Transaction>(sql)
+            .bind(shop_id)
+            .bind(status)
             .fetch_all(&self.pool)
             .await
     }

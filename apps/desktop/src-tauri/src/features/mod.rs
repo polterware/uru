@@ -18,7 +18,6 @@ pub mod product;
 pub mod refund;
 pub mod review;
 pub mod role;
-pub mod setting;
 pub mod shipment;
 pub mod shop;
 pub mod shop_template;

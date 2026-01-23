@@ -47,3 +47,12 @@ pub async fn list_customer_groups(
     let service = CustomerGroupService::new(pool.inner().clone());
     service.list_groups().await
 }
+
+#[tauri::command]
+pub async fn list_customer_groups_by_shop(
+    pool: State<'_, SqlitePool>,
+    shop_id: String,
+) -> Result<Vec<CustomerGroup>, String> {
+    let service = CustomerGroupService::new(pool.inner().clone());
+    service.list_groups_by_shop(&shop_id).await
+}

@@ -108,4 +108,12 @@ impl CustomerGroupsRepository {
             .fetch_all(&self.pool)
             .await
     }
+
+    pub async fn list_by_shop(&self, shop_id: &str) -> Result<Vec<CustomerGroup>> {
+        let sql = "SELECT * FROM customer_groups WHERE shop_id = $1 ORDER BY created_at DESC";
+        sqlx::query_as::<_, CustomerGroup>(sql)
+            .bind(shop_id)
+            .fetch_all(&self.pool)
+            .await
+    }
 }
