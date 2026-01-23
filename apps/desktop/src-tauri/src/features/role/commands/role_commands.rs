@@ -29,10 +29,7 @@ pub async fn delete_role(pool: State<'_, SqlitePool>, id: String) -> Result<(), 
 }
 
 #[tauri::command]
-pub async fn get_role(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<Option<Role>, String> {
+pub async fn get_role(pool: State<'_, SqlitePool>, id: String) -> Result<Option<Role>, String> {
     let service = RoleService::new(pool.inner().clone());
     service.get_role(&id).await
 }

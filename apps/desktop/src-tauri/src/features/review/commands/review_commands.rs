@@ -1,7 +1,7 @@
 use crate::features::review::models::review_model::Review;
 use crate::features::review::services::review_service::ReviewService;
-use tauri::State;
 use sqlx::SqlitePool;
+use tauri::State;
 
 #[tauri::command]
 pub async fn list_reviews_by_shop(
@@ -13,9 +13,7 @@ pub async fn list_reviews_by_shop(
 }
 
 #[tauri::command]
-pub async fn list_reviews(
-    pool: State<'_, SqlitePool>,
-) -> Result<Vec<Review>, String> {
+pub async fn list_reviews(pool: State<'_, SqlitePool>) -> Result<Vec<Review>, String> {
     // Note: ReviewService doesn't have a generic list(), but we might need it or just return empty/all?
     // For now let's implement it if needed, or if the repo calls it.
     // Repo calls "list_reviews".
@@ -36,19 +34,13 @@ pub async fn list_reviews(
 }
 
 #[tauri::command]
-pub async fn delete_review(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<(), String> {
+pub async fn delete_review(pool: State<'_, SqlitePool>, id: String) -> Result<(), String> {
     let service = ReviewService::new(pool.inner().clone());
     service.delete_review(&id).await
 }
 
 #[tauri::command]
-pub async fn get_review(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<Option<Review>, String> {
+pub async fn get_review(pool: State<'_, SqlitePool>, id: String) -> Result<Option<Review>, String> {
     let service = ReviewService::new(pool.inner().clone());
     service.get_review(&id).await
 }
@@ -58,21 +50,21 @@ pub async fn get_review(
 pub async fn create_review(
     pool: State<'_, SqlitePool>,
     payload: Review, // The repo sends "payload" which is CreateReviewInput, but here I can accept Review or DTO.
-    // The repo says invoke("create_review", { payload }).
-    // Payload in frontend is CreateReviewInput.
-    // Backend service `create_review` takes `Review`.
-    // I probably need DTOs.
-    // ReviewService::create_review takes Review.
-    // Does Review implement Deserialize?
+                     // The repo says invoke("create_review", { payload }).
+                     // Payload in frontend is CreateReviewInput.
+                     // Backend service `create_review` takes `Review`.
+                     // I probably need DTOs.
+                     // ReviewService::create_review takes Review.
+                     // Does Review implement Deserialize?
 ) -> Result<Review, String> {
-     let service = ReviewService::new(pool.inner().clone());
-     service.create_review(payload).await
+    let service = ReviewService::new(pool.inner().clone());
+    service.create_review(payload).await
 }
 
 #[tauri::command]
 pub async fn update_review(
     pool: State<'_, SqlitePool>,
-    id: String, // Repo sends { id, payload }
+    id: String,      // Repo sends { id, payload }
     payload: Review, // UpdateReviewInput? Service takes Review.
 ) -> Result<Review, String> {
     // This is getting complicated with DTOs.

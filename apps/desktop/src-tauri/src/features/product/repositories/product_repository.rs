@@ -209,9 +209,7 @@ impl ProductRepository {
         limit: i64,
         offset: i64,
     ) -> Result<Vec<Product>> {
-        let mut builder = QueryBuilder::<Sqlite>::new(
-            "SELECT * FROM products WHERE shop_id = ",
-        );
+        let mut builder = QueryBuilder::<Sqlite>::new("SELECT * FROM products WHERE shop_id = ");
         builder.push_bind(shop_id);
         builder.push(" AND _status != 'deleted'");
 

@@ -285,6 +285,7 @@ export function CheckoutsTable() {
           label: "New Checkout",
           to: `/shops/${shopId}/checkouts/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

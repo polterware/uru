@@ -260,6 +260,7 @@ export function PosSessionsTable() {
           label: "Open Session",
           to: `/shops/${shopId}/pos-sessions/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

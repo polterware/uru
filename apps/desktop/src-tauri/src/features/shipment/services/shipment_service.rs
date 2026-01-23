@@ -268,36 +268,87 @@ impl ShipmentService {
         Ok(created_shipment)
     }
 
-    pub async fn update_shipment(&self, id: &str, payload: UpdateShipmentDTO) -> Result<Shipment, String> {
-        let mut shipment = self.repo.get_by_id(id).await
+    pub async fn update_shipment(
+        &self,
+        id: &str,
+        payload: UpdateShipmentDTO,
+    ) -> Result<Shipment, String> {
+        let mut shipment = self
+            .repo
+            .get_by_id(id)
+            .await
             .map_err(|e| format!("Erro ao buscar envio: {}", e))?
             .ok_or("Envio não encontrado".to_string())?;
 
-        if let Some(v) = payload.location_id { shipment.location_id = Some(v); }
-        if let Some(v) = payload.status { shipment.status = Some(v); }
-        if let Some(v) = payload.carrier_company { shipment.carrier_company = Some(v); }
-        if let Some(v) = payload.carrier_service { shipment.carrier_service = Some(v); }
-        if let Some(v) = payload.tracking_number { shipment.tracking_number = Some(v); }
-        if let Some(v) = payload.tracking_url { shipment.tracking_url = Some(v); }
-        if let Some(v) = payload.weight_g { shipment.weight_g = Some(v); }
-        if let Some(v) = payload.height_mm { shipment.height_mm = Some(v); }
-        if let Some(v) = payload.width_mm { shipment.width_mm = Some(v); }
-        if let Some(v) = payload.depth_mm { shipment.depth_mm = Some(v); }
-        if let Some(v) = payload.package_type { shipment.package_type = Some(v); }
-        if let Some(v) = payload.shipping_label_url { shipment.shipping_label_url = Some(v); }
-        if let Some(v) = payload.invoice_url { shipment.invoice_url = Some(v); }
-        if let Some(v) = payload.invoice_key { shipment.invoice_key = Some(v); }
-        if let Some(v) = payload.cost_amount { shipment.cost_amount = Some(v); }
-        if let Some(v) = payload.insurance_amount { shipment.insurance_amount = Some(v); }
-        if let Some(v) = payload.estimated_delivery_at { shipment.estimated_delivery_at = Some(v); }
-        if let Some(v) = payload.shipped_at { shipment.shipped_at = Some(v); }
-        if let Some(v) = payload.delivered_at { shipment.delivered_at = Some(v); }
-        if let Some(v) = payload.metadata { shipment.metadata = Some(v); }
-        if let Some(v) = payload.customs_info { shipment.customs_info = Some(v); }
+        if let Some(v) = payload.location_id {
+            shipment.location_id = Some(v);
+        }
+        if let Some(v) = payload.status {
+            shipment.status = Some(v);
+        }
+        if let Some(v) = payload.carrier_company {
+            shipment.carrier_company = Some(v);
+        }
+        if let Some(v) = payload.carrier_service {
+            shipment.carrier_service = Some(v);
+        }
+        if let Some(v) = payload.tracking_number {
+            shipment.tracking_number = Some(v);
+        }
+        if let Some(v) = payload.tracking_url {
+            shipment.tracking_url = Some(v);
+        }
+        if let Some(v) = payload.weight_g {
+            shipment.weight_g = Some(v);
+        }
+        if let Some(v) = payload.height_mm {
+            shipment.height_mm = Some(v);
+        }
+        if let Some(v) = payload.width_mm {
+            shipment.width_mm = Some(v);
+        }
+        if let Some(v) = payload.depth_mm {
+            shipment.depth_mm = Some(v);
+        }
+        if let Some(v) = payload.package_type {
+            shipment.package_type = Some(v);
+        }
+        if let Some(v) = payload.shipping_label_url {
+            shipment.shipping_label_url = Some(v);
+        }
+        if let Some(v) = payload.invoice_url {
+            shipment.invoice_url = Some(v);
+        }
+        if let Some(v) = payload.invoice_key {
+            shipment.invoice_key = Some(v);
+        }
+        if let Some(v) = payload.cost_amount {
+            shipment.cost_amount = Some(v);
+        }
+        if let Some(v) = payload.insurance_amount {
+            shipment.insurance_amount = Some(v);
+        }
+        if let Some(v) = payload.estimated_delivery_at {
+            shipment.estimated_delivery_at = Some(v);
+        }
+        if let Some(v) = payload.shipped_at {
+            shipment.shipped_at = Some(v);
+        }
+        if let Some(v) = payload.delivered_at {
+            shipment.delivered_at = Some(v);
+        }
+        if let Some(v) = payload.metadata {
+            shipment.metadata = Some(v);
+        }
+        if let Some(v) = payload.customs_info {
+            shipment.customs_info = Some(v);
+        }
 
         shipment.updated_at = Some(Utc::now());
 
-        self.repo.update(shipment).await
+        self.repo
+            .update(shipment)
+            .await
             .map_err(|e| format!("Erro ao atualizar envio: {}", e))
     }
 

@@ -1,9 +1,8 @@
+use crate::features::customer::models::customer_model::CustomerAddress;
 use crate::features::customer_address::dtos::customer_address_dto::{
-    CreateCustomerAddressDTO,
-    UpdateCustomerAddressDTO,
+    CreateCustomerAddressDTO, UpdateCustomerAddressDTO,
 };
 use crate::features::customer_address::services::customer_address_service::CustomerAddressService;
-use crate::features::customer::models::customer_model::CustomerAddress;
 use sqlx::SqlitePool;
 use tauri::State;
 

@@ -1,5 +1,5 @@
-use sqlx::{SqlitePool, Result};
 use crate::features::role::models::role_model::Role;
+use sqlx::{Result, SqlitePool};
 
 pub struct RoleRepository {
     pool: SqlitePool,
@@ -18,12 +18,12 @@ impl RoleRepository {
         "#;
 
         sqlx::query_as::<_, Role>(sql)
-            .bind(item.id)              // $1
-            .bind(item.name)            // $2
-            .bind(item.permissions)     // $3
+            .bind(item.id) // $1
+            .bind(item.name) // $2
+            .bind(item.permissions) // $3
             .bind(item.status_internal) // $4
-            .bind(item.created_at)      // $5
-            .bind(item.updated_at)      // $6
+            .bind(item.created_at) // $5
+            .bind(item.updated_at) // $6
             .fetch_one(&self.pool)
             .await
     }
@@ -40,11 +40,11 @@ impl RoleRepository {
         "#;
 
         sqlx::query_as::<_, Role>(sql)
-            .bind(item.id)              // $1
-            .bind(item.name)            // $2
-            .bind(item.permissions)     // $3
+            .bind(item.id) // $1
+            .bind(item.name) // $2
+            .bind(item.permissions) // $3
             .bind(item.status_internal) // $4
-            .bind(item.updated_at)      // $5
+            .bind(item.updated_at) // $5
             .fetch_one(&self.pool)
             .await
     }
@@ -67,17 +67,12 @@ impl RoleRepository {
 
     pub async fn list_all(&self) -> Result<Vec<Role>> {
         let sql = "SELECT * FROM roles ORDER BY name ASC";
-        sqlx::query_as::<_, Role>(sql)
-            .fetch_all(&self.pool)
-            .await
+        sqlx::query_as::<_, Role>(sql).fetch_all(&self.pool).await
     }
 
     pub async fn delete(&self, id: &str) -> Result<()> {
         let sql = "DELETE FROM roles WHERE id = $1";
-        sqlx::query(sql)
-            .bind(id)
-            .execute(&self.pool)
-            .await?;
+        sqlx::query(sql).bind(id).execute(&self.pool).await?;
         Ok(())
     }
 }

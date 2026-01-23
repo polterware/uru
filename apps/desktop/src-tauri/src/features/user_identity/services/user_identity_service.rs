@@ -1,5 +1,5 @@
-use crate::features::user_identity::dtos::{CreateUserIdentityDTO, UpdateUserIdentityDTO};
 use crate::features::user::models::user_model::UserIdentity;
+use crate::features::user_identity::dtos::{CreateUserIdentityDTO, UpdateUserIdentityDTO};
 use crate::features::user_identity::repositories::user_identities_repository::UserIdentitiesRepository;
 use sqlx::SqlitePool;
 

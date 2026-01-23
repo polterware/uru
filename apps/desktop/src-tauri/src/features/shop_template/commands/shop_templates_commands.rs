@@ -22,7 +22,9 @@ pub async fn get_shop_template_by_code(
 }
 
 #[tauri::command]
-pub async fn list_shop_templates(pool: State<'_, SqlitePool>) -> Result<Vec<ShopTemplateDto>, String> {
+pub async fn list_shop_templates(
+    pool: State<'_, SqlitePool>,
+) -> Result<Vec<ShopTemplateDto>, String> {
     let service = ShopTemplatesService::new(pool.inner().clone());
     service.list_templates().await
 }

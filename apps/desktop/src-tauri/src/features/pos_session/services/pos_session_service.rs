@@ -121,7 +121,10 @@ impl PosSessionService {
             .map_err(|e| format!("Failed to list POS sessions: {}", e))
     }
 
-    pub async fn list_pos_sessions_by_shop(&self, shop_id: &str) -> Result<Vec<PosSession>, String> {
+    pub async fn list_pos_sessions_by_shop(
+        &self,
+        shop_id: &str,
+    ) -> Result<Vec<PosSession>, String> {
         self.repo
             .list_by_shop(shop_id)
             .await

@@ -1,8 +1,8 @@
 use crate::features::shipment::dtos::shipment_dto::{CreateShipmentDTO, UpdateShipmentDTO};
 use crate::features::shipment::models::shipment_model::Shipment;
 use crate::features::shipment::services::shipment_service::ShipmentService;
-use tauri::State;
 use sqlx::SqlitePool;
+use tauri::State;
 
 #[tauri::command]
 pub async fn create_shipment(
@@ -24,10 +24,7 @@ pub async fn update_shipment(
 }
 
 #[tauri::command]
-pub async fn delete_shipment(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<(), String> {
+pub async fn delete_shipment(pool: State<'_, SqlitePool>, id: String) -> Result<(), String> {
     let service = ShipmentService::new(pool.inner().clone());
     service.delete_shipment(&id).await
 }
@@ -42,9 +39,7 @@ pub async fn get_shipment(
 }
 
 #[tauri::command]
-pub async fn list_shipments(
-    pool: State<'_, SqlitePool>,
-) -> Result<Vec<Shipment>, String> {
+pub async fn list_shipments(pool: State<'_, SqlitePool>) -> Result<Vec<Shipment>, String> {
     let service = ShipmentService::new(pool.inner().clone());
     service.list_shipments().await
 }

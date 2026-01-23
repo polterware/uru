@@ -328,6 +328,7 @@ export function TransactionsTable() {
           label: "New Transaction",
           to: `/shops/${shopId}/transactions/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       {/* Delete Confirmation Dialog */}

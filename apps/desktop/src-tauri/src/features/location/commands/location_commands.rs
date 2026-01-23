@@ -58,7 +58,9 @@ pub async fn list_locations_by_type(
     location_type: String,
 ) -> Result<Vec<Location>, String> {
     let service = LocationService::new(pool.inner().clone());
-    service.list_locations_by_type(&shop_id, &location_type).await
+    service
+        .list_locations_by_type(&shop_id, &location_type)
+        .await
 }
 
 #[tauri::command]

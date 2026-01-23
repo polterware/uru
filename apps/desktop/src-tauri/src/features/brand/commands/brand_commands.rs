@@ -29,10 +29,7 @@ pub async fn delete_brand(pool: State<'_, SqlitePool>, id: String) -> Result<(),
 }
 
 #[tauri::command]
-pub async fn get_brand(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<Option<Brand>, String> {
+pub async fn get_brand(pool: State<'_, SqlitePool>, id: String) -> Result<Option<Brand>, String> {
     let service = BrandService::new(pool.inner().clone());
     service.get_brand(&id).await
 }

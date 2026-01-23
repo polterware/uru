@@ -187,6 +187,7 @@ export function LocationsTable() {
           label: "New Location",
           to: `/shops/${shopId}/locations/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

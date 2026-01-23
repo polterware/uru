@@ -273,6 +273,7 @@ export function RefundsTable() {
           label: "New Refund",
           to: `/shops/${shopId}/refunds/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

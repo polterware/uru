@@ -244,6 +244,7 @@ export function CustomersTable() {
           label: "New Customer",
           to: `/shops/${shopId}/customers/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

@@ -225,6 +225,7 @@ export function BrandsTable() {
           label: "New Brand",
           to: `/shops/${shopId}/brands/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

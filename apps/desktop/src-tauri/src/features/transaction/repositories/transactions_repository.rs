@@ -128,7 +128,8 @@ impl TransactionsRepository {
 
     /// Get a transaction by ID, ensuring it belongs to the specified shop
     pub async fn get_by_id_for_shop(&self, shop_id: &str, id: &str) -> Result<Option<Transaction>> {
-        let sql = "SELECT * FROM transactions WHERE id = $1 AND shop_id = $2 AND _status != 'deleted'";
+        let sql =
+            "SELECT * FROM transactions WHERE id = $1 AND shop_id = $2 AND _status != 'deleted'";
         sqlx::query_as::<_, Transaction>(sql)
             .bind(id)
             .bind(shop_id)
@@ -137,7 +138,11 @@ impl TransactionsRepository {
     }
 
     /// List transactions by type for a specific shop
-    pub async fn list_by_type(&self, shop_id: &str, transaction_type: &str) -> Result<Vec<Transaction>> {
+    pub async fn list_by_type(
+        &self,
+        shop_id: &str,
+        transaction_type: &str,
+    ) -> Result<Vec<Transaction>> {
         let sql = r#"
             SELECT * FROM transactions
             WHERE shop_id = $1 AND type = $2 AND _status != 'deleted'

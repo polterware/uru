@@ -20,7 +20,10 @@ impl ShopTemplatesService {
             .map(|opt| opt.map(ShopTemplateDto::from))
     }
 
-    pub async fn get_template_by_code(&self, code: &str) -> Result<Option<ShopTemplateDto>, String> {
+    pub async fn get_template_by_code(
+        &self,
+        code: &str,
+    ) -> Result<Option<ShopTemplateDto>, String> {
         self.repo
             .find_by_code(code)
             .await
@@ -36,7 +39,10 @@ impl ShopTemplatesService {
             .map(|templates| templates.into_iter().map(ShopTemplateDto::from).collect())
     }
 
-    pub async fn list_templates_by_category(&self, category: &str) -> Result<Vec<ShopTemplateDto>, String> {
+    pub async fn list_templates_by_category(
+        &self,
+        category: &str,
+    ) -> Result<Vec<ShopTemplateDto>, String> {
         self.repo
             .list_by_category(category)
             .await

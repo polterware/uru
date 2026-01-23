@@ -51,7 +51,8 @@ impl CreateUserDTO {
             status: self.status.or(Some("active".to_string())),
         };
 
-        let roles = self.role_ids
+        let roles = self
+            .role_ids
             .into_iter()
             .map(|rid| UserRole {
                 user_id: user_id.clone(),

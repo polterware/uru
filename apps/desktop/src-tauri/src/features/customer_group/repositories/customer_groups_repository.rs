@@ -1,5 +1,5 @@
 use crate::features::customer_group::models::customer_group_model::CustomerGroup;
-use sqlx::{SqlitePool, Result};
+use sqlx::{Result, SqlitePool};
 
 pub struct CustomerGroupsRepository {
     pool: SqlitePool,
@@ -87,10 +87,7 @@ impl CustomerGroupsRepository {
 
     pub async fn delete(&self, id: &str) -> Result<()> {
         let sql = "DELETE FROM customer_groups WHERE id = $1";
-        sqlx::query(sql)
-            .bind(id)
-            .execute(&self.pool)
-            .await?;
+        sqlx::query(sql).bind(id).execute(&self.pool).await?;
         Ok(())
     }
 

@@ -276,6 +276,7 @@ export function CustomerAddressesTable() {
           label: "New Address",
           to: `/shops/${shopId}/customers/addresses/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

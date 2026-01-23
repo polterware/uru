@@ -1,7 +1,7 @@
+use crate::features::transaction::models::transaction_model::{Transaction, TransactionItem};
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use chrono::Utc;
-use crate::features::transaction::models::transaction_model::{Transaction, TransactionItem};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateTransactionItemDTO {
@@ -55,7 +55,8 @@ impl CreateTransactionDTO {
             updated_at: Some(now),
         };
 
-        let items = self.items
+        let items = self
+            .items
             .into_iter()
             .map(|i| TransactionItem {
                 id: Uuid::new_v4().to_string(),

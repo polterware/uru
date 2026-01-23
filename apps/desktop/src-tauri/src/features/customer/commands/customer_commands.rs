@@ -1,8 +1,8 @@
 use crate::features::customer::dtos::customer_dto::{CreateCustomerDTO, UpdateCustomerDTO};
 use crate::features::customer::models::customer_model::Customer;
 use crate::features::customer::services::customer_service::CustomerService;
-use tauri::State;
 use sqlx::SqlitePool;
+use tauri::State;
 
 #[tauri::command]
 pub async fn create_customer(
@@ -23,10 +23,7 @@ pub async fn update_customer(
 }
 
 #[tauri::command]
-pub async fn delete_customer(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<(), String> {
+pub async fn delete_customer(pool: State<'_, SqlitePool>, id: String) -> Result<(), String> {
     let service = CustomerService::new(pool.inner().clone());
     service.delete_customer(&id).await
 }
@@ -41,9 +38,7 @@ pub async fn get_customer(
 }
 
 #[tauri::command]
-pub async fn list_customers(
-    pool: State<'_, SqlitePool>,
-) -> Result<Vec<Customer>, String> {
+pub async fn list_customers(pool: State<'_, SqlitePool>) -> Result<Vec<Customer>, String> {
     let service = CustomerService::new(pool.inner().clone());
     service.list_customers().await
 }

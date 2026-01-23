@@ -144,7 +144,8 @@ impl TransactionItemsRepository {
         &self,
         transaction_id: &str,
     ) -> Result<Vec<TransactionItem>> {
-        let sql = "SELECT * FROM transaction_items WHERE transaction_id = $1 ORDER BY created_at ASC";
+        let sql =
+            "SELECT * FROM transaction_items WHERE transaction_id = $1 ORDER BY created_at ASC";
         sqlx::query_as::<_, TransactionItem>(sql)
             .bind(transaction_id)
             .fetch_all(&self.pool)

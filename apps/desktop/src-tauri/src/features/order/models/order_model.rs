@@ -1,6 +1,6 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use chrono::{DateTime, Utc};
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
 pub struct Order {
@@ -20,15 +20,15 @@ pub struct Order {
     pub total_shipping: Option<f64>,
     pub total_tip: Option<f64>,
     pub total_price: f64,
-    pub tax_lines: Option<String>, // JSON
+    pub tax_lines: Option<String>,      // JSON
     pub discount_codes: Option<String>, // JSON
     pub note: Option<String>,
     pub tags: Option<String>,
     pub custom_attributes: Option<String>, // JSON
-    pub metadata: Option<String>, // JSON
-    pub customer_snapshot: String, // JSON, NOT NULL
-    pub billing_address: Option<String>, // JSON
-    pub shipping_address: Option<String>, // JSON
+    pub metadata: Option<String>,          // JSON
+    pub customer_snapshot: String,         // JSON, NOT NULL
+    pub billing_address: Option<String>,   // JSON
+    pub shipping_address: Option<String>,  // JSON
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,

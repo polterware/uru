@@ -1,5 +1,5 @@
-use crate::features::user_session::dtos::{CreateUserSessionDTO, UpdateUserSessionDTO};
 use crate::features::user::models::user_model::UserSession;
+use crate::features::user_session::dtos::{CreateUserSessionDTO, UpdateUserSessionDTO};
 use crate::features::user_session::repositories::user_sessions_repository::UserSessionsRepository;
 use sqlx::SqlitePool;
 
@@ -63,10 +63,7 @@ impl UserSessionService {
             .map_err(|e| format!("Failed to list sessions: {}", e))
     }
 
-    pub async fn list_sessions_by_user(
-        &self,
-        user_id: &str,
-    ) -> Result<Vec<UserSession>, String> {
+    pub async fn list_sessions_by_user(&self, user_id: &str) -> Result<Vec<UserSession>, String> {
         self.repo
             .find_by_user_id(user_id)
             .await

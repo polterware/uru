@@ -69,14 +69,20 @@ impl AnalyticsService {
 
         let features_config = self.get_features_config(Some(shop_id.clone())).await;
         let features_config_str = features_config.as_deref();
-        eprintln!("[get_dashboard_stats] Features config: {:?}", features_config_str);
+        eprintln!(
+            "[get_dashboard_stats] Features config: {:?}",
+            features_config_str
+        );
 
         let stats = self
             .repo
             .get_dashboard_stats(features_config_str, &shop_id, LOW_STOCK_THRESHOLD)
             .await
             .map_err(|e| {
-                eprintln!("[get_dashboard_stats] Error fetching dashboard stats: {} (shop_id: {})", e, shop_id);
+                eprintln!(
+                    "[get_dashboard_stats] Error fetching dashboard stats: {} (shop_id: {})",
+                    e, shop_id
+                );
                 format!("Failed to fetch dashboard stats: {}", e)
             })?;
 
@@ -135,10 +141,16 @@ impl AnalyticsService {
         shop_id: Option<String>,
         days: Option<i64>,
     ) -> Result<Vec<CumulativeRevenueDto>, String> {
-        eprintln!("[get_cumulative_revenue] Called with shop_id: {:?}, days: {:?}", shop_id, days);
+        eprintln!(
+            "[get_cumulative_revenue] Called with shop_id: {:?}, days: {:?}",
+            shop_id, days
+        );
         let shop_id = self.get_or_resolve_shop_id(shop_id).await?;
         let days = days.unwrap_or(90);
-        eprintln!("[get_cumulative_revenue] Resolved shop_id: {}, days: {}", shop_id, days);
+        eprintln!(
+            "[get_cumulative_revenue] Resolved shop_id: {}, days: {}",
+            shop_id, days
+        );
 
         let rows = self
             .repo
@@ -149,9 +161,17 @@ impl AnalyticsService {
                 format!("Failed to fetch cumulative revenue: {}", e)
             })?;
 
-        eprintln!("[get_cumulative_revenue] Rows returned: {} (shop_id: {}, days: {})", rows.len(), shop_id, days);
+        eprintln!(
+            "[get_cumulative_revenue] Rows returned: {} (shop_id: {}, days: {})",
+            rows.len(),
+            shop_id,
+            days
+        );
         if rows.is_empty() {
-            eprintln!("[get_cumulative_revenue] WARNING: No data returned for shop_id: {}", shop_id);
+            eprintln!(
+                "[get_cumulative_revenue] WARNING: No data returned for shop_id: {}",
+                shop_id
+            );
         }
 
         Ok(rows
@@ -230,11 +250,17 @@ impl AnalyticsService {
         days: Option<i64>,
         limit: Option<i64>,
     ) -> Result<Vec<TopProductDto>, String> {
-        eprintln!("[get_top_products] Called with shop_id: {:?}, days: {:?}, limit: {:?}", shop_id, days, limit);
+        eprintln!(
+            "[get_top_products] Called with shop_id: {:?}, days: {:?}, limit: {:?}",
+            shop_id, days, limit
+        );
         let shop_id = self.get_or_resolve_shop_id(shop_id).await?;
         let days = days.unwrap_or(30);
         let limit = limit.unwrap_or(10);
-        eprintln!("[get_top_products] Resolved shop_id: {}, days: {}, limit: {}", shop_id, days, limit);
+        eprintln!(
+            "[get_top_products] Resolved shop_id: {}, days: {}, limit: {}",
+            shop_id, days, limit
+        );
 
         let rows = self
             .repo
@@ -245,9 +271,18 @@ impl AnalyticsService {
                 format!("Failed to fetch top products: {}", e)
             })?;
 
-        eprintln!("[get_top_products] Rows returned: {} (shop_id: {}, days: {}, limit: {})", rows.len(), shop_id, days, limit);
+        eprintln!(
+            "[get_top_products] Rows returned: {} (shop_id: {}, days: {}, limit: {})",
+            rows.len(),
+            shop_id,
+            days,
+            limit
+        );
         if rows.is_empty() {
-            eprintln!("[get_top_products] WARNING: No data returned for shop_id: {}", shop_id);
+            eprintln!(
+                "[get_top_products] WARNING: No data returned for shop_id: {}",
+                shop_id
+            );
         }
 
         Ok(rows
@@ -267,7 +302,10 @@ impl AnalyticsService {
         &self,
         shop_id: Option<String>,
     ) -> Result<Vec<RevenueByCategoryDto>, String> {
-        eprintln!("[get_revenue_by_category] Called with shop_id: {:?}", shop_id);
+        eprintln!(
+            "[get_revenue_by_category] Called with shop_id: {:?}",
+            shop_id
+        );
         let shop_id = self.get_or_resolve_shop_id(shop_id).await?;
         eprintln!("[get_revenue_by_category] Resolved shop_id: {}", shop_id);
 
@@ -280,9 +318,16 @@ impl AnalyticsService {
                 format!("Failed to fetch revenue by category: {}", e)
             })?;
 
-        eprintln!("[get_revenue_by_category] Rows returned: {} (shop_id: {})", rows.len(), shop_id);
+        eprintln!(
+            "[get_revenue_by_category] Rows returned: {} (shop_id: {})",
+            rows.len(),
+            shop_id
+        );
         if rows.is_empty() {
-            eprintln!("[get_revenue_by_category] WARNING: No data returned for shop_id: {}", shop_id);
+            eprintln!(
+                "[get_revenue_by_category] WARNING: No data returned for shop_id: {}",
+                shop_id
+            );
         }
 
         Ok(rows
@@ -302,10 +347,16 @@ impl AnalyticsService {
         shop_id: Option<String>,
         months: Option<i64>,
     ) -> Result<Vec<MonthlySalesDto>, String> {
-        eprintln!("[get_monthly_sales] Called with shop_id: {:?}, months: {:?}", shop_id, months);
+        eprintln!(
+            "[get_monthly_sales] Called with shop_id: {:?}, months: {:?}",
+            shop_id, months
+        );
         let shop_id = self.get_or_resolve_shop_id(shop_id).await?;
         let months = months.unwrap_or(12);
-        eprintln!("[get_monthly_sales] Resolved shop_id: {}, months: {}", shop_id, months);
+        eprintln!(
+            "[get_monthly_sales] Resolved shop_id: {}, months: {}",
+            shop_id, months
+        );
 
         let rows = self
             .repo
@@ -316,9 +367,17 @@ impl AnalyticsService {
                 format!("Failed to fetch monthly sales: {}", e)
             })?;
 
-        eprintln!("[get_monthly_sales] Rows returned: {} (shop_id: {}, months: {})", rows.len(), shop_id, months);
+        eprintln!(
+            "[get_monthly_sales] Rows returned: {} (shop_id: {}, months: {})",
+            rows.len(),
+            shop_id,
+            months
+        );
         if rows.is_empty() {
-            eprintln!("[get_monthly_sales] WARNING: No data returned for shop_id: {}", shop_id);
+            eprintln!(
+                "[get_monthly_sales] WARNING: No data returned for shop_id: {}",
+                shop_id
+            );
         }
 
         Ok(rows
@@ -724,7 +783,10 @@ impl AnalyticsService {
     }
 
     /// Query 22: Vendas Acumuladas por Período (YTD - Year to Date)
-    pub async fn get_year_to_date_sales(&self, shop_id: Option<String>) -> Result<Vec<YearToDateSalesDto>, String> {
+    pub async fn get_year_to_date_sales(
+        &self,
+        shop_id: Option<String>,
+    ) -> Result<Vec<YearToDateSalesDto>, String> {
         let shop_id = self.get_or_resolve_shop_id(shop_id).await?;
         let rows = self
             .repo
@@ -852,7 +914,6 @@ impl AnalyticsService {
             .collect())
     }
 }
-
 
 fn parse_time_range(value: &str) -> Result<ParsedTimeRange, String> {
     let now = Utc::now();

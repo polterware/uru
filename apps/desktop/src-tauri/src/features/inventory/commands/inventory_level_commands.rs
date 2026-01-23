@@ -78,7 +78,10 @@ pub async fn list_inventory_levels_by_shop(
 }
 
 #[tauri::command]
-pub async fn adjust_stock(pool: State<'_, SqlitePool>, payload: AdjustStockDTO) -> Result<(), String> {
+pub async fn adjust_stock(
+    pool: State<'_, SqlitePool>,
+    payload: AdjustStockDTO,
+) -> Result<(), String> {
     let service = InventoryService::new(pool.inner().clone());
     service
         .adjust_stock(
@@ -114,5 +117,7 @@ pub async fn get_available_quantity(
     location_id: String,
 ) -> Result<f64, String> {
     let service = InventoryService::new(pool.inner().clone());
-    service.get_available_quantity(&product_id, &location_id).await
+    service
+        .get_available_quantity(&product_id, &location_id)
+        .await
 }

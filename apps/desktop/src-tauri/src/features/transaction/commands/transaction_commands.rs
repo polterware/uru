@@ -1,11 +1,11 @@
 use crate::features::transaction::dtos::transaction_dto::{
-    CreateTransactionDTO, UpdateTransactionDTO, UpdateTransactionStatusDTO, CompleteSaleDTO
+    CompleteSaleDTO, CreateTransactionDTO, UpdateTransactionDTO, UpdateTransactionStatusDTO,
 };
 use crate::features::transaction::models::transaction_model::Transaction;
 use crate::features::transaction::repositories::transactions_repository::TransactionsRepository;
 use crate::features::transaction::services::transaction_service::TransactionService;
-use tauri::State;
 use sqlx::SqlitePool;
+use tauri::State;
 
 #[tauri::command]
 pub async fn create_transaction(
@@ -36,10 +36,7 @@ pub async fn update_transaction(
 }
 
 #[tauri::command]
-pub async fn delete_transaction(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<(), String> {
+pub async fn delete_transaction(pool: State<'_, SqlitePool>, id: String) -> Result<(), String> {
     let service = TransactionService::new(pool.inner().clone());
     service.delete_transaction(&id).await
 }
@@ -54,9 +51,7 @@ pub async fn get_transaction(
 }
 
 #[tauri::command]
-pub async fn list_transactions(
-    pool: State<'_, SqlitePool>,
-) -> Result<Vec<Transaction>, String> {
+pub async fn list_transactions(pool: State<'_, SqlitePool>) -> Result<Vec<Transaction>, String> {
     let service = TransactionService::new(pool.inner().clone());
     service.list_transactions().await
 }
@@ -98,7 +93,9 @@ pub async fn complete_sale_transaction(
     payload: CompleteSaleDTO,
 ) -> Result<Transaction, String> {
     let service = TransactionService::new(pool.inner().clone());
-    service.complete_sale(&payload.id, &payload.location_id).await
+    service
+        .complete_sale(&payload.id, &payload.location_id)
+        .await
 }
 
 #[tauri::command]

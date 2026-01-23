@@ -1,4 +1,6 @@
-use crate::features::product::dtos::product_dto::{CreateProductDTO, ProductListFilterDTO, UpdateProductDTO};
+use crate::features::product::dtos::product_dto::{
+    CreateProductDTO, ProductListFilterDTO, UpdateProductDTO,
+};
 use crate::features::product::models::product_model::Product;
 use crate::features::product::repositories::product_categories_repository::ProductCategoriesRepository;
 use crate::features::product::repositories::product_repository::ProductRepository;
@@ -70,7 +72,7 @@ impl ProductService {
             .execute(&mut *tx)
             .await
             .map_err(|e| format!("Failed to delete product categories: {}", e))?;
-        
+
         // Delete product
         sqlx::query("DELETE FROM products WHERE id = $1")
             .bind(id)
@@ -131,14 +133,22 @@ impl ProductService {
             .map_err(|e| format!("Failed to list filtered products: {}", e))
     }
 
-    pub async fn search_products(&self, shop_id: &str, query: &str) -> Result<Vec<Product>, String> {
+    pub async fn search_products(
+        &self,
+        shop_id: &str,
+        query: &str,
+    ) -> Result<Vec<Product>, String> {
         self.repo
             .search(shop_id, query)
             .await
             .map_err(|e| format!("Failed to search products: {}", e))
     }
 
-    pub async fn get_product_for_shop(&self, shop_id: &str, id: &str) -> Result<Option<Product>, String> {
+    pub async fn get_product_for_shop(
+        &self,
+        shop_id: &str,
+        id: &str,
+    ) -> Result<Option<Product>, String> {
         self.repo
             .get_by_id_for_shop(shop_id, id)
             .await

@@ -220,6 +220,7 @@ export function CategoriesTable() {
           label: "New Category",
           to: `/shops/${shopId}/categories/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

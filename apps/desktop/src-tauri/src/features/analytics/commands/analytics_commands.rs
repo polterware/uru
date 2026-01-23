@@ -10,7 +10,10 @@ pub async fn get_dashboard_stats(
     pool: State<'_, SqlitePool>,
     shop_id: String,
 ) -> Result<DashboardStatsDto, String> {
-    eprintln!("[get_dashboard_stats command] Received shop_id: {:?} (type: String)", shop_id);
+    eprintln!(
+        "[get_dashboard_stats command] Received shop_id: {:?} (type: String)",
+        shop_id
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_dashboard_stats(Some(shop_id)).await
 }
@@ -21,7 +24,10 @@ pub async fn get_stock_movements(
     shop_id: String,
     payload: StockMovementsFilterDto,
 ) -> Result<Vec<DailyMovementStatDto>, String> {
-    eprintln!("[get_stock_movements command] Received shop_id: {:?}", shop_id);
+    eprintln!(
+        "[get_stock_movements command] Received shop_id: {:?}",
+        shop_id
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_stock_movements(Some(shop_id), payload).await
 }
@@ -33,7 +39,10 @@ pub async fn get_cumulative_revenue(
     shop_id: String,
     days: Option<i64>,
 ) -> Result<Vec<CumulativeRevenueDto>, String> {
-    eprintln!("[get_cumulative_revenue command] Received shop_id: {:?}, days: {:?}", shop_id, days);
+    eprintln!(
+        "[get_cumulative_revenue command] Received shop_id: {:?}, days: {:?}",
+        shop_id, days
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_cumulative_revenue(Some(shop_id), days).await
 }
@@ -44,7 +53,10 @@ pub async fn get_stock_movements_area(
     shop_id: String,
     days: Option<i64>,
 ) -> Result<Vec<StockMovementsAreaDto>, String> {
-    eprintln!("[get_stock_movements_area command] Received shop_id: {:?}, days: {:?}", shop_id, days);
+    eprintln!(
+        "[get_stock_movements_area command] Received shop_id: {:?}, days: {:?}",
+        shop_id, days
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_stock_movements_area(Some(shop_id), days).await
 }
@@ -55,9 +67,14 @@ pub async fn get_revenue_by_payment_method(
     shop_id: String,
     days: Option<i64>,
 ) -> Result<Vec<RevenueByPaymentMethodDto>, String> {
-    eprintln!("[get_revenue_by_payment_method command] Received shop_id: {:?}, days: {:?}", shop_id, days);
+    eprintln!(
+        "[get_revenue_by_payment_method command] Received shop_id: {:?}, days: {:?}",
+        shop_id, days
+    );
     let service = AnalyticsService::new(pool.inner().clone());
-    service.get_revenue_by_payment_method(Some(shop_id), days).await
+    service
+        .get_revenue_by_payment_method(Some(shop_id), days)
+        .await
 }
 
 // Bar Chart Commands
@@ -68,7 +85,10 @@ pub async fn get_top_products(
     days: Option<i64>,
     limit: Option<i64>,
 ) -> Result<Vec<TopProductDto>, String> {
-    eprintln!("[get_top_products command] Received shop_id: {:?}, days: {:?}, limit: {:?}", shop_id, days, limit);
+    eprintln!(
+        "[get_top_products command] Received shop_id: {:?}, days: {:?}, limit: {:?}",
+        shop_id, days, limit
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_top_products(Some(shop_id), days, limit).await
 }
@@ -78,7 +98,10 @@ pub async fn get_revenue_by_category(
     pool: State<'_, SqlitePool>,
     shop_id: String,
 ) -> Result<Vec<RevenueByCategoryDto>, String> {
-    eprintln!("[get_revenue_by_category command] Received shop_id: {:?}", shop_id);
+    eprintln!(
+        "[get_revenue_by_category command] Received shop_id: {:?}",
+        shop_id
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_revenue_by_category(Some(shop_id)).await
 }
@@ -89,7 +112,10 @@ pub async fn get_monthly_sales(
     shop_id: String,
     months: Option<i64>,
 ) -> Result<Vec<MonthlySalesDto>, String> {
-    eprintln!("[get_monthly_sales command] Received shop_id: {:?}, months: {:?}", shop_id, months);
+    eprintln!(
+        "[get_monthly_sales command] Received shop_id: {:?}, months: {:?}",
+        shop_id, months
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_monthly_sales(Some(shop_id), months).await
 }
@@ -111,7 +137,10 @@ pub async fn get_daily_sales_trend(
     shop_id: String,
     days: Option<i64>,
 ) -> Result<Vec<DailySalesTrendDto>, String> {
-    eprintln!("[get_daily_sales_trend command] Received shop_id: {:?}, days: {:?}", shop_id, days);
+    eprintln!(
+        "[get_daily_sales_trend command] Received shop_id: {:?}, days: {:?}",
+        shop_id, days
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_daily_sales_trend(Some(shop_id), days).await
 }
@@ -122,7 +151,10 @@ pub async fn get_customer_growth(
     shop_id: String,
     months: Option<i64>,
 ) -> Result<Vec<CustomerGrowthDto>, String> {
-    eprintln!("[get_customer_growth command] Received shop_id: {:?}, months: {:?}", shop_id, months);
+    eprintln!(
+        "[get_customer_growth command] Received shop_id: {:?}, months: {:?}",
+        shop_id, months
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_customer_growth(Some(shop_id), months).await
 }
@@ -133,7 +165,10 @@ pub async fn get_average_order_value(
     shop_id: String,
     months: Option<i64>,
 ) -> Result<Vec<AverageOrderValueDto>, String> {
-    eprintln!("[get_average_order_value command] Received shop_id: {:?}, months: {:?}", shop_id, months);
+    eprintln!(
+        "[get_average_order_value command] Received shop_id: {:?}, months: {:?}",
+        shop_id, months
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_average_order_value(Some(shop_id), months).await
 }
@@ -145,9 +180,14 @@ pub async fn get_payment_method_distribution(
     shop_id: String,
     days: Option<i64>,
 ) -> Result<Vec<PaymentMethodDistributionDto>, String> {
-    eprintln!("[get_payment_method_distribution command] Received shop_id: {:?}, days: {:?}", shop_id, days);
+    eprintln!(
+        "[get_payment_method_distribution command] Received shop_id: {:?}, days: {:?}",
+        shop_id, days
+    );
     let service = AnalyticsService::new(pool.inner().clone());
-    service.get_payment_method_distribution(Some(shop_id), days).await
+    service
+        .get_payment_method_distribution(Some(shop_id), days)
+        .await
 }
 
 #[tauri::command]
@@ -155,7 +195,10 @@ pub async fn get_category_distribution(
     pool: State<'_, SqlitePool>,
     shop_id: String,
 ) -> Result<Vec<CategoryDistributionDto>, String> {
-    eprintln!("[get_category_distribution command] Received shop_id: {:?}", shop_id);
+    eprintln!(
+        "[get_category_distribution command] Received shop_id: {:?}",
+        shop_id
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_category_distribution(Some(shop_id)).await
 }
@@ -166,9 +209,14 @@ pub async fn get_order_status_distribution(
     shop_id: String,
     days: Option<i64>,
 ) -> Result<Vec<OrderStatusDistributionDto>, String> {
-    eprintln!("[get_order_status_distribution command] Received shop_id: {:?}, days: {:?}", shop_id, days);
+    eprintln!(
+        "[get_order_status_distribution command] Received shop_id: {:?}, days: {:?}",
+        shop_id, days
+    );
     let service = AnalyticsService::new(pool.inner().clone());
-    service.get_order_status_distribution(Some(shop_id), days).await
+    service
+        .get_order_status_distribution(Some(shop_id), days)
+        .await
 }
 
 #[tauri::command]
@@ -176,7 +224,10 @@ pub async fn get_customer_group_distribution(
     pool: State<'_, SqlitePool>,
     shop_id: String,
 ) -> Result<Vec<CustomerGroupDistributionDto>, String> {
-    eprintln!("[get_customer_group_distribution command] Received shop_id: {:?}", shop_id);
+    eprintln!(
+        "[get_customer_group_distribution command] Received shop_id: {:?}",
+        shop_id
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_customer_group_distribution(Some(shop_id)).await
 }
@@ -188,9 +239,14 @@ pub async fn get_monthly_performance_metrics(
     shop_id: String,
     months: Option<i64>,
 ) -> Result<Vec<MonthlyPerformanceMetricsDto>, String> {
-    eprintln!("[get_monthly_performance_metrics command] Received shop_id: {:?}, months: {:?}", shop_id, months);
+    eprintln!(
+        "[get_monthly_performance_metrics command] Received shop_id: {:?}, months: {:?}",
+        shop_id, months
+    );
     let service = AnalyticsService::new(pool.inner().clone());
-    service.get_monthly_performance_metrics(Some(shop_id), months).await
+    service
+        .get_monthly_performance_metrics(Some(shop_id), months)
+        .await
 }
 
 #[tauri::command]
@@ -200,9 +256,14 @@ pub async fn get_product_metrics(
     days: Option<i64>,
     limit: Option<i64>,
 ) -> Result<Vec<ProductMetricsDto>, String> {
-    eprintln!("[get_product_metrics command] Received shop_id: {:?}, days: {:?}, limit: {:?}", shop_id, days, limit);
+    eprintln!(
+        "[get_product_metrics command] Received shop_id: {:?}, days: {:?}, limit: {:?}",
+        shop_id, days, limit
+    );
     let service = AnalyticsService::new(pool.inner().clone());
-    service.get_product_metrics(Some(shop_id), days, limit).await
+    service
+        .get_product_metrics(Some(shop_id), days, limit)
+        .await
 }
 
 // Radial Chart Commands
@@ -212,9 +273,14 @@ pub async fn get_monthly_sales_progress(
     shop_id: String,
     target_revenue: Option<f64>,
 ) -> Result<MonthlySalesProgressDto, String> {
-    eprintln!("[get_monthly_sales_progress command] Received shop_id: {:?}, target_revenue: {:?}", shop_id, target_revenue);
+    eprintln!(
+        "[get_monthly_sales_progress command] Received shop_id: {:?}, target_revenue: {:?}",
+        shop_id, target_revenue
+    );
     let service = AnalyticsService::new(pool.inner().clone());
-    service.get_monthly_sales_progress(Some(shop_id), target_revenue).await
+    service
+        .get_monthly_sales_progress(Some(shop_id), target_revenue)
+        .await
 }
 
 #[tauri::command]
@@ -223,7 +289,10 @@ pub async fn get_conversion_rate(
     shop_id: String,
     days: Option<i64>,
 ) -> Result<ConversionRateDto, String> {
-    eprintln!("[get_conversion_rate command] Received shop_id: {:?}, days: {:?}", shop_id, days);
+    eprintln!(
+        "[get_conversion_rate command] Received shop_id: {:?}, days: {:?}",
+        shop_id, days
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_conversion_rate(Some(shop_id), days).await
 }
@@ -234,9 +303,14 @@ pub async fn get_inventory_capacity(
     shop_id: String,
     capacity_limit: Option<f64>,
 ) -> Result<InventoryCapacityDto, String> {
-    eprintln!("[get_inventory_capacity command] Received shop_id: {:?}, capacity_limit: {:?}", shop_id, capacity_limit);
+    eprintln!(
+        "[get_inventory_capacity command] Received shop_id: {:?}, capacity_limit: {:?}",
+        shop_id, capacity_limit
+    );
     let service = AnalyticsService::new(pool.inner().clone());
-    service.get_inventory_capacity(Some(shop_id), capacity_limit).await
+    service
+        .get_inventory_capacity(Some(shop_id), capacity_limit)
+        .await
 }
 
 // Advanced Queries Commands
@@ -247,9 +321,14 @@ pub async fn get_product_ranking(
     days: Option<i64>,
     limit: Option<i64>,
 ) -> Result<Vec<ProductRankingDto>, String> {
-    eprintln!("[get_product_ranking command] Received shop_id: {:?}, days: {:?}, limit: {:?}", shop_id, days, limit);
+    eprintln!(
+        "[get_product_ranking command] Received shop_id: {:?}, days: {:?}, limit: {:?}",
+        shop_id, days, limit
+    );
     let service = AnalyticsService::new(pool.inner().clone());
-    service.get_product_ranking(Some(shop_id), days, limit).await
+    service
+        .get_product_ranking(Some(shop_id), days, limit)
+        .await
 }
 
 #[tauri::command]
@@ -258,9 +337,14 @@ pub async fn get_month_over_month_growth(
     shop_id: String,
     months: Option<i64>,
 ) -> Result<Vec<MonthOverMonthGrowthDto>, String> {
-    eprintln!("[get_month_over_month_growth command] Received shop_id: {:?}, months: {:?}", shop_id, months);
+    eprintln!(
+        "[get_month_over_month_growth command] Received shop_id: {:?}, months: {:?}",
+        shop_id, months
+    );
     let service = AnalyticsService::new(pool.inner().clone());
-    service.get_month_over_month_growth(Some(shop_id), months).await
+    service
+        .get_month_over_month_growth(Some(shop_id), months)
+        .await
 }
 
 #[tauri::command]
@@ -268,7 +352,10 @@ pub async fn get_year_to_date_sales(
     pool: State<'_, SqlitePool>,
     shop_id: String,
 ) -> Result<Vec<YearToDateSalesDto>, String> {
-    eprintln!("[get_year_to_date_sales command] Received shop_id: {:?}", shop_id);
+    eprintln!(
+        "[get_year_to_date_sales command] Received shop_id: {:?}",
+        shop_id
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_year_to_date_sales(Some(shop_id)).await
 }
@@ -281,9 +368,14 @@ pub async fn get_top_rated_products(
     limit: Option<i64>,
     min_reviews: Option<i64>,
 ) -> Result<Vec<TopRatedProductDto>, String> {
-    eprintln!("[get_top_rated_products command] Received shop_id: {:?}, limit: {:?}, min_reviews: {:?}", shop_id, limit, min_reviews);
+    eprintln!(
+        "[get_top_rated_products command] Received shop_id: {:?}, limit: {:?}, min_reviews: {:?}",
+        shop_id, limit, min_reviews
+    );
     let service = AnalyticsService::new(pool.inner().clone());
-    service.get_top_rated_products(Some(shop_id), limit, min_reviews).await
+    service
+        .get_top_rated_products(Some(shop_id), limit, min_reviews)
+        .await
 }
 
 #[tauri::command]
@@ -292,9 +384,14 @@ pub async fn get_product_review_analytics(
     shop_id: String,
     limit: Option<i64>,
 ) -> Result<Vec<ProductReviewAnalyticsDto>, String> {
-    eprintln!("[get_product_review_analytics command] Received shop_id: {:?}, limit: {:?}", shop_id, limit);
+    eprintln!(
+        "[get_product_review_analytics command] Received shop_id: {:?}, limit: {:?}",
+        shop_id, limit
+    );
     let service = AnalyticsService::new(pool.inner().clone());
-    service.get_product_review_analytics(Some(shop_id), limit).await
+    service
+        .get_product_review_analytics(Some(shop_id), limit)
+        .await
 }
 
 #[tauri::command]
@@ -302,7 +399,10 @@ pub async fn get_review_stats_summary(
     pool: State<'_, SqlitePool>,
     shop_id: String,
 ) -> Result<ReviewStatsSummaryDto, String> {
-    eprintln!("[get_review_stats_summary command] Received shop_id: {:?}", shop_id);
+    eprintln!(
+        "[get_review_stats_summary command] Received shop_id: {:?}",
+        shop_id
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_review_stats_summary(Some(shop_id)).await
 }
@@ -312,7 +412,10 @@ pub async fn get_rating_distribution(
     pool: State<'_, SqlitePool>,
     shop_id: String,
 ) -> Result<Vec<RatingDistributionDto>, String> {
-    eprintln!("[get_rating_distribution command] Received shop_id: {:?}", shop_id);
+    eprintln!(
+        "[get_rating_distribution command] Received shop_id: {:?}",
+        shop_id
+    );
     let service = AnalyticsService::new(pool.inner().clone());
     service.get_rating_distribution(Some(shop_id)).await
 }

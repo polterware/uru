@@ -41,7 +41,9 @@ impl CreateOrderDTO {
             customer_id: self.customer_id,
             status: self.status.or_else(|| Some("open".to_string())),
             payment_status: self.payment_status.or_else(|| Some("unpaid".to_string())),
-            fulfillment_status: self.fulfillment_status.or_else(|| Some("unfulfilled".to_string())),
+            fulfillment_status: self
+                .fulfillment_status
+                .or_else(|| Some("unfulfilled".to_string())),
             currency: self.currency.or_else(|| Some("BRL".to_string())),
             subtotal_price: self.subtotal_price,
             total_discounts: self.total_discounts,

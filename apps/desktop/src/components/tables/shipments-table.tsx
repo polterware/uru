@@ -217,6 +217,7 @@ export function ShipmentsTable() {
           label: "New Shipment",
           to: `/shops/${shopId}/shipments/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

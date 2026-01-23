@@ -238,6 +238,7 @@ export function InquiriesTable() {
           label: "New Inquiry",
           to: `/shops/${shopId}/inquiries/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

@@ -55,11 +55,7 @@ impl CustomerGroupMembershipService {
             .map_err(|e| format!("Failed to list memberships by group: {}", e))
     }
 
-    pub async fn delete_membership(
-        &self,
-        customer_id: &str,
-        group_id: &str,
-    ) -> Result<(), String> {
+    pub async fn delete_membership(&self, customer_id: &str, group_id: &str) -> Result<(), String> {
         self.repo
             .delete(customer_id, group_id)
             .await

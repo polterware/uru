@@ -1,9 +1,8 @@
+use crate::features::customer::models::customer_model::CustomerAddress;
 use crate::features::customer_address::dtos::customer_address_dto::{
-    CreateCustomerAddressDTO,
-    UpdateCustomerAddressDTO,
+    CreateCustomerAddressDTO, UpdateCustomerAddressDTO,
 };
 use crate::features::customer_address::repositories::customer_addresses_repository::CustomerAddressesRepository;
-use crate::features::customer::models::customer_model::CustomerAddress;
 use sqlx::SqlitePool;
 
 pub struct CustomerAddressService {

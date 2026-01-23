@@ -328,6 +328,7 @@ export function OrdersTable() {
           label: "New Order",
           to: `/shops/${shopId}/orders/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       {/* Delete Confirmation Dialog */}

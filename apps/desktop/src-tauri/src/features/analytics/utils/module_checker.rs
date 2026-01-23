@@ -24,7 +24,13 @@ pub fn is_module_enabled(features_config: Option<&str>, module_code: &str) -> bo
 }
 
 /// Módulos core sempre habilitados
-pub const CORE_MODULES: &[&str] = &["products", "customers", "transactions", "orders", "payments"];
+pub const CORE_MODULES: &[&str] = &[
+    "products",
+    "customers",
+    "transactions",
+    "orders",
+    "payments",
+];
 
 /// Verifica se um módulo é core (sempre habilitado)
 pub fn is_core_module(module_code: &str) -> bool {

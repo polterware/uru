@@ -105,9 +105,7 @@ impl<'a> PaymentsRepository<'a> {
 
     pub async fn list(&self) -> Result<Vec<Payment>> {
         let sql = "SELECT * FROM payments ORDER BY created_at DESC";
-        sqlx::query_as::<_, Payment>(sql)
-            .fetch_all(self.pool)
-            .await
+        sqlx::query_as::<_, Payment>(sql).fetch_all(self.pool).await
     }
 
     pub async fn list_by_transaction(&self, transaction_id: &str) -> Result<Vec<Payment>> {

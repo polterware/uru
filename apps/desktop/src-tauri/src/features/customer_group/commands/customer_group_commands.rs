@@ -1,4 +1,6 @@
-use crate::features::customer_group::dtos::customer_group_dto::{CreateCustomerGroupDTO, UpdateCustomerGroupDTO};
+use crate::features::customer_group::dtos::customer_group_dto::{
+    CreateCustomerGroupDTO, UpdateCustomerGroupDTO,
+};
 use crate::features::customer_group::models::customer_group_model::CustomerGroup;
 use crate::features::customer_group::services::customer_group_service::CustomerGroupService;
 use sqlx::SqlitePool;
@@ -23,10 +25,7 @@ pub async fn update_customer_group(
 }
 
 #[tauri::command]
-pub async fn delete_customer_group(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<(), String> {
+pub async fn delete_customer_group(pool: State<'_, SqlitePool>, id: String) -> Result<(), String> {
     let service = CustomerGroupService::new(pool.inner().clone());
     service.delete_group(&id).await
 }

@@ -1,5 +1,5 @@
-use crate::features::review::models::review_model::Review;
 use crate::features::product::repositories::product_metrics_repository::ProductMetricsRepository;
+use crate::features::review::models::review_model::Review;
 use crate::features::review::repositories::reviews_repository::ReviewsRepository;
 use sqlx::SqlitePool;
 

@@ -29,10 +29,7 @@ pub async fn delete_refund(pool: State<'_, SqlitePool>, id: String) -> Result<()
 }
 
 #[tauri::command]
-pub async fn get_refund(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<Option<Refund>, String> {
+pub async fn get_refund(pool: State<'_, SqlitePool>, id: String) -> Result<Option<Refund>, String> {
     let service = RefundService::new(pool.inner());
     service.get_refund(&id).await
 }

@@ -2,110 +2,138 @@ pub mod db;
 pub mod features;
 
 use crate::features::analytics::commands::analytics_commands::{
-    get_dashboard_stats, get_stock_movements,
-    get_cumulative_revenue, get_stock_movements_area, get_revenue_by_payment_method,
-    get_top_products, get_revenue_by_category, get_monthly_sales, get_stock_status,
-    get_daily_sales_trend, get_customer_growth, get_average_order_value,
-    get_payment_method_distribution, get_category_distribution, get_order_status_distribution,
+    get_average_order_value,
+    get_category_distribution,
+    get_conversion_rate,
+    get_cumulative_revenue,
     get_customer_group_distribution,
-    get_monthly_performance_metrics, get_product_metrics,
-    get_monthly_sales_progress, get_conversion_rate, get_inventory_capacity,
-    get_product_ranking, get_month_over_month_growth, get_year_to_date_sales,
+    get_customer_growth,
+    get_daily_sales_trend,
+    get_dashboard_stats,
+    get_inventory_capacity,
+    get_month_over_month_growth,
+    get_monthly_performance_metrics,
+    get_monthly_sales,
+    get_monthly_sales_progress,
+    get_order_status_distribution,
+    get_payment_method_distribution,
+    get_product_metrics,
+    get_product_ranking,
+    get_product_review_analytics,
+    get_rating_distribution,
+    get_revenue_by_category,
+    get_revenue_by_payment_method,
+    get_review_stats_summary,
+    get_stock_movements,
+    get_stock_movements_area,
+    get_stock_status,
+    get_top_products,
     // Product Review Analytics
-    get_top_rated_products, get_product_review_analytics, get_review_stats_summary, get_rating_distribution,
+    get_top_rated_products,
+    get_year_to_date_sales,
+};
+use crate::features::brand::commands::brand_commands::{
+    create_brand, delete_brand, get_brand, list_brands, list_brands_by_shop, update_brand,
+};
+use crate::features::category::commands::category_commands::{
+    create_category, delete_category, get_category, list_categories, list_categories_by_shop,
+    update_category,
+};
+use crate::features::checkout::commands::checkout_commands::{
+    create_checkout, delete_checkout, get_checkout, get_checkout_by_token, list_checkouts,
+    list_checkouts_by_shop, update_checkout,
+};
+use crate::features::customer::commands::customer_commands::{
+    create_customer, delete_customer, get_customer, list_customers, list_customers_by_shop,
+    update_customer,
+};
+use crate::features::customer_address::commands::customer_address_commands::{
+    create_customer_address, delete_customer_address, get_customer_address,
+    list_customer_addresses, list_customer_addresses_by_customer, update_customer_address,
+};
+use crate::features::customer_group::commands::customer_group_commands::{
+    create_customer_group, delete_customer_group, get_customer_group, list_customer_groups,
+    list_customer_groups_by_shop, update_customer_group,
+};
+use crate::features::customer_group_membership::commands::customer_group_membership_commands::{
+    assign_customer_groups, delete_customer_group_membership,
+    list_customer_group_memberships_by_customer, list_customer_group_memberships_by_group,
 };
 use crate::features::inquiry::commands::inquiry_commands::{
     create_inquiry, delete_inquiry, get_inquiry, list_inquiries, list_inquiries_by_shop,
 };
 use crate::features::module::commands::modules_commands::{
-    get_module, get_module_by_code, list_modules, list_modules_by_category, list_core_modules,
-};
-use crate::features::shop::commands::shop_commands::{
-    create_shop, create_shop_from_template, update_shop, delete_shop, get_shop, list_shops,
-};
-use crate::features::shop_template::commands::shop_templates_commands::{
-    get_shop_template, get_shop_template_by_code, list_shop_templates, list_shop_templates_by_category,
-};
-use crate::features::product::commands::product_commands::{
-    create_product, update_product, delete_product, get_product, list_products, list_products_filtered,
-};
-use crate::features::brand::commands::brand_commands::{
-    create_brand, update_brand, delete_brand, get_brand, list_brands, list_brands_by_shop,
-};
-use crate::features::category::commands::category_commands::{
-    create_category, update_category, delete_category, get_category, list_categories_by_shop, list_categories,
-};
-use crate::features::checkout::commands::checkout_commands::{
-    create_checkout, update_checkout, delete_checkout, get_checkout, get_checkout_by_token, list_checkouts, list_checkouts_by_shop,
-};
-use crate::features::refund::commands::refund_commands::{
-    create_refund, update_refund, delete_refund, get_refund, list_refunds, list_refunds_by_payment, update_refund_status,
-};
-use crate::features::payment::commands::payment_commands::{
-    list_payments, list_payments_by_shop, get_payment, update_payment_status,
+    get_module, get_module_by_code, list_core_modules, list_modules, list_modules_by_category,
 };
 use crate::features::order::commands::order_commands::{
-    create_order, update_order, delete_order, get_order, list_orders, list_orders_by_shop,
-    update_order_payment_status, update_order_fulfillment_status, cancel_order,
+    cancel_order, create_order, delete_order, get_order, list_orders, list_orders_by_shop,
+    update_order, update_order_fulfillment_status, update_order_payment_status,
 };
-use crate::features::customer::commands::customer_commands::{
-    create_customer, update_customer, delete_customer, get_customer, list_customers, list_customers_by_shop,
+use crate::features::payment::commands::payment_commands::{
+    get_payment, list_payments, list_payments_by_shop, update_payment_status,
 };
-use crate::features::customer_address::commands::customer_address_commands::{
-    create_customer_address, update_customer_address, delete_customer_address,
-    get_customer_address, list_customer_addresses, list_customer_addresses_by_customer,
+use crate::features::product::commands::product_commands::{
+    create_product, delete_product, get_product, list_products, list_products_filtered,
+    update_product,
 };
-use crate::features::customer_group::commands::customer_group_commands::{
-    create_customer_group, update_customer_group, delete_customer_group,
-    get_customer_group, list_customer_groups, list_customer_groups_by_shop,
+use crate::features::refund::commands::refund_commands::{
+    create_refund, delete_refund, get_refund, list_refunds, list_refunds_by_payment, update_refund,
+    update_refund_status,
 };
-use crate::features::customer_group_membership::commands::customer_group_membership_commands::{
-    assign_customer_groups, list_customer_group_memberships_by_customer,
-    list_customer_group_memberships_by_group, delete_customer_group_membership,
+use crate::features::shop::commands::shop_commands::{
+    create_shop, create_shop_from_template, delete_shop, get_shop, list_shops, update_shop,
+};
+use crate::features::shop_template::commands::shop_templates_commands::{
+    get_shop_template, get_shop_template_by_code, list_shop_templates,
+    list_shop_templates_by_category,
 };
 use crate::features::transaction::commands::transaction_commands::{
-    create_transaction, update_transaction, delete_transaction, get_transaction, list_transactions, list_transactions_by_shop,
-    update_transaction_status, complete_sale_transaction, cancel_transaction,
+    cancel_transaction, complete_sale_transaction, create_transaction, delete_transaction,
+    get_transaction, list_transactions, list_transactions_by_shop, update_transaction,
+    update_transaction_status,
 };
 
-use crate::features::transaction::commands::transaction_item_commands::{
-    create_transaction_item, update_transaction_item, delete_transaction_item,
-    get_transaction_item, list_transaction_items, list_transaction_items_by_transaction,
-};
 use crate::features::inventory::commands::inventory_level_commands::{
-    create_inventory_level, update_inventory_level, delete_inventory_level,
-    get_inventory_level, list_inventory_levels, list_inventory_levels_by_shop, adjust_stock, transfer_stock, get_available_quantity,
+    adjust_stock, create_inventory_level, delete_inventory_level, get_available_quantity,
+    get_inventory_level, list_inventory_levels, list_inventory_levels_by_shop, transfer_stock,
+    update_inventory_level,
 };
 use crate::features::inventory::commands::inventory_movement_commands::{
-    create_inventory_movement, list_inventory_movements,
-    list_inventory_movements_by_transaction, list_inventory_movements_by_level,
+    create_inventory_movement, list_inventory_movements, list_inventory_movements_by_level,
+    list_inventory_movements_by_transaction,
 };
 use crate::features::location::commands::location_commands::{
-    create_location, update_location, delete_location, get_location, list_locations,
-    list_locations_by_type, list_sellable_locations,
-};
-use crate::features::shipment::commands::shipment_commands::{
-    create_shipment, update_shipment, delete_shipment, get_shipment, list_shipments, list_shipments_by_shop,
-};
-use crate::features::review::commands::review_commands::{
-    list_reviews_by_shop, list_reviews, delete_review, get_review, create_review, update_review,
+    create_location, delete_location, get_location, list_locations, list_locations_by_type,
+    list_sellable_locations, update_location,
 };
 use crate::features::pos_session::commands::pos_session_commands::{
-    create_pos_session, update_pos_session, close_pos_session, delete_pos_session,
-    get_pos_session, list_pos_sessions, list_pos_sessions_by_shop, get_open_pos_session_by_operator,
+    close_pos_session, create_pos_session, delete_pos_session, get_open_pos_session_by_operator,
+    get_pos_session, list_pos_sessions, list_pos_sessions_by_shop, update_pos_session,
+};
+use crate::features::review::commands::review_commands::{
+    create_review, delete_review, get_review, list_reviews, list_reviews_by_shop, update_review,
+};
+use crate::features::shipment::commands::shipment_commands::{
+    create_shipment, delete_shipment, get_shipment, list_shipments, list_shipments_by_shop,
+    update_shipment,
+};
+use crate::features::transaction::commands::transaction_item_commands::{
+    create_transaction_item, delete_transaction_item, get_transaction_item, list_transaction_items,
+    list_transaction_items_by_transaction, update_transaction_item,
 };
 use crate::features::user::commands::user_commands::{
-    create_user, update_user, delete_user, get_user, list_users,
+    create_user, delete_user, get_user, list_users, update_user,
 };
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
-use tauri::Manager;
 use std::fs;
 use std::fs::OpenOptions;
 use std::str::FromStr;
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_stronghold::Builder::new(|pass| todo!()).build())
         .invoke_handler(tauri::generate_handler![
             // Analytics
             get_dashboard_stats,
@@ -239,7 +267,6 @@ pub fn run() {
             get_transaction_item,
             list_transaction_items,
             list_transaction_items_by_transaction,
-
             // Inventory Levels
             create_inventory_level,
             update_inventory_level,
@@ -322,24 +349,19 @@ pub fn run() {
             fs::create_dir_all(&app_data_dir)?;
             let db_path = app_data_dir.join("uru.db");
             if !db_path.exists() {
-                OpenOptions::new()
-                    .create(true)
-                    .write(true)
-                    .open(&db_path)?;
+                OpenOptions::new().create(true).write(true).open(&db_path)?;
             }
             let db_url = format!(
                 "sqlite:{}?mode=rwc",
                 db_path.to_string_lossy().replace(' ', "%20")
             );
 
-            let migrations = vec![
-                tauri_plugin_sql::Migration {
-                    version: 1,
-                    description: "create_initial_schema",
-                    sql: include_str!("../migrations/001_initial_schema.sql"),
-                    kind: tauri_plugin_sql::MigrationKind::Up,
-                },
-            ];
+            let migrations = vec![tauri_plugin_sql::Migration {
+                version: 1,
+                description: "create_initial_schema",
+                sql: include_str!("../migrations/001_initial_schema.sql"),
+                kind: tauri_plugin_sql::MigrationKind::Up,
+            }];
 
             app.handle().plugin(
                 tauri_plugin_sql::Builder::default()
@@ -347,8 +369,7 @@ pub fn run() {
                     .build(),
             )?;
 
-            let connect_options = SqliteConnectOptions::from_str(&db_url)?
-                .create_if_missing(true);
+            let connect_options = SqliteConnectOptions::from_str(&db_url)?.create_if_missing(true);
             let pool = tauri::async_runtime::block_on(async {
                 SqlitePoolOptions::new()
                     .max_connections(5)
@@ -358,7 +379,8 @@ pub fn run() {
             app.manage(pool);
 
             // Register store plugin for app settings
-            app.handle().plugin(tauri_plugin_store::Builder::new().build())?;
+            app.handle()
+                .plugin(tauri_plugin_store::Builder::new().build())?;
 
             if cfg!(debug_assertions) {
                 app.handle().plugin(

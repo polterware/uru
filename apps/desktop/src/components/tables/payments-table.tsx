@@ -286,6 +286,7 @@ export function PaymentsTable() {
           label: "New Payment",
           to: `/shops/${shopId}/payments/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

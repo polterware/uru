@@ -1,5 +1,5 @@
 use crate::features::shop_template::models::shop_template_model::ShopTemplate;
-use sqlx::{SqlitePool, Result};
+use sqlx::{Result, SqlitePool};
 
 pub struct ShopTemplatesRepository {
     pool: SqlitePool,

@@ -1,5 +1,5 @@
-use sqlx::SqlitePool;
 use crate::features::analytics::utils::module_checker;
+use sqlx::SqlitePool;
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct DashboardStatsRow {
@@ -241,7 +241,6 @@ pub struct RatingDistributionRow {
     pub percentage: f64,
 }
 
-
 pub struct AnalyticsRepository {
     pool: SqlitePool,
 }
@@ -251,10 +250,14 @@ impl AnalyticsRepository {
         Self { pool }
     }
 
-    fn check_module_required(&self, features_config: Option<&str>, module_code: &str) -> sqlx::Result<()> {
+    fn check_module_required(
+        &self,
+        features_config: Option<&str>,
+        module_code: &str,
+    ) -> sqlx::Result<()> {
         if !module_checker::is_module_enabled_or_core(features_config, module_code) {
             return Err(sqlx::Error::Configuration(
-                format!("Module '{}' is not enabled", module_code).into()
+                format!("Module '{}' is not enabled", module_code).into(),
             ));
         }
         Ok(())
@@ -266,7 +269,10 @@ impl AnalyticsRepository {
         shop_id: &str,
         low_stock_threshold: f64,
     ) -> sqlx::Result<DashboardStatsRow> {
-        eprintln!("[AnalyticsRepository::get_dashboard_stats] shop_id: {}, low_stock_threshold: {}", shop_id, low_stock_threshold);
+        eprintln!(
+            "[AnalyticsRepository::get_dashboard_stats] shop_id: {}, low_stock_threshold: {}",
+            shop_id, low_stock_threshold
+        );
         self.check_module_required(features_config, "inventory")?;
         let sql = r#"
             SELECT
@@ -305,7 +311,10 @@ impl AnalyticsRepository {
                     stats.total_items, stats.low_stock_items, stats.total_inventory_value);
             }
             Err(e) => {
-                eprintln!("[AnalyticsRepository::get_dashboard_stats] Query error: {} (shop_id: {})", e, shop_id);
+                eprintln!(
+                    "[AnalyticsRepository::get_dashboard_stats] Query error: {} (shop_id: {})",
+                    e, shop_id
+                );
             }
         }
 
@@ -397,7 +406,10 @@ impl AnalyticsRepository {
         shop_id: &str,
         days: i64,
     ) -> sqlx::Result<Vec<CumulativeRevenueRow>> {
-        eprintln!("[AnalyticsRepository::get_cumulative_revenue] shop_id: {}, days: {}", shop_id, days);
+        eprintln!(
+            "[AnalyticsRepository::get_cumulative_revenue] shop_id: {}, days: {}",
+            shop_id, days
+        );
         let sql = r#"
             WITH payments_revenue AS (
                 SELECT
@@ -620,7 +632,10 @@ impl AnalyticsRepository {
         days: i64,
         limit: i64,
     ) -> sqlx::Result<Vec<TopProductRow>> {
-        eprintln!("[AnalyticsRepository::get_top_products] shop_id: {}, days: {}, limit: {}", shop_id, days, limit);
+        eprintln!(
+            "[AnalyticsRepository::get_top_products] shop_id: {}, days: {}, limit: {}",
+            shop_id, days, limit
+        );
         let sql = r#"
             SELECT
                 ti.product_id,
@@ -682,7 +697,10 @@ impl AnalyticsRepository {
         &self,
         shop_id: &str,
     ) -> sqlx::Result<Vec<RevenueByCategoryRow>> {
-        eprintln!("[AnalyticsRepository::get_revenue_by_category] shop_id: {}", shop_id);
+        eprintln!(
+            "[AnalyticsRepository::get_revenue_by_category] shop_id: {}",
+            shop_id
+        );
         let sql = r#"
             SELECT
                 c.name AS category_name,
@@ -711,7 +729,10 @@ impl AnalyticsRepository {
                     rows.len(), shop_id);
             }
             Err(e) => {
-                eprintln!("[AnalyticsRepository::get_revenue_by_category] Query error: {} (shop_id: {})", e, shop_id);
+                eprintln!(
+                    "[AnalyticsRepository::get_revenue_by_category] Query error: {} (shop_id: {})",
+                    e, shop_id
+                );
             }
         }
 
@@ -724,7 +745,10 @@ impl AnalyticsRepository {
         shop_id: &str,
         months: i64,
     ) -> sqlx::Result<Vec<MonthlySalesRow>> {
-        eprintln!("[AnalyticsRepository::get_monthly_sales] shop_id: {}, months: {}", shop_id, months);
+        eprintln!(
+            "[AnalyticsRepository::get_monthly_sales] shop_id: {}, months: {}",
+            shop_id, months
+        );
         let sql = r#"
             SELECT
                 strftime('%Y-%m', created_at) AS month,
@@ -1040,7 +1064,10 @@ impl AnalyticsRepository {
     }
 
     /// Query 14: Distribuição de Clientes por Grupo
-    pub async fn get_customer_group_distribution(&self, shop_id: &str) -> sqlx::Result<Vec<CustomerGroupDistributionRow>> {
+    pub async fn get_customer_group_distribution(
+        &self,
+        shop_id: &str,
+    ) -> sqlx::Result<Vec<CustomerGroupDistributionRow>> {
         let sql = r#"
             SELECT
                 COALESCE(cg.name, 'Sem Grupo') AS group_name,
@@ -1070,7 +1097,11 @@ impl AnalyticsRepository {
     // ============================================================
 
     /// Query 15: Métricas de Performance por Mês (Vendas, Receita, Clientes, Estoque)
-    pub async fn get_monthly_performance_metrics(&self, shop_id: &str, months: i64) -> sqlx::Result<Vec<MonthlyPerformanceMetricsRow>> {
+    pub async fn get_monthly_performance_metrics(
+        &self,
+        shop_id: &str,
+        months: i64,
+    ) -> sqlx::Result<Vec<MonthlyPerformanceMetricsRow>> {
         let sql = r#"
             WITH monthly_metrics AS (
                 SELECT
@@ -1142,7 +1173,12 @@ impl AnalyticsRepository {
     }
 
     /// Query 16: Métricas por Produto (Vendas, Receita, Margem, Estoque)
-    pub async fn get_product_metrics(&self, shop_id: &str, days: i64, limit: i64) -> sqlx::Result<Vec<ProductMetricsRow>> {
+    pub async fn get_product_metrics(
+        &self,
+        shop_id: &str,
+        days: i64,
+        limit: i64,
+    ) -> sqlx::Result<Vec<ProductMetricsRow>> {
         let sql = r#"
             WITH product_metrics AS (
                 SELECT
@@ -1201,7 +1237,11 @@ impl AnalyticsRepository {
     // ============================================================
 
     /// Query 17: Progresso de Meta de Vendas Mensal
-    pub async fn get_monthly_sales_progress(&self, shop_id: &str, target_revenue: f64) -> sqlx::Result<MonthlySalesProgressRow> {
+    pub async fn get_monthly_sales_progress(
+        &self,
+        shop_id: &str,
+        target_revenue: f64,
+    ) -> sqlx::Result<MonthlySalesProgressRow> {
         let sql = r#"
             WITH monthly_target AS (
                 SELECT
@@ -1328,7 +1368,12 @@ impl AnalyticsRepository {
     // ============================================================
 
     /// Query 20: Ranking de Produtos com Percentil
-    pub async fn get_product_ranking(&self, shop_id: &str, days: i64, limit: i64) -> sqlx::Result<Vec<ProductRankingRow>> {
+    pub async fn get_product_ranking(
+        &self,
+        shop_id: &str,
+        days: i64,
+        limit: i64,
+    ) -> sqlx::Result<Vec<ProductRankingRow>> {
         let sql = r#"
             SELECT
                 COALESCE(ti.name_snapshot, p.name) AS product_name,
@@ -1373,7 +1418,11 @@ impl AnalyticsRepository {
     }
 
     /// Query 21: Comparação Mês a Mês (MoM - Month over Month)
-    pub async fn get_month_over_month_growth(&self, shop_id: &str, months: i64) -> sqlx::Result<Vec<MonthOverMonthGrowthRow>> {
+    pub async fn get_month_over_month_growth(
+        &self,
+        shop_id: &str,
+        months: i64,
+    ) -> sqlx::Result<Vec<MonthOverMonthGrowthRow>> {
         let sql = r#"
             SELECT
                 strftime('%Y-%m', created_at) AS month,
@@ -1401,7 +1450,10 @@ impl AnalyticsRepository {
     }
 
     /// Query 22: Vendas Acumuladas por Período (YTD - Year to Date)
-    pub async fn get_year_to_date_sales(&self, shop_id: &str) -> sqlx::Result<Vec<YearToDateSalesRow>> {
+    pub async fn get_year_to_date_sales(
+        &self,
+        shop_id: &str,
+    ) -> sqlx::Result<Vec<YearToDateSalesRow>> {
         let sql = r#"
             SELECT
                 strftime('%Y-%m', created_at) AS month,

@@ -1,4 +1,6 @@
-use crate::features::product::dtos::product_dto::{CreateProductDTO, ProductListFilterDTO, UpdateProductDTO};
+use crate::features::product::dtos::product_dto::{
+    CreateProductDTO, ProductListFilterDTO, UpdateProductDTO,
+};
 use crate::features::product::models::product_model::Product;
 use crate::features::product::services::product_service::ProductService;
 use sqlx::SqlitePool;
@@ -23,10 +25,7 @@ pub async fn update_product(
 }
 
 #[tauri::command]
-pub async fn delete_product(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<(), String> {
+pub async fn delete_product(pool: State<'_, SqlitePool>, id: String) -> Result<(), String> {
     let service = ProductService::new(pool.inner().clone());
     service.delete_product(&id).await
 }

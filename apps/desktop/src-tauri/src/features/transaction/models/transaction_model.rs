@@ -1,6 +1,6 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use chrono::{DateTime, Utc};
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
 pub struct Transaction {
@@ -9,16 +9,16 @@ pub struct Transaction {
     #[serde(rename = "type")]
     #[sqlx(rename = "type")]
     pub r#type: String, // 'sale', 'purchase', 'transfer', 'return', 'adjustment'
-    pub status: String, // 'draft', 'pending', 'completed', 'cancelled', 'failed'
+    pub status: String,  // 'draft', 'pending', 'completed', 'cancelled', 'failed'
     pub channel: Option<String>,
     pub customer_id: Option<String>,
     pub supplier_id: Option<String>,
     pub staff_id: Option<String>,
-    pub currency: Option<String>, // DEFAULT 'BRL'
-    pub total_items: Option<f64>, // DEFAULT 0
+    pub currency: Option<String>,    // DEFAULT 'BRL'
+    pub total_items: Option<f64>,    // DEFAULT 0
     pub total_shipping: Option<f64>, // DEFAULT 0
     pub total_discount: Option<f64>, // DEFAULT 0
-    pub total_net: Option<f64>, // DEFAULT 0
+    pub total_net: Option<f64>,      // DEFAULT 0
     pub shipping_method: Option<String>,
     pub shipping_address: Option<String>, // JSONB stored as TEXT
     pub billing_address: Option<String>,  // JSONB stored as TEXT
@@ -39,9 +39,9 @@ pub struct TransactionItem {
     pub quantity: f64,
     pub unit_price: f64,
     pub unit_cost: Option<f64>,
-    pub total_line: Option<f64>, // Real Generated Always
+    pub total_line: Option<f64>,             // Real Generated Always
     pub attributes_snapshot: Option<String>, // JSONB
-    pub tax_details: Option<String>, // JSONB
+    pub tax_details: Option<String>,         // JSONB
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>, // DEFAULT 'created'

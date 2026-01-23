@@ -1,5 +1,5 @@
-use crate::features::customer_group_membership::dtos::customer_group_membership_dto::AssignCustomerGroupsDTO;
 use crate::features::customer::models::customer_model::CustomerGroupMembership;
+use crate::features::customer_group_membership::dtos::customer_group_membership_dto::AssignCustomerGroupsDTO;
 use crate::features::customer_group_membership::services::customer_group_membership_service::CustomerGroupMembershipService;
 use sqlx::SqlitePool;
 use tauri::State;
@@ -38,7 +38,5 @@ pub async fn delete_customer_group_membership(
     group_id: String,
 ) -> Result<(), String> {
     let service = CustomerGroupMembershipService::new(pool.inner().clone());
-    service
-        .delete_membership(&customer_id, &group_id)
-        .await
+    service.delete_membership(&customer_id, &group_id).await
 }

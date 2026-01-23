@@ -20,7 +20,9 @@ pub async fn create_shop_from_template(
     template_code: Option<String>,
 ) -> Result<Shop, String> {
     let service = ShopService::new(pool.inner().clone());
-    service.create_shop_from_template(payload, template_code).await
+    service
+        .create_shop_from_template(payload, template_code)
+        .await
 }
 
 #[tauri::command]
@@ -39,10 +41,7 @@ pub async fn delete_shop(pool: State<'_, SqlitePool>, id: String) -> Result<(), 
 }
 
 #[tauri::command]
-pub async fn get_shop(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<Option<Shop>, String> {
+pub async fn get_shop(pool: State<'_, SqlitePool>, id: String) -> Result<Option<Shop>, String> {
     let service = ShopService::new(pool.inner().clone());
     service.get_shop(&id).await
 }

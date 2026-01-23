@@ -188,6 +188,7 @@ export function ReviewsTable() {
           label: "New Review",
           to: `/shops/${shopId}/reviews/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

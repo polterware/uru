@@ -1,5 +1,5 @@
-use crate::features::user_identity::dtos::{CreateUserIdentityDTO, UpdateUserIdentityDTO};
 use crate::features::user::models::user_model::UserIdentity;
+use crate::features::user_identity::dtos::{CreateUserIdentityDTO, UpdateUserIdentityDTO};
 use crate::features::user_identity::services::user_identity_service::UserIdentityService;
 use sqlx::SqlitePool;
 use tauri::State;
@@ -23,10 +23,7 @@ pub async fn update_user_identity(
 }
 
 #[tauri::command]
-pub async fn delete_user_identity(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<(), String> {
+pub async fn delete_user_identity(pool: State<'_, SqlitePool>, id: String) -> Result<(), String> {
     let service = UserIdentityService::new(pool.inner().clone());
     service.delete_identity(&id).await
 }

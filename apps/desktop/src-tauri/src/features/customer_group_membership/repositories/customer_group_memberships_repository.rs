@@ -80,10 +80,7 @@ impl CustomerGroupMembershipsRepository {
 
     pub async fn delete_by_group_id(&self, group_id: &str) -> Result<()> {
         let sql = "DELETE FROM customer_group_memberships WHERE customer_group_id = $1";
-        sqlx::query(sql)
-            .bind(group_id)
-            .execute(&self.pool)
-            .await?;
+        sqlx::query(sql).bind(group_id).execute(&self.pool).await?;
         Ok(())
     }
 
@@ -108,10 +105,7 @@ impl CustomerGroupMembershipsRepository {
             .await
     }
 
-    pub async fn find_by_group_id(
-        &self,
-        group_id: &str,
-    ) -> Result<Vec<CustomerGroupMembership>> {
+    pub async fn find_by_group_id(&self, group_id: &str) -> Result<Vec<CustomerGroupMembership>> {
         let sql = "SELECT * FROM customer_group_memberships WHERE customer_group_id = $1";
         sqlx::query_as::<_, CustomerGroupMembership>(sql)
             .bind(group_id)

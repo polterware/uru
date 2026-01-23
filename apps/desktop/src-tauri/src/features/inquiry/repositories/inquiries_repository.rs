@@ -141,7 +141,11 @@ impl InquiriesRepository {
     }
 
     /// Find inquiry by protocol number within a shop
-    pub async fn find_by_protocol(&self, shop_id: &str, protocol_number: &str) -> Result<Option<Inquiry>> {
+    pub async fn find_by_protocol(
+        &self,
+        shop_id: &str,
+        protocol_number: &str,
+    ) -> Result<Option<Inquiry>> {
         let sql = r#"
             SELECT * FROM inquiries
             WHERE shop_id = $1 AND protocol_number = $2 AND _status != 'deleted'
@@ -154,7 +158,11 @@ impl InquiriesRepository {
     }
 
     /// List inquiries by status for a specific shop
-    pub async fn list_by_status_for_shop(&self, shop_id: &str, status: &str) -> Result<Vec<Inquiry>> {
+    pub async fn list_by_status_for_shop(
+        &self,
+        shop_id: &str,
+        status: &str,
+    ) -> Result<Vec<Inquiry>> {
         let sql = r#"
             SELECT * FROM inquiries
             WHERE shop_id = $1 AND status = $2 AND _status != 'deleted'

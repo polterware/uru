@@ -43,6 +43,7 @@ type DataTableProps<TData> = {
   filterPlaceholder?: string
   emptyMessage?: string
   action?: DataTableAction
+  onRowDoubleClick?: (row: TData) => void
 }
 
 export function DataTable<TData>({
@@ -52,6 +53,7 @@ export function DataTable<TData>({
   filterPlaceholder = "Filter results...",
   emptyMessage = "No results found.",
   action,
+  onRowDoubleClick,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -139,7 +141,11 @@ export function DataTable<TData>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  onDoubleClick={() => onRowDoubleClick?.(row.original)}
+                  className={onRowDoubleClick ? "cursor-pointer" : undefined}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

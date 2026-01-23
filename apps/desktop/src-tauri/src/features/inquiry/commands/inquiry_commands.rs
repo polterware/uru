@@ -1,8 +1,8 @@
 use crate::features::inquiry::dtos::inquiry_dto::CreateInquiryDTO;
 use crate::features::inquiry::models::inquiry_model::Inquiry;
 use crate::features::inquiry::services::inquiry_service::InquiryService;
-use tauri::State;
 use sqlx::SqlitePool;
+use tauri::State;
 
 #[tauri::command]
 pub async fn create_inquiry(
@@ -14,10 +14,7 @@ pub async fn create_inquiry(
 }
 
 #[tauri::command]
-pub async fn delete_inquiry(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<(), String> {
+pub async fn delete_inquiry(pool: State<'_, SqlitePool>, id: String) -> Result<(), String> {
     let service = InquiryService::new(pool.inner().clone());
     service.delete_inquiry(&id).await
 }
@@ -32,9 +29,7 @@ pub async fn get_inquiry(
 }
 
 #[tauri::command]
-pub async fn list_inquiries(
-    pool: State<'_, SqlitePool>,
-) -> Result<Vec<Inquiry>, String> {
+pub async fn list_inquiries(pool: State<'_, SqlitePool>) -> Result<Vec<Inquiry>, String> {
     let service = InquiryService::new(pool.inner().clone());
     service.list_inquiries().await
 }

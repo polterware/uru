@@ -1,6 +1,6 @@
-use crate::features::transaction::models::transaction_model::InventoryMovement;
 use crate::features::inventory::repositories::inventory_levels_repository::InventoryLevelsRepository;
 use crate::features::inventory::repositories::inventory_movements_repository::InventoryMovementsRepository;
+use crate::features::transaction::models::transaction_model::InventoryMovement;
 use chrono::Utc;
 use sqlx::SqlitePool;
 use uuid::Uuid;

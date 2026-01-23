@@ -1,7 +1,7 @@
 use crate::features::checkout::models::checkout_model::Checkout;
-use crate::features::order::models::order_model::Order;
 use crate::features::checkout::repositories::checkouts_repository::CheckoutsRepository;
 use crate::features::customer::repositories::customer_repository::CustomerRepository;
+use crate::features::order::models::order_model::Order;
 use crate::features::order::repositories::orders_repository::OrdersRepository;
 use chrono::Utc;
 use sqlx::SqlitePool;

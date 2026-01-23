@@ -1,5 +1,5 @@
 use crate::features::brand::models::brand_model::Brand;
-use sqlx::{SqlitePool, Result};
+use sqlx::{Result, SqlitePool};
 
 pub struct BrandsRepository {
     pool: SqlitePool,
@@ -22,26 +22,26 @@ impl BrandsRepository {
         "#;
 
         sqlx::query_as::<_, Brand>(sql)
-        .bind(brand.id)
-        .bind(brand.shop_id)
-        .bind(brand.name)
-        .bind(brand.slug)
-        .bind(brand.logo_url)
-        .bind(brand.banner_url)
-        .bind(brand.description)
-        .bind(brand.rich_description)
-        .bind(brand.website_url)
-        .bind(brand.status)
-        .bind(brand.is_featured)
-        .bind(brand.sort_order)
-        .bind(brand.seo_title)
-        .bind(brand.seo_keywords)
-        .bind(brand.metadata)
-        .bind(brand.sync_status)
-        .bind(brand.created_at)
-        .bind(brand.updated_at)
-        .fetch_one(&self.pool)
-        .await
+            .bind(brand.id)
+            .bind(brand.shop_id)
+            .bind(brand.name)
+            .bind(brand.slug)
+            .bind(brand.logo_url)
+            .bind(brand.banner_url)
+            .bind(brand.description)
+            .bind(brand.rich_description)
+            .bind(brand.website_url)
+            .bind(brand.status)
+            .bind(brand.is_featured)
+            .bind(brand.sort_order)
+            .bind(brand.seo_title)
+            .bind(brand.seo_keywords)
+            .bind(brand.metadata)
+            .bind(brand.sync_status)
+            .bind(brand.created_at)
+            .bind(brand.updated_at)
+            .fetch_one(&self.pool)
+            .await
     }
 
     pub async fn update(&self, brand: Brand) -> Result<Brand> {
@@ -56,25 +56,25 @@ impl BrandsRepository {
         "#;
 
         sqlx::query_as::<_, Brand>(sql)
-        .bind(brand.id)
-        .bind(brand.shop_id)
-        .bind(brand.name)
-        .bind(brand.slug)
-        .bind(brand.logo_url)
-        .bind(brand.banner_url)
-        .bind(brand.description)
-        .bind(brand.rich_description)
-        .bind(brand.website_url)
-        .bind(brand.status)
-        .bind(brand.is_featured)
-        .bind(brand.sort_order)
-        .bind(brand.seo_title)
-        .bind(brand.seo_keywords)
-        .bind(brand.metadata)
-        .bind(brand.sync_status)
-        .bind(brand.updated_at)
-        .fetch_one(&self.pool)
-        .await
+            .bind(brand.id)
+            .bind(brand.shop_id)
+            .bind(brand.name)
+            .bind(brand.slug)
+            .bind(brand.logo_url)
+            .bind(brand.banner_url)
+            .bind(brand.description)
+            .bind(brand.rich_description)
+            .bind(brand.website_url)
+            .bind(brand.status)
+            .bind(brand.is_featured)
+            .bind(brand.sort_order)
+            .bind(brand.seo_title)
+            .bind(brand.seo_keywords)
+            .bind(brand.metadata)
+            .bind(brand.sync_status)
+            .bind(brand.updated_at)
+            .fetch_one(&self.pool)
+            .await
     }
 
     pub async fn find_by_id(&self, id: &str) -> Result<Option<Brand>> {

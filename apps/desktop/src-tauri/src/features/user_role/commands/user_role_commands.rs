@@ -1,5 +1,5 @@
-use crate::features::user_role::dtos::AssignUserRolesDTO;
 use crate::features::user::models::user_model::UserRole;
+use crate::features::user_role::dtos::AssignUserRolesDTO;
 use crate::features::user_role::services::user_role_service::UserRoleService;
 use sqlx::SqlitePool;
 use tauri::State;

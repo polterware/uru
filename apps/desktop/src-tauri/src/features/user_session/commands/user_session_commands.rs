@@ -1,5 +1,5 @@
-use crate::features::user_session::dtos::{CreateUserSessionDTO, UpdateUserSessionDTO};
 use crate::features::user::models::user_model::UserSession;
+use crate::features::user_session::dtos::{CreateUserSessionDTO, UpdateUserSessionDTO};
 use crate::features::user_session::services::user_session_service::UserSessionService;
 use sqlx::SqlitePool;
 use tauri::State;
@@ -23,10 +23,7 @@ pub async fn update_user_session(
 }
 
 #[tauri::command]
-pub async fn delete_user_session(
-    pool: State<'_, SqlitePool>,
-    id: String,
-) -> Result<(), String> {
+pub async fn delete_user_session(pool: State<'_, SqlitePool>, id: String) -> Result<(), String> {
     let service = UserSessionService::new(pool.inner().clone());
     service.delete_session(&id).await
 }
@@ -41,9 +38,7 @@ pub async fn get_user_session(
 }
 
 #[tauri::command]
-pub async fn list_user_sessions(
-    pool: State<'_, SqlitePool>,
-) -> Result<Vec<UserSession>, String> {
+pub async fn list_user_sessions(pool: State<'_, SqlitePool>) -> Result<Vec<UserSession>, String> {
     let service = UserSessionService::new(pool.inner().clone());
     service.list_sessions().await
 }

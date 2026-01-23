@@ -1,4 +1,6 @@
-use crate::features::customer::models::customer_model::{Customer, CustomerAddress, CustomerGroupMembership};
+use crate::features::customer::models::customer_model::{
+    Customer, CustomerAddress, CustomerGroupMembership,
+};
 use crate::features::customer_address::dtos::customer_address_dto::CreateCustomerAddressDTO;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
@@ -63,7 +65,8 @@ impl CreateCustomerDTO {
             updated_at: Some(now),
         };
 
-        let addresses = self.addresses
+        let addresses = self
+            .addresses
             .into_iter()
             .map(|a| CustomerAddress {
                 id: Uuid::new_v4().to_string(),
@@ -87,7 +90,8 @@ impl CreateCustomerDTO {
             })
             .collect();
 
-        let group_memberships = self.group_ids
+        let group_memberships = self
+            .group_ids
             .into_iter()
             .map(|gid| CustomerGroupMembership {
                 customer_id: customer_id.clone(),

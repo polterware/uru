@@ -1,5 +1,5 @@
 use crate::features::shop::models::shop_model::Shop;
-use sqlx::{SqlitePool, Result};
+use sqlx::{Result, SqlitePool};
 
 pub struct ShopsRepository {
     pool: SqlitePool,
@@ -22,25 +22,25 @@ impl ShopsRepository {
         "#;
 
         sqlx::query_as::<_, Shop>(sql)
-        .bind(shop.id)
-        .bind(shop.name)
-        .bind(shop.legal_name)
-        .bind(shop.slug)
-        .bind(shop.status)
-        .bind(shop.features_config)
-        .bind(shop.mail_config)
-        .bind(shop.storage_config)
-        .bind(shop.settings)
-        .bind(shop.branding)
-        .bind(shop.currency)
-        .bind(shop.timezone)
-        .bind(shop.locale)
-        .bind(shop.owner_id)
-        .bind(shop.sync_status)
-        .bind(shop.created_at)
-        .bind(shop.updated_at)
-        .fetch_one(&self.pool)
-        .await
+            .bind(shop.id)
+            .bind(shop.name)
+            .bind(shop.legal_name)
+            .bind(shop.slug)
+            .bind(shop.status)
+            .bind(shop.features_config)
+            .bind(shop.mail_config)
+            .bind(shop.storage_config)
+            .bind(shop.settings)
+            .bind(shop.branding)
+            .bind(shop.currency)
+            .bind(shop.timezone)
+            .bind(shop.locale)
+            .bind(shop.owner_id)
+            .bind(shop.sync_status)
+            .bind(shop.created_at)
+            .bind(shop.updated_at)
+            .fetch_one(&self.pool)
+            .await
     }
 
     pub async fn update(&self, shop: Shop) -> Result<Shop> {
@@ -54,24 +54,24 @@ impl ShopsRepository {
         "#;
 
         sqlx::query_as::<_, Shop>(sql)
-        .bind(shop.id)
-        .bind(shop.name)
-        .bind(shop.legal_name)
-        .bind(shop.slug)
-        .bind(shop.status)
-        .bind(shop.features_config)
-        .bind(shop.mail_config)
-        .bind(shop.storage_config)
-        .bind(shop.settings)
-        .bind(shop.branding)
-        .bind(shop.currency)
-        .bind(shop.timezone)
-        .bind(shop.locale)
-        .bind(shop.owner_id)
-        .bind(shop.sync_status)
-        .bind(shop.updated_at)
-        .fetch_one(&self.pool)
-        .await
+            .bind(shop.id)
+            .bind(shop.name)
+            .bind(shop.legal_name)
+            .bind(shop.slug)
+            .bind(shop.status)
+            .bind(shop.features_config)
+            .bind(shop.mail_config)
+            .bind(shop.storage_config)
+            .bind(shop.settings)
+            .bind(shop.branding)
+            .bind(shop.currency)
+            .bind(shop.timezone)
+            .bind(shop.locale)
+            .bind(shop.owner_id)
+            .bind(shop.sync_status)
+            .bind(shop.updated_at)
+            .fetch_one(&self.pool)
+            .await
     }
 
     pub async fn find_by_id(&self, id: &str) -> Result<Option<Shop>> {

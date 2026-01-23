@@ -1,7 +1,7 @@
+use crate::features::inquiry::models::inquiry_model::{Inquiry, InquiryMessage};
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use chrono::Utc;
-use crate::features::inquiry::models::inquiry_model::{Inquiry, InquiryMessage};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateInquiryDTO {

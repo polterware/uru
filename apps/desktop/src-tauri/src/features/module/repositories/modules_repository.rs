@@ -1,5 +1,5 @@
 use crate::features::module::models::module_model::Module;
-use sqlx::{SqlitePool, Result};
+use sqlx::{Result, SqlitePool};
 
 pub struct ModulesRepository {
     pool: SqlitePool,
@@ -11,17 +11,21 @@ impl ModulesRepository {
     }
 
     pub async fn find_by_id(&self, id: &str) -> Result<Option<Module>> {
-        sqlx::query_as::<_, Module>("SELECT * FROM modules WHERE id = ? AND (_status IS NULL OR _status != 'deleted')")
-            .bind(id)
-            .fetch_optional(&self.pool)
-            .await
+        sqlx::query_as::<_, Module>(
+            "SELECT * FROM modules WHERE id = ? AND (_status IS NULL OR _status != 'deleted')",
+        )
+        .bind(id)
+        .fetch_optional(&self.pool)
+        .await
     }
 
     pub async fn find_by_code(&self, code: &str) -> Result<Option<Module>> {
-        sqlx::query_as::<_, Module>("SELECT * FROM modules WHERE code = ? AND (_status IS NULL OR _status != 'deleted')")
-            .bind(code)
-            .fetch_optional(&self.pool)
-            .await
+        sqlx::query_as::<_, Module>(
+            "SELECT * FROM modules WHERE code = ? AND (_status IS NULL OR _status != 'deleted')",
+        )
+        .bind(code)
+        .fetch_optional(&self.pool)
+        .await
     }
 
     pub async fn list_all(&self) -> Result<Vec<Module>> {

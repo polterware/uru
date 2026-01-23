@@ -1,6 +1,6 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use chrono::{DateTime, Utc};
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
 pub struct Customer {
@@ -17,17 +17,17 @@ pub struct Customer {
     pub tax_id: Option<String>,
     pub tax_id_type: Option<String>,
     pub state_tax_id: Option<String>,
-    pub status: Option<String>, // 'active', 'inactive', 'blocked'
-    pub currency: Option<String>, // 'BRL'
-    pub language: Option<String>, // 'pt'
-    pub tags: Option<String>, // TEXT[]
+    pub status: Option<String>,          // 'active', 'inactive', 'blocked'
+    pub currency: Option<String>,        // 'BRL'
+    pub language: Option<String>,        // 'pt'
+    pub tags: Option<String>,            // TEXT[]
     pub accepts_marketing: Option<bool>, // INTEGER DEFAULT 0
     pub customer_group_id: Option<String>,
-    pub total_spent: Option<f64>, // REAL
+    pub total_spent: Option<f64>,  // REAL
     pub orders_count: Option<i64>, // INTEGER
     pub last_order_at: Option<DateTime<Utc>>,
     pub notes: Option<String>,
-    pub metadata: Option<String>, // JSONB
+    pub metadata: Option<String>,          // JSONB
     pub custom_attributes: Option<String>, // JSONB
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]

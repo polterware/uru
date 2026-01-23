@@ -269,6 +269,7 @@ export function ProductsTable() {
           label: "New Product",
           to: `/shops/${shopId}/products/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

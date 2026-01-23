@@ -277,6 +277,7 @@ export function InventoryTable() {
           label: "Add Inventory Level",
           to: `/shops/${shopId}/inventory/new`,
         }}
+        onRowDoubleClick={handleEdit}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
