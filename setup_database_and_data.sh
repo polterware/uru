@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Script para resetar o banco de dados, criar o schema e preencher com dados sintéticos na raiz do projeto
+# Script para resetar os bancos de dados, criar o schema e preencher com dados sintéticos
+# Arquitetura multi-database: registry.db + shop_{id}.db para cada loja
 # Uso: ./setup_database_and_data.sh
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PYTHON_DIR="$ROOT_DIR/scripts"
 VENV_DIR="$PYTHON_DIR/.venv"
-DB_DIR="$HOME/Library/Application Support/com.tauri.dev"
-DB_PATH="$DB_DIR/uru.db"
-SCHEMA_PATH="$ROOT_DIR/apps/desktop/src-tauri/migrations/001_initial_schema.sql"
+DATA_DIR="$HOME/Library/Application Support/com.tauri.dev"
+REGISTRY_SCHEMA="$ROOT_DIR/apps/desktop/src-tauri/migrations/001_registry_schema.sql"
 SCRIPT_PATH="$PYTHON_DIR/python/generate_synthetic_data.py"
 
 # Verificar se sqlite3 está instalado
@@ -20,8 +20,8 @@ if ! command -v sqlite3 &> /dev/null; then
 fi
 
 # Verificar se o arquivo de schema existe
-if [[ ! -f "$SCHEMA_PATH" ]]; then
-  echo "❌ Erro: Schema não encontrado em $SCHEMA_PATH"
+if [[ ! -f "$REGISTRY_SCHEMA" ]]; then
+  echo "❌ Erro: Schema não encontrado em $REGISTRY_SCHEMA"
   exit 1
 fi
 
@@ -31,24 +31,39 @@ if [[ ! -f "$SCRIPT_PATH" ]]; then
   exit 1
 fi
 
-echo "🗑️  Removendo banco de dados existente (se houver)..."
-mkdir -p "$DB_DIR"
-if [[ -f "$DB_PATH" ]]; then
-  rm -f "$DB_PATH"
-  echo "   ✓ Banco removido"
+echo "🗑️  Removendo bancos de dados existentes (se houver)..."
+mkdir -p "$DATA_DIR"
+mkdir -p "$DATA_DIR/shops"
+
+# Remover registry.db
+if [[ -f "$DATA_DIR/registry.db" ]]; then
+  rm -f "$DATA_DIR/registry.db"
+  rm -f "$DATA_DIR/registry.db-shm" 2>/dev/null || true
+  rm -f "$DATA_DIR/registry.db-wal" 2>/dev/null || true
+  echo "   ✓ Registry removido"
 else
-  echo "   ℹ Nenhum banco encontrado"
+  echo "   ℹ Nenhum registry encontrado"
 fi
 
-echo ""
-echo "📊 Aplicando schema inicial..."
-sqlite3 "$DB_PATH" < "$SCHEMA_PATH"
-echo "   ✓ Schema aplicado"
+# Remover shop databases
+SHOP_COUNT=$(find "$DATA_DIR/shops" -name "shop_*.db" 2>/dev/null | wc -l | tr -d ' ')
+if [[ "$SHOP_COUNT" -gt 0 ]]; then
+  rm -f "$DATA_DIR/shops/shop_"*.db*
+  echo "   ✓ $SHOP_COUNT banco(s) de shop removido(s)"
+else
+  echo "   ℹ Nenhum banco de shop encontrado"
+fi
+
+# Remover banco antigo (se existir do schema antigo)
+if [[ -f "$DATA_DIR/uru.db" ]]; then
+  rm -f "$DATA_DIR/uru.db"*
+  echo "   ✓ Banco antigo (uru.db) removido"
+fi
 
 echo ""
 echo "🐍 Configurando ambiente Python..."
 
-# Criar venv se não existir ou se estiver quebrado (após mover a pasta)
+# Criar venv se não existir ou se estiver quebrado
 if [[ ! -d "$VENV_DIR" ]] || [[ ! -f "$VENV_DIR/bin/python3" ]]; then
   echo "   Criando venv em $VENV_DIR"
   rm -rf "$VENV_DIR"
@@ -63,40 +78,37 @@ echo "   Instalando/atualizando dependências"
 "$VENV_PYTHON" -m pip install faker --quiet
 
 echo ""
-echo "🎲 Gerando dados sintéticos..."
-"$VENV_PYTHON" "$SCRIPT_PATH" --db-path "$DB_PATH" --seed 42
+echo "🎲 Gerando dados sintéticos (multi-database)..."
+"$VENV_PYTHON" "$SCRIPT_PATH" --data-dir "$DATA_DIR" --seed 42
 
 echo ""
-echo "✅ Banco de dados criado e preenchido com sucesso!"
+echo "✅ Bancos de dados criados e preenchidos com sucesso!"
 echo ""
-echo "📊 Informações do banco:"
-echo "   Localização: $DB_PATH"
+echo "📊 Informações:"
+echo "   Diretório: $DATA_DIR"
 
-# Verificar quantas tabelas foram criadas
-TABLE_COUNT=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';" 2>/dev/null || echo "0")
-echo "   Tabelas: $TABLE_COUNT"
+# Verificar registry
+if [[ -f "$DATA_DIR/registry.db" ]]; then
+  SHOP_COUNT=$(sqlite3 "$DATA_DIR/registry.db" "SELECT COUNT(*) FROM shops;" 2>/dev/null || echo "0")
+  USER_COUNT=$(sqlite3 "$DATA_DIR/registry.db" "SELECT COUNT(*) FROM users;" 2>/dev/null || echo "0")
+  echo ""
+  echo "   📁 Registry (registry.db):"
+  echo "      Shops: $SHOP_COUNT"
+  echo "      Users: $USER_COUNT"
+fi
 
-# Verificar alguns registros principais
-SHOP_COUNT=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM shops;" 2>/dev/null || echo "0")
-PRODUCT_COUNT=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM products;" 2>/dev/null || echo "0")
-CUSTOMER_COUNT=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM customers;" 2>/dev/null || echo "0")
-TRANSACTION_COUNT=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM transactions;" 2>/dev/null || echo "0")
-ORDER_COUNT=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM orders;" 2>/dev/null || echo "0")
-
-if [[ "$SHOP_COUNT" -gt 0 ]]; then
-  echo "   Shops: $SHOP_COUNT"
-fi
-if [[ "$PRODUCT_COUNT" -gt 0 ]]; then
-  echo "   Products: $PRODUCT_COUNT"
-fi
-if [[ "$CUSTOMER_COUNT" -gt 0 ]]; then
-  echo "   Customers: $CUSTOMER_COUNT"
-fi
-if [[ "$TRANSACTION_COUNT" -gt 0 ]]; then
-  echo "   Transactions: $TRANSACTION_COUNT"
-fi
-if [[ "$ORDER_COUNT" -gt 0 ]]; then
-  echo "   Orders: $ORDER_COUNT"
+# Verificar shops
+SHOP_DBS=$(find "$DATA_DIR/shops" -name "shop_*.db" 2>/dev/null | head -1)
+if [[ -n "$SHOP_DBS" ]]; then
+  PRODUCT_COUNT=$(sqlite3 "$SHOP_DBS" "SELECT COUNT(*) FROM products;" 2>/dev/null || echo "0")
+  CUSTOMER_COUNT=$(sqlite3 "$SHOP_DBS" "SELECT COUNT(*) FROM customers;" 2>/dev/null || echo "0")
+  ORDER_COUNT=$(sqlite3 "$SHOP_DBS" "SELECT COUNT(*) FROM orders;" 2>/dev/null || echo "0")
+  echo ""
+  echo "   📁 Shop Databases (shops/):"
+  echo "      Arquivos: $(find "$DATA_DIR/shops" -name "shop_*.db" | wc -l | tr -d ' ')"
+  echo "      Products (per shop): $PRODUCT_COUNT"
+  echo "      Customers (per shop): $CUSTOMER_COUNT"
+  echo "      Orders (per shop): $ORDER_COUNT"
 fi
 
 echo ""
