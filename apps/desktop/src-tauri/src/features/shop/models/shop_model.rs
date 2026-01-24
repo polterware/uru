@@ -19,9 +19,18 @@ pub struct Shop {
     pub timezone: String,
     pub locale: String,
     pub owner_id: Option<String>,
+    /// Database type: "sqlite" (default) or "postgres"
+    #[serde(default = "default_database_type")]
+    pub database_type: String,
+    /// Database configuration (JSON with connection details, encrypted for postgres)
+    pub database_config: Option<String>,
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: String,
     pub created_at: DateTime<Utc>, // SQLite DATETIME is usually compatible with NaiveDateTime
     pub updated_at: DateTime<Utc>,
+}
+
+fn default_database_type() -> String {
+    "sqlite".to_string()
 }

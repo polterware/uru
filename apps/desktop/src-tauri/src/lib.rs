@@ -1,6 +1,8 @@
 pub mod db;
 pub mod features;
 
+use crate::db::{MigrationService, PoolManager, RepositoryFactory};
+
 use crate::features::analytics::commands::analytics_commands::{
     get_average_order_value,
     get_category_distribution,
@@ -124,10 +126,7 @@ use crate::features::transaction::commands::transaction_item_commands::{
 use crate::features::user::commands::user_commands::{
     create_user, delete_user, get_user, list_users, update_user,
 };
-use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
 use std::fs;
-use std::fs::OpenOptions;
-use std::str::FromStr;
 use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -347,36 +346,57 @@ pub fn run() {
         .setup(|app| {
             let app_data_dir = app.path().app_data_dir()?;
             fs::create_dir_all(&app_data_dir)?;
-            let db_path = app_data_dir.join("uru.db");
-            if !db_path.exists() {
-                OpenOptions::new().create(true).write(true).open(&db_path)?;
-            }
-            let db_url = format!(
-                "sqlite:{}?mode=rwc",
-                db_path.to_string_lossy().replace(' ', "%20")
-            );
 
-            let migrations = vec![tauri_plugin_sql::Migration {
-                version: 1,
-                description: "create_initial_schema",
-                sql: include_str!("../migrations/001_initial_schema.sql"),
-                kind: tauri_plugin_sql::MigrationKind::Up,
-            }];
+            // ============================================================
+            // Multi-Database Architecture Setup
+            // ============================================================
+            // Initialize PoolManager for the new multi-database architecture
+            // This manages:
+            // - Registry database (shops, users, roles, modules)
+            // - Per-shop databases (products, customers, orders, etc.)
+            let pool_manager = tauri::async_runtime::block_on(async {
+                PoolManager::initialize(app_data_dir.clone()).await
+            })
+            .map_err(|e| format!("Failed to initialize PoolManager: {}", e))?;
+
+            let pool_manager = std::sync::Arc::new(pool_manager);
+
+            // Run registry migrations
+            let migration_service = MigrationService::new(pool_manager.clone());
+            tauri::async_runtime::block_on(async {
+                migration_service.migrate_registry().await
+            })
+            .map_err(|e| format!("Failed to run registry migrations: {}", e))?;
+
+            // Create RepositoryFactory for dependency injection
+            let repo_factory = std::sync::Arc::new(RepositoryFactory::new(pool_manager.clone()));
+
+            // Manage the new infrastructure
+            app.manage(pool_manager.clone());
+            app.manage(repo_factory);
+
+            // ============================================================
+            // Legacy Support (Backward Compatibility)
+            // ============================================================
+            // The registry pool is also exposed as the "main" pool for
+            // backward compatibility with existing commands during migration.
+            // TODO: Remove this once all commands are migrated to use RepositoryFactory
+            let legacy_pool = pool_manager.registry().clone();
+            app.manage(legacy_pool);
+
+            // Legacy tauri-plugin-sql setup (for frontend SQL access if needed)
+            // Note: Migrations are now handled by MigrationService, so we don't add them here
+            let registry_db_path = app_data_dir.join("registry.db");
+            let registry_db_url = format!(
+                "sqlite:{}?mode=rwc",
+                registry_db_path.to_string_lossy().replace(' ', "%20")
+            );
 
             app.handle().plugin(
                 tauri_plugin_sql::Builder::default()
-                    .add_migrations(&db_url, migrations)
+                    .add_migrations(&registry_db_url, vec![])
                     .build(),
             )?;
-
-            let connect_options = SqliteConnectOptions::from_str(&db_url)?.create_if_missing(true);
-            let pool = tauri::async_runtime::block_on(async {
-                SqlitePoolOptions::new()
-                    .max_connections(5)
-                    .connect_with(connect_options)
-                    .await
-            })?;
-            app.manage(pool);
 
             // Register store plugin for app settings
             app.handle()

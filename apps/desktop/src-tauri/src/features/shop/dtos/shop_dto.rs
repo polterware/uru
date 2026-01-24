@@ -18,6 +18,10 @@ pub struct CreateShopDTO {
     pub settings: Option<String>,
     pub branding: Option<String>,
     pub owner_id: Option<String>,
+    /// Database type: "sqlite" (default) or "postgres"
+    pub database_type: Option<String>,
+    /// Database configuration (JSON with connection details)
+    pub database_config: Option<String>,
 }
 
 impl CreateShopDTO {
@@ -38,6 +42,8 @@ impl CreateShopDTO {
             timezone: self.timezone,
             locale: self.locale,
             owner_id: self.owner_id,
+            database_type: self.database_type.unwrap_or_else(|| "sqlite".to_string()),
+            database_config: self.database_config,
             sync_status: "created".to_string(),
             created_at: now,
             updated_at: now,
@@ -61,6 +67,10 @@ pub struct UpdateShopDTO {
     pub timezone: Option<String>,
     pub locale: Option<String>,
     pub owner_id: Option<String>,
+    /// Database type: "sqlite" or "postgres" (rarely changed after creation)
+    pub database_type: Option<String>,
+    /// Database configuration (JSON with connection details)
+    pub database_config: Option<String>,
 }
 
 impl UpdateShopDTO {
@@ -104,6 +114,12 @@ impl UpdateShopDTO {
         }
         if let Some(owner_id) = self.owner_id {
             shop.owner_id = Some(owner_id);
+        }
+        if let Some(database_type) = self.database_type {
+            shop.database_type = database_type;
+        }
+        if let Some(database_config) = self.database_config {
+            shop.database_config = Some(database_config);
         }
         shop.sync_status = "updated".to_string();
         shop.updated_at = now;

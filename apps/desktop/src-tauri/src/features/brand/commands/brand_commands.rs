@@ -1,50 +1,97 @@
+use crate::db::RepositoryFactory;
 use crate::features::brand::dtos::brand_dto::{CreateBrandDTO, UpdateBrandDTO};
 use crate::features::brand::models::brand_model::Brand;
-use crate::features::brand::services::brand_service::BrandService;
-use sqlx::SqlitePool;
+use crate::features::brand::services::shop_brand_service::ShopBrandService;
+use std::sync::Arc;
 use tauri::State;
 
 #[tauri::command]
 pub async fn create_brand(
-    pool: State<'_, SqlitePool>,
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
     payload: CreateBrandDTO,
 ) -> Result<Brand, String> {
-    let service = BrandService::new(pool.inner().clone());
+    let shop_id = payload.shop_id.clone();
+    let pool = repo_factory
+        .shop_pool(&shop_id)
+        .await
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopBrandService::new(pool, shop_id);
     service.create_brand(payload).await
 }
 
 #[tauri::command]
 pub async fn update_brand(
-    pool: State<'_, SqlitePool>,
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
     payload: UpdateBrandDTO,
 ) -> Result<Brand, String> {
-    let service = BrandService::new(pool.inner().clone());
+    let shop_id = payload
+        .shop_id
+        .clone()
+        .ok_or_else(|| "shop_id is required for update".to_string())?;
+    let pool = repo_factory
+        .shop_pool(&shop_id)
+        .await
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopBrandService::new(pool, shop_id);
     service.update_brand(payload).await
 }
 
 #[tauri::command]
-pub async fn delete_brand(pool: State<'_, SqlitePool>, id: String) -> Result<(), String> {
-    let service = BrandService::new(pool.inner().clone());
+pub async fn delete_brand(
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
+    shop_id: String,
+    id: String,
+) -> Result<(), String> {
+    let pool = repo_factory
+        .shop_pool(&shop_id)
+        .await
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopBrandService::new(pool, shop_id);
     service.delete_brand(&id).await
 }
 
 #[tauri::command]
-pub async fn get_brand(pool: State<'_, SqlitePool>, id: String) -> Result<Option<Brand>, String> {
-    let service = BrandService::new(pool.inner().clone());
+pub async fn get_brand(
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
+    shop_id: String,
+    id: String,
+) -> Result<Option<Brand>, String> {
+    let pool = repo_factory
+        .shop_pool(&shop_id)
+        .await
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopBrandService::new(pool, shop_id);
     service.get_brand(&id).await
 }
 
 #[tauri::command]
-pub async fn list_brands(pool: State<'_, SqlitePool>) -> Result<Vec<Brand>, String> {
-    let service = BrandService::new(pool.inner().clone());
+pub async fn list_brands(
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
+    shop_id: String,
+) -> Result<Vec<Brand>, String> {
+    let pool = repo_factory
+        .shop_pool(&shop_id)
+        .await
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopBrandService::new(pool, shop_id);
     service.list_brands().await
 }
 
 #[tauri::command]
 pub async fn list_brands_by_shop(
-    pool: State<'_, SqlitePool>,
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
     shop_id: String,
 ) -> Result<Vec<Brand>, String> {
-    let service = BrandService::new(pool.inner().clone());
-    service.list_brands_by_shop(&shop_id).await
+    let pool = repo_factory
+        .shop_pool(&shop_id)
+        .await
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopBrandService::new(pool, shop_id);
+    service.list_brands().await
 }

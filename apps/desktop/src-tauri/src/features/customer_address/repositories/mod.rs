@@ -1,1 +1,2 @@
 pub mod customer_addresses_repository;
+pub mod shop_customer_address_repository;

@@ -15,9 +15,11 @@ impl ShopsRepository {
             INSERT INTO shops (
                 id, name, legal_name, slug, status,
                 features_config, mail_config, storage_config, settings, branding,
-                currency, timezone, locale, owner_id, _status, created_at, updated_at
+                currency, timezone, locale, owner_id,
+                database_type, database_config,
+                _status, created_at, updated_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
             RETURNING *
         "#;
 
@@ -36,6 +38,8 @@ impl ShopsRepository {
             .bind(shop.timezone)
             .bind(shop.locale)
             .bind(shop.owner_id)
+            .bind(shop.database_type)
+            .bind(shop.database_config)
             .bind(shop.sync_status)
             .bind(shop.created_at)
             .bind(shop.updated_at)
@@ -48,7 +52,9 @@ impl ShopsRepository {
             UPDATE shops SET
                 name = $2, legal_name = $3, slug = $4, status = $5,
                 features_config = $6, mail_config = $7, storage_config = $8, settings = $9, branding = $10,
-                currency = $11, timezone = $12, locale = $13, owner_id = $14, _status = $15, updated_at = $16
+                currency = $11, timezone = $12, locale = $13, owner_id = $14,
+                database_type = $15, database_config = $16,
+                _status = $17, updated_at = $18
             WHERE id = $1
             RETURNING *
         "#;
@@ -68,6 +74,8 @@ impl ShopsRepository {
             .bind(shop.timezone)
             .bind(shop.locale)
             .bind(shop.owner_id)
+            .bind(shop.database_type)
+            .bind(shop.database_config)
             .bind(shop.sync_status)
             .bind(shop.updated_at)
             .fetch_one(&self.pool)

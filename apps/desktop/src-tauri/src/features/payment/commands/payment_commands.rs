@@ -1,54 +1,64 @@
+use crate::db::RepositoryFactory;
 use crate::features::payment::models::payment_model::Payment;
-use crate::features::payment::repositories::payments_repository::PaymentsRepository;
-use crate::features::payment::services::payment_service::PaymentService;
-use sqlx::SqlitePool;
+use crate::features::payment::services::shop_payment_service::ShopPaymentService;
+use std::sync::Arc;
 use tauri::State;
 
 #[tauri::command]
-pub async fn list_payments(pool: State<'_, SqlitePool>) -> Result<Vec<Payment>, String> {
-    let repo = PaymentsRepository::new(pool.inner());
-    repo.list()
+pub async fn list_payments(
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
+    shop_id: String,
+) -> Result<Vec<Payment>, String> {
+    let pool = repo_factory
+        .shop_pool(&shop_id)
         .await
-        .map_err(|e| format!("Failed to list payments: {}", e))
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopPaymentService::new(pool);
+    service.list_payments().await
 }
 
 #[tauri::command]
 pub async fn list_payments_by_shop(
-    pool: State<'_, SqlitePool>,
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
     shop_id: String,
 ) -> Result<Vec<Payment>, String> {
-    let service = PaymentService::new(pool.inner().clone());
-    service.list_payments_by_shop(&shop_id).await
+    let pool = repo_factory
+        .shop_pool(&shop_id)
+        .await
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopPaymentService::new(pool);
+    service.list_payments().await
 }
 
 #[tauri::command]
 pub async fn get_payment(
-    pool: State<'_, SqlitePool>,
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
+    shop_id: String,
     id: String,
 ) -> Result<Option<Payment>, String> {
-    let repo = PaymentsRepository::new(pool.inner());
-    repo.get_by_id(&id)
+    let pool = repo_factory
+        .shop_pool(&shop_id)
         .await
-        .map_err(|e| format!("Failed to get payment: {}", e))
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopPaymentService::new(pool);
+    service.get_payment(&id).await
 }
 
 #[tauri::command]
 pub async fn update_payment_status(
-    pool: State<'_, SqlitePool>,
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
+    shop_id: String,
     id: String,
     status: String,
 ) -> Result<Payment, String> {
-    let mut payment = PaymentsRepository::new(pool.inner())
-        .get_by_id(&id)
+    let pool = repo_factory
+        .shop_pool(&shop_id)
         .await
-        .map_err(|e| format!("Failed to get payment: {}", e))?
-        .ok_or_else(|| format!("Payment not found: {}", id))?;
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
-    payment.status = status.clone();
-    payment.updated_at = Some(chrono::Utc::now());
-
-    PaymentsRepository::new(pool.inner())
-        .update(payment)
-        .await
-        .map_err(|e| format!("Failed to update payment status: {}", e))
+    let service = ShopPaymentService::new(pool);
+    service.update_payment_status(&id, &status).await
 }

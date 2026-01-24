@@ -1,26 +1,58 @@
+use crate::db::RepositoryFactory;
 use crate::features::shop::dtos::shop_dto::{CreateShopDTO, UpdateShopDTO};
 use crate::features::shop::models::shop_model::Shop;
 use crate::features::shop::repositories::shop_repository::ShopsRepository;
 use crate::features::shop_template::services::shop_templates_service::ShopTemplatesService;
 use sqlx::SqlitePool;
+use std::sync::Arc;
 
 pub struct ShopService {
     pool: SqlitePool,
     repo: ShopsRepository,
+    /// Optional reference to RepositoryFactory for multi-db operations
+    repo_factory: Option<Arc<RepositoryFactory>>,
 }
 
 impl ShopService {
     pub fn new(pool: SqlitePool) -> Self {
         let repo = ShopsRepository::new(pool.clone());
-        Self { pool, repo }
+        Self {
+            pool,
+            repo,
+            repo_factory: None,
+        }
+    }
+
+    /// Create a ShopService with multi-database support
+    pub fn with_repo_factory(pool: SqlitePool, repo_factory: Arc<RepositoryFactory>) -> Self {
+        let repo = ShopsRepository::new(pool.clone());
+        Self {
+            pool,
+            repo,
+            repo_factory: Some(repo_factory),
+        }
     }
 
     pub async fn create_shop(&self, payload: CreateShopDTO) -> Result<Shop, String> {
         let shop = payload.into_model();
-        self.repo
+        let shop_id = shop.id.clone();
+
+        // 1. Create the shop record in the registry database
+        let created_shop = self
+            .repo
             .create(shop)
             .await
-            .map_err(|e| format!("Erro ao criar loja: {}", e))
+            .map_err(|e| format!("Erro ao criar loja: {}", e))?;
+
+        // 2. Provision the shop's database (if multi-db is enabled)
+        if let Some(ref repo_factory) = self.repo_factory {
+            repo_factory
+                .provision_shop_database(&shop_id)
+                .await
+                .map_err(|e| format!("Erro ao provisionar banco da loja: {}", e))?;
+        }
+
+        Ok(created_shop)
     }
 
     /// Cria uma shop a partir de um template
@@ -78,6 +110,27 @@ impl ShopService {
             .map_err(|e| format!("Erro ao buscar loja: {}", e))?
             .ok_or_else(|| format!("Loja não encontrada: {}", id))?;
 
+        // With multi-database architecture, deletion is much simpler:
+        // 1. Soft delete the shop record in the registry
+        // 2. Delete the shop's database file
+        if let Some(ref repo_factory) = self.repo_factory {
+            // Multi-database mode: delete the shop's database file
+            repo_factory
+                .delete_shop_database(id)
+                .await
+                .map_err(|e| format!("Erro ao deletar banco da loja: {}", e))?;
+
+            // Soft delete in registry (mark as deleted)
+            sqlx::query("UPDATE shops SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1")
+                .bind(id)
+                .execute(&self.pool)
+                .await
+                .map_err(|e| format!("Erro ao marcar loja como deletada: {}", e))?;
+
+            return Ok(());
+        }
+
+        // Legacy mode: cascade delete all shop data from single database
         // Iniciar transação para exclusão em cascata
         let mut tx = self
             .pool

@@ -14,6 +14,9 @@ import { Route as PairingRouteImport } from './routes/pairing'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopsIndexRouteImport } from './routes/shops/index'
 import { Route as ShopsNewRouteImport } from './routes/shops/new'
+import { Route as SettingsUsersRouteImport } from './routes/settings/users'
+import { Route as SettingsTemplatesRouteImport } from './routes/settings/templates'
+import { Route as SettingsModulesRouteImport } from './routes/settings/modules'
 import { Route as ShopsShopIdIndexRouteImport } from './routes/shops/$shopId/index'
 import { Route as ShopsShopIdAddModuleRouteImport } from './routes/shops/$shopId/add-module'
 import { Route as ShopsShopIdTransactionsIndexRouteImport } from './routes/shops/$shopId/transactions/index'
@@ -83,6 +86,21 @@ const ShopsNewRoute = ShopsNewRouteImport.update({
   id: '/shops/new',
   path: '/shops/new',
   getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsUsersRoute = SettingsUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsTemplatesRoute = SettingsTemplatesRouteImport.update({
+  id: '/templates',
+  path: '/templates',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsModulesRoute = SettingsModulesRouteImport.update({
+  id: '/modules',
+  path: '/modules',
+  getParentRoute: () => SettingsRoute,
 } as any)
 const ShopsShopIdIndexRoute = ShopsShopIdIndexRouteImport.update({
   id: '/shops/$shopId/',
@@ -338,7 +356,10 @@ const ShopsShopIdCustomersAddressesAddressIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/pairing': typeof PairingRoute
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/settings/modules': typeof SettingsModulesRoute
+  '/settings/templates': typeof SettingsTemplatesRoute
+  '/settings/users': typeof SettingsUsersRoute
   '/shops/new': typeof ShopsNewRoute
   '/shops/': typeof ShopsIndexRoute
   '/shops/$shopId/add-module': typeof ShopsShopIdAddModuleRoute
@@ -389,7 +410,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/pairing': typeof PairingRoute
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/settings/modules': typeof SettingsModulesRoute
+  '/settings/templates': typeof SettingsTemplatesRoute
+  '/settings/users': typeof SettingsUsersRoute
   '/shops/new': typeof ShopsNewRoute
   '/shops': typeof ShopsIndexRoute
   '/shops/$shopId/add-module': typeof ShopsShopIdAddModuleRoute
@@ -441,7 +465,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/pairing': typeof PairingRoute
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/settings/modules': typeof SettingsModulesRoute
+  '/settings/templates': typeof SettingsTemplatesRoute
+  '/settings/users': typeof SettingsUsersRoute
   '/shops/new': typeof ShopsNewRoute
   '/shops/': typeof ShopsIndexRoute
   '/shops/$shopId/add-module': typeof ShopsShopIdAddModuleRoute
@@ -495,6 +522,9 @@ export interface FileRouteTypes {
     | '/'
     | '/pairing'
     | '/settings'
+    | '/settings/modules'
+    | '/settings/templates'
+    | '/settings/users'
     | '/shops/new'
     | '/shops/'
     | '/shops/$shopId/add-module'
@@ -546,6 +576,9 @@ export interface FileRouteTypes {
     | '/'
     | '/pairing'
     | '/settings'
+    | '/settings/modules'
+    | '/settings/templates'
+    | '/settings/users'
     | '/shops/new'
     | '/shops'
     | '/shops/$shopId/add-module'
@@ -597,6 +630,9 @@ export interface FileRouteTypes {
     | '/'
     | '/pairing'
     | '/settings'
+    | '/settings/modules'
+    | '/settings/templates'
+    | '/settings/users'
     | '/shops/new'
     | '/shops/'
     | '/shops/$shopId/add-module'
@@ -648,7 +684,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PairingRoute: typeof PairingRoute
-  SettingsRoute: typeof SettingsRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
   ShopsNewRoute: typeof ShopsNewRoute
   ShopsIndexRoute: typeof ShopsIndexRoute
   ShopsShopIdAddModuleRoute: typeof ShopsShopIdAddModuleRoute
@@ -733,6 +769,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/shops/new'
       preLoaderRoute: typeof ShopsNewRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/settings/users': {
+      id: '/settings/users'
+      path: '/users'
+      fullPath: '/settings/users'
+      preLoaderRoute: typeof SettingsUsersRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/templates': {
+      id: '/settings/templates'
+      path: '/templates'
+      fullPath: '/settings/templates'
+      preLoaderRoute: typeof SettingsTemplatesRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/modules': {
+      id: '/settings/modules'
+      path: '/modules'
+      fullPath: '/settings/modules'
+      preLoaderRoute: typeof SettingsModulesRouteImport
+      parentRoute: typeof SettingsRoute
     }
     '/shops/$shopId/': {
       id: '/shops/$shopId/'
@@ -1045,10 +1102,26 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface SettingsRouteChildren {
+  SettingsModulesRoute: typeof SettingsModulesRoute
+  SettingsTemplatesRoute: typeof SettingsTemplatesRoute
+  SettingsUsersRoute: typeof SettingsUsersRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsModulesRoute: SettingsModulesRoute,
+  SettingsTemplatesRoute: SettingsTemplatesRoute,
+  SettingsUsersRoute: SettingsUsersRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PairingRoute: PairingRoute,
-  SettingsRoute: SettingsRoute,
+  SettingsRoute: SettingsRouteWithChildren,
   ShopsNewRoute: ShopsNewRoute,
   ShopsIndexRoute: ShopsIndexRoute,
   ShopsShopIdAddModuleRoute: ShopsShopIdAddModuleRoute,

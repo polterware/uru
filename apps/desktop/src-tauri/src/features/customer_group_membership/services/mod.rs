@@ -1,1 +1,2 @@
 pub mod customer_group_membership_service;
+pub mod shop_customer_group_membership_service;

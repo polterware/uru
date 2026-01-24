@@ -1,82 +1,118 @@
+use crate::db::RepositoryFactory;
 use crate::features::order::dtos::order_dto::{
     CreateOrderDTO, UpdateFulfillmentStatusDTO, UpdateOrderDTO, UpdatePaymentStatusDTO,
 };
 use crate::features::order::models::order_model::Order;
-use crate::features::order::repositories::orders_repository::OrdersRepository;
-use crate::features::order::services::order_service::OrderService;
-use sqlx::SqlitePool;
+use crate::features::order::services::shop_order_service::ShopOrderService;
+use std::sync::Arc;
 use tauri::State;
 
 #[tauri::command]
 pub async fn create_order(
-    pool: State<'_, SqlitePool>,
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
     payload: CreateOrderDTO,
 ) -> Result<Order, String> {
-    let repo = OrdersRepository::new(pool.inner().clone());
-    let order = payload.into_model();
-    repo.create(order)
+    let shop_id = payload
+        .shop_id
+        .clone()
+        .ok_or_else(|| "shop_id is required".to_string())?;
+    let pool = repo_factory
+        .shop_pool(&shop_id)
         .await
-        .map_err(|e| format!("Failed to create order: {}", e))
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopOrderService::new(pool, shop_id);
+    service.create_order(payload).await
 }
 
 #[tauri::command]
 pub async fn update_order(
-    pool: State<'_, SqlitePool>,
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
     payload: UpdateOrderDTO,
 ) -> Result<Order, String> {
-    let repo = OrdersRepository::new(pool.inner().clone());
-
-    let existing = repo
-        .find_by_id(&payload.id)
+    let shop_id = payload
+        .shop_id
+        .clone()
+        .ok_or_else(|| "shop_id is required for update".to_string())?;
+    let pool = repo_factory
+        .shop_pool(&shop_id)
         .await
-        .map_err(|e| format!("Failed to fetch order: {}", e))?
-        .ok_or_else(|| format!("Order not found: {}", payload.id))?;
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
-    let updated = payload.apply_to_model(existing);
-    repo.update(updated)
-        .await
-        .map_err(|e| format!("Failed to update order: {}", e))
+    let service = ShopOrderService::new(pool, shop_id);
+    service.update_order(payload).await
 }
 
 #[tauri::command]
-pub async fn delete_order(pool: State<'_, SqlitePool>, id: String) -> Result<(), String> {
-    let repo = OrdersRepository::new(pool.inner().clone());
-    repo.delete(&id)
+pub async fn delete_order(
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
+    shop_id: String,
+    id: String,
+) -> Result<(), String> {
+    let pool = repo_factory
+        .shop_pool(&shop_id)
         .await
-        .map_err(|e| format!("Failed to delete order: {}", e))
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopOrderService::new(pool, shop_id);
+    service.delete_order(&id).await
 }
 
 #[tauri::command]
-pub async fn get_order(pool: State<'_, SqlitePool>, id: String) -> Result<Option<Order>, String> {
-    let repo = OrdersRepository::new(pool.inner().clone());
-    repo.find_by_id(&id)
+pub async fn get_order(
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
+    shop_id: String,
+    id: String,
+) -> Result<Option<Order>, String> {
+    let pool = repo_factory
+        .shop_pool(&shop_id)
         .await
-        .map_err(|e| format!("Failed to fetch order: {}", e))
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopOrderService::new(pool, shop_id);
+    service.get_order(&id).await
 }
 
 #[tauri::command]
-pub async fn list_orders(pool: State<'_, SqlitePool>) -> Result<Vec<Order>, String> {
-    let repo = OrdersRepository::new(pool.inner().clone());
-    repo.list()
+pub async fn list_orders(
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
+    shop_id: String,
+) -> Result<Vec<Order>, String> {
+    let pool = repo_factory
+        .shop_pool(&shop_id)
         .await
-        .map_err(|e| format!("Failed to list orders: {}", e))
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopOrderService::new(pool, shop_id);
+    service.list_orders().await
 }
 
 #[tauri::command]
 pub async fn list_orders_by_shop(
-    pool: State<'_, SqlitePool>,
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
     shop_id: String,
 ) -> Result<Vec<Order>, String> {
-    let service = OrderService::new(pool.inner().clone());
-    service.list_orders_by_shop(&shop_id).await
+    let pool = repo_factory
+        .shop_pool(&shop_id)
+        .await
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopOrderService::new(pool, shop_id);
+    service.list_orders().await
 }
 
 #[tauri::command]
 pub async fn update_order_payment_status(
-    pool: State<'_, SqlitePool>,
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
+    shop_id: String,
     payload: UpdatePaymentStatusDTO,
 ) -> Result<Order, String> {
-    let service = OrderService::new(pool.inner().clone());
+    let pool = repo_factory
+        .shop_pool(&shop_id)
+        .await
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopOrderService::new(pool, shop_id);
     service
         .update_payment_status(&payload.id, &payload.payment_status)
         .await
@@ -84,17 +120,32 @@ pub async fn update_order_payment_status(
 
 #[tauri::command]
 pub async fn update_order_fulfillment_status(
-    pool: State<'_, SqlitePool>,
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
+    shop_id: String,
     payload: UpdateFulfillmentStatusDTO,
 ) -> Result<Order, String> {
-    let service = OrderService::new(pool.inner().clone());
+    let pool = repo_factory
+        .shop_pool(&shop_id)
+        .await
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopOrderService::new(pool, shop_id);
     service
         .update_fulfillment_status(&payload.id, &payload.fulfillment_status)
         .await
 }
 
 #[tauri::command]
-pub async fn cancel_order(pool: State<'_, SqlitePool>, id: String) -> Result<Order, String> {
-    let service = OrderService::new(pool.inner().clone());
+pub async fn cancel_order(
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
+    shop_id: String,
+    id: String,
+) -> Result<Order, String> {
+    let pool = repo_factory
+        .shop_pool(&shop_id)
+        .await
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopOrderService::new(pool, shop_id);
     service.cancel_order(&id).await
 }
