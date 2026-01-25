@@ -77,7 +77,7 @@ export function CustomerGroupMembershipsTable() {
       setIsLoading(true)
       const [customersList, allGroupsList] = await Promise.all([
         CustomersRepository.listByShop(shopId),
-        CustomerGroupsRepository.list(),
+        CustomerGroupsRepository.listByShop(shopId),
       ])
 
       // Filter groups by shop_id

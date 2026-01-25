@@ -46,12 +46,16 @@ export function CustomerAddressesTable() {
   const [deleteId, setDeleteId] = React.useState<string | null>(null)
 
   const loadData = React.useCallback(async () => {
-    if (!shopId) return
+    if (!shopId) {
+      console.warn('[CustomerAddressesTable] shopId is not available yet')
+      return
+    }
 
     try {
       setIsLoading(true)
+      console.log('[CustomerAddressesTable] Loading addresses for shopId:', shopId)
       const [addresses, customersList] = await Promise.all([
-        CustomerAddressesRepository.list(),
+        CustomerAddressesRepository.list(shopId),
         CustomersRepository.listByShop(shopId),
       ])
 
@@ -80,10 +84,10 @@ export function CustomerAddressesTable() {
   }, [loadData])
 
   const handleDelete = async () => {
-    if (!deleteId) return
+    if (!deleteId || !shopId) return
 
     try {
-      await CustomerAddressesRepository.delete(deleteId)
+      await CustomerAddressesRepository.delete(shopId, deleteId)
       toast.success("Address deleted successfully")
       loadData()
     } catch (error) {

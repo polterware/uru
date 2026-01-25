@@ -102,7 +102,7 @@ use crate::features::inventory::commands::inventory_level_commands::{
 };
 use crate::features::inventory::commands::inventory_movement_commands::{
     create_inventory_movement, list_inventory_movements, list_inventory_movements_by_level,
-    list_inventory_movements_by_transaction,
+    list_inventory_movements_by_shop, list_inventory_movements_by_transaction,
 };
 use crate::features::location::commands::location_commands::{
     create_location, delete_location, get_location, list_locations, list_locations_by_type,
@@ -281,6 +281,7 @@ pub fn run() {
             list_inventory_movements,
             list_inventory_movements_by_transaction,
             list_inventory_movements_by_level,
+            list_inventory_movements_by_shop,
             // Locations
             create_location,
             update_location,

@@ -34,10 +34,10 @@ export function MovementsTable() {
     try {
       setIsLoading(true)
       const [movements, inventoryLevels, products, locations] = await Promise.all([
-        InventoryMovementsRepository.list(),
+        InventoryMovementsRepository.listByShop(shopId),
         InventoryLevelsRepository.listByShop(shopId),
         ProductsRepository.listFiltered({ shop_id: shopId }),
-        LocationsRepository.list(),
+        LocationsRepository.listByShop(shopId),
       ])
 
       const levelMap = new Map(inventoryLevels.map((l) => [l.id, l]))

@@ -57,13 +57,17 @@ function NewInventoryLevel() {
     aisle_bin_slot: "",
   })
 
+  const { shopId } = Route.useParams()
+  
   React.useEffect(() => {
+    if (!shopId) return
+    
     const loadData = async () => {
       try {
         setIsLoading(true)
         const [productsList, locationsList] = await Promise.all([
-          ProductsRepository.list(),
-          LocationsRepository.list(),
+          ProductsRepository.list(shopId),
+          LocationsRepository.listByShop(shopId),
         ])
         setProducts(productsList)
         setLocations(locationsList)
@@ -75,7 +79,7 @@ function NewInventoryLevel() {
       }
     }
     loadData()
-  }, [])
+  }, [shopId])
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))

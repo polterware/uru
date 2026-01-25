@@ -6,6 +6,10 @@ export const InventoryMovementsRepository = {
     return invoke("list_inventory_movements");
   },
 
+  async listByShop(shopId: string): Promise<InventoryMovement[]> {
+    return invoke("list_inventory_movements_by_shop", { shopId });
+  },
+
   async listByTransaction(transactionId: string): Promise<InventoryMovement[]> {
     return invoke("list_inventory_movements_by_transaction", { transactionId });
   },

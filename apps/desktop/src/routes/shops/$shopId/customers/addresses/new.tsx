@@ -47,6 +47,7 @@ const COUNTRIES = [
 
 function NewCustomerAddress() {
   const navigate = useNavigate()
+  const { shopId } = Route.useParams()
   const [isSaving, setIsSaving] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(true)
   const [customers, setCustomers] = React.useState<Customer[]>([])
@@ -70,7 +71,7 @@ function NewCustomerAddress() {
   React.useEffect(() => {
     const loadCustomers = async () => {
       try {
-        const data = await CustomersRepository.list()
+        const data = await CustomersRepository.listByShop(shopId)
         setCustomers(data)
       } catch (error) {
         console.error("Failed to load customers:", error)
@@ -137,7 +138,7 @@ function NewCustomerAddress() {
         phone: formData.phone || undefined,
       }
 
-      await CustomerAddressesRepository.create(payload)
+      await CustomerAddressesRepository.create(shopId, payload)
       toast.success("Address created successfully")
       navigate({ to: "/customers/addresses" })
     } catch (error) {

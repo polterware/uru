@@ -87,17 +87,21 @@ function NewTransaction() {
   })
 
   // Load products for selection
+  const { shopId } = Route.useParams()
+  
   React.useEffect(() => {
+    if (!shopId) return
+    
     const loadProducts = async () => {
       try {
-        const productsList = await ProductsRepository.list()
+        const productsList = await ProductsRepository.list(shopId)
         setProducts(productsList)
       } catch (error) {
         console.error("Failed to load products:", error)
       }
     }
     loadProducts()
-  }, [])
+  }, [shopId])
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))

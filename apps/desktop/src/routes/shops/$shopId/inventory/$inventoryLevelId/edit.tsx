@@ -40,7 +40,7 @@ const STOCK_STATUSES = [
 
 function EditInventoryLevel() {
   const navigate = useNavigate()
-  const { inventoryLevelId } = Route.useParams()
+  const { shopId, inventoryLevelId } = Route.useParams()
   const [isSaving, setIsSaving] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(true)
   const [products, setProducts] = React.useState<Product[]>([])
@@ -59,13 +59,15 @@ function EditInventoryLevel() {
   })
 
   React.useEffect(() => {
+    if (!shopId) return
+    
     const loadData = async () => {
       try {
         setIsLoading(true)
         const [inventoryLevel, productsList, locationsList] = await Promise.all([
           InventoryLevelsRepository.getById(inventoryLevelId),
-          ProductsRepository.list(),
-          LocationsRepository.list(),
+          ProductsRepository.list(shopId),
+          LocationsRepository.listByShop(shopId),
         ])
         if (!inventoryLevel) {
           toast.error("Inventory level not found")
@@ -95,7 +97,7 @@ function EditInventoryLevel() {
       }
     }
     loadData()
-  }, [inventoryLevelId, navigate])
+  }, [shopId, inventoryLevelId, navigate])
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))

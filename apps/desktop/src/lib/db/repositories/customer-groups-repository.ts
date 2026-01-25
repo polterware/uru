@@ -6,16 +6,16 @@ import type {
 } from '@uru/types'
 
 export const CustomerGroupsRepository = {
-  async list(): Promise<CustomerGroup[]> {
-    return invoke('list_customer_groups')
+  async list(shopId: string): Promise<CustomerGroup[]> {
+    return invoke('list_customer_groups', { shopId })
   },
 
   async listByShop(shopId: string): Promise<CustomerGroup[]> {
     return invoke('list_customer_groups_by_shop', { shopId })
   },
 
-  async getById(id: string): Promise<CustomerGroup | null> {
-    return invoke('get_customer_group', { id })
+  async getById(shopId: string, id: string): Promise<CustomerGroup | null> {
+    return invoke('get_customer_group', { shopId, id })
   },
 
   async create(payload: CreateCustomerGroupDTO): Promise<CustomerGroup> {
@@ -26,7 +26,7 @@ export const CustomerGroupsRepository = {
     return invoke('update_customer_group', { payload })
   },
 
-  async delete(id: string): Promise<void> {
-    return invoke('delete_customer_group', { id })
+  async delete(shopId: string, id: string): Promise<void> {
+    return invoke('delete_customer_group', { shopId, id })
   },
 }

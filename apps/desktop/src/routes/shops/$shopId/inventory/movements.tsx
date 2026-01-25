@@ -38,6 +38,7 @@ export const Route = createFileRoute("/shops/$shopId/inventory/movements")({
 })
 
 function MovementsRoute() {
+  const { shopId } = Route.useParams()
   const [activeTab, setActiveTab] = React.useState("list")
   const [isSaving, setIsSaving] = React.useState(false)
   const [products, setProducts] = React.useState<Product[]>([])
@@ -62,12 +63,14 @@ function MovementsRoute() {
   })
 
   React.useEffect(() => {
+    if (!shopId) return
+    
     const loadData = async () => {
       try {
         setIsLoading(true)
         const [productsList, locationsList] = await Promise.all([
-          ProductsRepository.list(),
-          LocationsRepository.list(),
+          ProductsRepository.list(shopId),
+          LocationsRepository.listByShop(shopId),
         ])
         setProducts(productsList)
         setLocations(locationsList)
@@ -79,7 +82,7 @@ function MovementsRoute() {
       }
     }
     loadData()
-  }, [])
+  }, [shopId])
 
   const handleAdjustChange = (field: string, value: string) => {
     setAdjustForm((prev) => ({ ...prev, [field]: value }))

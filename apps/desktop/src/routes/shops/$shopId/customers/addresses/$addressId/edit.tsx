@@ -47,7 +47,7 @@ const COUNTRIES = [
 
 function EditCustomerAddress() {
   const navigate = useNavigate()
-  const { addressId } = Route.useParams()
+  const { shopId, addressId } = Route.useParams()
   const [isSaving, setIsSaving] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(true)
   const [customers, setCustomers] = React.useState<Customer[]>([])
@@ -74,8 +74,8 @@ function EditCustomerAddress() {
       try {
         setIsLoading(true)
         const [address, customersData] = await Promise.all([
-          CustomerAddressesRepository.getById(addressId),
-          CustomersRepository.list(),
+          CustomerAddressesRepository.getById(shopId, addressId),
+          CustomersRepository.listByShop(shopId),
         ])
         if (!address) {
           toast.error("Address not found")
@@ -147,7 +147,7 @@ function EditCustomerAddress() {
 
     try {
       setIsSaving(true)
-      await CustomerAddressesRepository.update(formData)
+      await CustomerAddressesRepository.update(shopId, formData)
       toast.success("Address updated successfully")
       navigate({ to: "/customers/addresses" })
     } catch (error) {
