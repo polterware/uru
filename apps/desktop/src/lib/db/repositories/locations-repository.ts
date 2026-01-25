@@ -6,16 +6,16 @@ import type {
 } from "@uru/types";
 
 export const LocationsRepository = {
-  async list(): Promise<Location[]> {
-    return invoke("list_locations");
+  async list(shopId: string): Promise<Location[]> {
+    return invoke("list_locations", { shop_id: shopId });
   },
 
   async listByShop(shopId: string): Promise<Location[]> {
-    return invoke("list_locations_by_shop", { shopId });
+    return invoke("list_locations", { shop_id: shopId });
   },
 
-  async getById(id: string): Promise<Location | null> {
-    return invoke("get_location", { id });
+  async getById(shopId: string, id: string): Promise<Location | null> {
+    return invoke("get_location", { shop_id: shopId, id });
   },
 
   async create(payload: CreateLocationDTO): Promise<Location> {
@@ -26,7 +26,7 @@ export const LocationsRepository = {
     return invoke("update_location", { payload });
   },
 
-  async delete(id: string): Promise<void> {
-    return invoke("delete_location", { id });
+  async delete(shopId: string, id: string): Promise<void> {
+    return invoke("delete_location", { shop_id: shopId, id });
   },
 };

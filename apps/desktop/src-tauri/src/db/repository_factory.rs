@@ -62,27 +62,22 @@ impl RepositoryFactory {
             ));
         }
 
-        // Check if we need to migrate this shop's database
-        if !self.pool_manager.shop_db_exists(shop_id) {
-            // New shop database - need to run migrations
-            let pool = self.pool_manager.get_shop_pool(shop_id).await?;
+        // Get or create the pool
+        let pool = self.pool_manager.get_shop_pool(shop_id).await?;
 
-            // Run migrations
-            let migration_service = MigrationService::new(self.pool_manager.clone());
-            migration_service.migrate_shop(shop_id).await?;
+        // Always run migrations (migrate_shop checks version and only migrates if needed)
+        let migration_service = MigrationService::new(self.pool_manager.clone());
+        migration_service.migrate_shop(shop_id).await?;
 
-            // Initialize shop_config table with shop_id
-            sqlx::query(
-                "INSERT OR REPLACE INTO shop_config (id, shop_id, initialized_at, schema_version) VALUES ('config', ?, datetime('now'), 1)"
-            )
-            .bind(shop_id)
-            .execute(&*pool)
-            .await?;
+        // Initialize shop_config table with shop_id (if not exists)
+        sqlx::query(
+            "INSERT OR REPLACE INTO shop_config (id, shop_id, initialized_at, schema_version) VALUES ('config', ?, datetime('now'), 1)"
+        )
+        .bind(shop_id)
+        .execute(&*pool)
+        .await?;
 
-            return Ok(pool);
-        }
-
-        self.pool_manager.get_shop_pool(shop_id).await
+        Ok(pool)
     }
 
     /// Get a shop's database pool with configuration (supports both SQLite and Postgres).

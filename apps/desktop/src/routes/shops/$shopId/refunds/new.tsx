@@ -34,6 +34,7 @@ export const Route = createFileRoute("/shops/$shopId/refunds/new")({
 
 function NewRefund() {
   const navigate = useNavigate()
+  const { shopId } = Route.useParams()
   const [payments, setPayments] = React.useState<Payment[]>([])
   const [selectedPayment, setSelectedPayment] = React.useState<Payment | null>(null)
   const [isSaving, setIsSaving] = React.useState(false)
@@ -48,10 +49,12 @@ function NewRefund() {
   })
 
   React.useEffect(() => {
+    if (!shopId) return
+    
     const loadData = async () => {
       try {
         setIsLoading(true)
-        const paymentsData = await PaymentsRepository.list()
+        const paymentsData = await PaymentsRepository.listByShop(shopId)
         // Filter only captured payments that can be refunded
         const refundablePayments = paymentsData.filter(
           (p) => p.status === "captured" || p.status === "partially_refunded"
@@ -65,7 +68,7 @@ function NewRefund() {
       }
     }
     loadData()
-  }, [])
+  }, [shopId])
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))

@@ -69,7 +69,7 @@ export function InventoryTable() {
       const [inventoryLevels, products, locations] = await Promise.all([
         InventoryLevelsRepository.listByShop(shopId),
         ProductsRepository.listFiltered({ shop_id: shopId }),
-        LocationsRepository.list(),
+        LocationsRepository.listByShop(shopId),
       ])
 
       const prodMap = new Map(products.map((p) => [p.id, p]))

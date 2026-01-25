@@ -1,10 +1,13 @@
+use crate::db::RepositoryFactory;
 use crate::features::inventory::dtos::inventory_level_dto::{
     AdjustStockDTO, CreateInventoryLevelDTO, TransferStockDTO, UpdateInventoryLevelDTO,
 };
 use crate::features::inventory::models::inventory_level_model::InventoryLevel;
 use crate::features::inventory::repositories::inventory_levels_repository::InventoryLevelsRepository;
 use crate::features::inventory::services::inventory_service::InventoryService;
+use crate::features::inventory::services::shop_inventory_service::ShopInventoryService;
 use sqlx::SqlitePool;
+use std::sync::Arc;
 use tauri::State;
 
 #[tauri::command]
@@ -68,13 +71,16 @@ pub async fn list_inventory_levels(
 
 #[tauri::command]
 pub async fn list_inventory_levels_by_shop(
-    pool: State<'_, SqlitePool>,
+    repo_factory: State<'_, Arc<RepositoryFactory>>,
     shop_id: String,
 ) -> Result<Vec<InventoryLevel>, String> {
-    let repo = InventoryLevelsRepository::new(pool.inner().clone());
-    repo.list_by_shop(&shop_id)
+    let pool = repo_factory
+        .shop_pool(&shop_id)
         .await
-        .map_err(|e| format!("Failed to list inventory levels by shop: {}", e))
+        .map_err(|e| format!("Failed to get shop pool: {}", e))?;
+
+    let service = ShopInventoryService::new(pool);
+    service.list_levels().await
 }
 
 #[tauri::command]

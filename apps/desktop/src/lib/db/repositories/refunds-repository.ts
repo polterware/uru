@@ -3,16 +3,20 @@ import type { Refund, CreateRefundDTO, UpdateRefundDTO } from '@uru/types'
 import { REFUND_STATUSES, REFUND_REASONS } from '@uru/types'
 
 export const RefundsRepository = {
-  async list(): Promise<Refund[]> {
-    return invoke('list_refunds')
+  async list(shopId: string): Promise<Refund[]> {
+    return invoke('list_refunds', { shopId })
   },
 
-  async listByPayment(paymentId: string): Promise<Refund[]> {
-    return invoke('list_refunds_by_payment', { paymentId })
+  async listByShop(shopId: string): Promise<Refund[]> {
+    return invoke('list_refunds', { shopId })
   },
 
-  async getById(id: string): Promise<Refund | null> {
-    return invoke('get_refund', { id })
+  async listByPayment(shopId: string, paymentId: string): Promise<Refund[]> {
+    return invoke('list_refunds_by_payment', { shopId, paymentId })
+  },
+
+  async getById(shopId: string, id: string): Promise<Refund | null> {
+    return invoke('get_refund', { shopId, id })
   },
 
   async create(payload: CreateRefundDTO): Promise<Refund> {
@@ -23,12 +27,12 @@ export const RefundsRepository = {
     return invoke('update_refund', { payload })
   },
 
-  async delete(id: string): Promise<void> {
-    return invoke('delete_refund', { id })
+  async delete(shopId: string, id: string): Promise<void> {
+    return invoke('delete_refund', { shopId, id })
   },
 
-  async updateStatus(id: string, status: string): Promise<Refund> {
-    return invoke('update_refund_status', { id, status })
+  async updateStatus(shopId: string, id: string, status: string): Promise<Refund> {
+    return invoke('update_refund_status', { shopId, id, status })
   },
 }
 

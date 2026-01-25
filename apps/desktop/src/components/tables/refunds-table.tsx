@@ -71,7 +71,7 @@ export function RefundsTable() {
     try {
       setIsLoading(true)
       const [refunds, paymentsData] = await Promise.all([
-        RefundsRepository.list(),
+        RefundsRepository.listByShop(shopId),
         PaymentsRepository.listByShop(shopId),
       ])
 
@@ -103,10 +103,10 @@ export function RefundsTable() {
   }, [loadData])
 
   const handleDelete = async () => {
-    if (!deleteId) return
+    if (!deleteId || !shopId) return
 
     try {
-      await RefundsRepository.delete(deleteId)
+      await RefundsRepository.delete(shopId, deleteId)
       toast.success("Refund deleted successfully")
       loadData()
     } catch (error) {

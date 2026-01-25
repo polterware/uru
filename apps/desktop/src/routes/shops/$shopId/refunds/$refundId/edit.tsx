@@ -34,7 +34,7 @@ export const Route = createFileRoute("/shops/$shopId/refunds/$refundId/edit")({
 
 function EditRefund() {
   const navigate = useNavigate()
-  const { refundId } = Route.useParams()
+  const { shopId, refundId } = Route.useParams()
   const [payments, setPayments] = React.useState<Payment[]>([])
   const [isSaving, setIsSaving] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(true)
@@ -52,8 +52,8 @@ function EditRefund() {
       try {
         setIsLoading(true)
         const [refund, paymentsData] = await Promise.all([
-          RefundsRepository.getById(refundId),
-          PaymentsRepository.list(),
+          RefundsRepository.getById(shopId, refundId),
+          PaymentsRepository.listByShop(shopId),
         ])
         if (!refund) {
           toast.error("Refund not found")
@@ -76,7 +76,7 @@ function EditRefund() {
       }
     }
     loadData()
-  }, [refundId, navigate])
+  }, [shopId, refundId, navigate])
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))

@@ -58,10 +58,10 @@ export function LocationsTable() {
   }, [loadData])
 
   const handleDelete = async () => {
-    if (!deleteId) return
+    if (!deleteId || !shopId) return
 
     try {
-      await LocationsRepository.delete(deleteId)
+      await LocationsRepository.delete(shopId, deleteId)
       toast.success("Location deleted successfully")
       loadData()
     } catch (error) {
