@@ -224,7 +224,7 @@ impl PoolManager {
 
     /// Get the file path for a shop's SQLite database.
     pub fn get_shop_db_path(&self, shop_id: &str) -> PathBuf {
-        self.data_dir.join(format!("shop_{}.db", shop_id))
+        self.data_dir.join("shops").join(format!("shop_{}.db", shop_id))
     }
 
     /// Check if a shop database file exists (SQLite only).
