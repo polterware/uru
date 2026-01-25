@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { TemplateSelector } from "./template-selector"
 import { ModuleSelector } from "./module-selector"
 import { SupabaseConfigForm, type SupabaseConfig } from "./supabase-config-form"
@@ -339,36 +340,23 @@ export function CreateShopForm() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-3">
+            <RadioGroup
+              value={databaseType}
+              onValueChange={(value) => setDatabaseType(value as "sqlite" | "postgres")}
+            >
               <div className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id="sqlite"
-                  name="databaseType"
-                  value="sqlite"
-                  checked={databaseType === "sqlite"}
-                  onChange={(e) => setDatabaseType(e.target.value as "sqlite" | "postgres")}
-                  className="h-4 w-4 text-primary focus:ring-primary"
-                />
+                <RadioGroupItem value="sqlite" id="sqlite" />
                 <Label htmlFor="sqlite" className="font-normal cursor-pointer">
                   SQLite (Local) - Offline-first, no internet required
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id="postgres"
-                  name="databaseType"
-                  value="postgres"
-                  checked={databaseType === "postgres"}
-                  onChange={(e) => setDatabaseType(e.target.value as "sqlite" | "postgres")}
-                  className="h-4 w-4 text-primary focus:ring-primary"
-                />
+                <RadioGroupItem value="postgres" id="postgres" />
                 <Label htmlFor="postgres" className="font-normal cursor-pointer">
                   Postgres (Supabase) - Cloud sync, backup, and multi-device access
                 </Label>
               </div>
-            </div>
+            </RadioGroup>
 
             {databaseType === "postgres" && (
               <div className="mt-4 p-4 border rounded-lg bg-muted/50">
