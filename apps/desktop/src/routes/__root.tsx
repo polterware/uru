@@ -97,6 +97,10 @@ function RootComponent() {
       // Normal breadcrumb for non-shop routes
       if (location.pathname === '/') return []
 
+      if (location.pathname === '/shops/new') {
+        return [{ label: 'New', path: '/shops/new', isLast: true }]
+      }
+
       return location.pathname.split('/').filter(Boolean).map((segment, index, array) => {
         const isLast = index === array.length - 1
         const path = '/' + array.slice(0, index + 1).join('/')
