@@ -7,15 +7,15 @@ import type {
 
 export const LocationsRepository = {
   async list(shopId: string): Promise<Location[]> {
-    return invoke("list_locations", { shop_id: shopId });
+    return invoke("list_locations", { shopId });
   },
 
   async listByShop(shopId: string): Promise<Location[]> {
-    return invoke("list_locations", { shop_id: shopId });
+    return invoke("list_locations", { shopId });
   },
 
   async getById(shopId: string, id: string): Promise<Location | null> {
-    return invoke("get_location", { shop_id: shopId, id });
+    return invoke("get_location", { shopId, id });
   },
 
   async create(payload: CreateLocationDTO): Promise<Location> {
@@ -27,6 +27,6 @@ export const LocationsRepository = {
   },
 
   async delete(shopId: string, id: string): Promise<void> {
-    return invoke("delete_location", { shop_id: shopId, id });
+    return invoke("delete_location", { shopId, id });
   },
 };
