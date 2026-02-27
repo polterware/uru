@@ -3,7 +3,7 @@
 use crate::features::customer_group::models::customer_group_model::CustomerGroup;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Result, SqlitePool};
+use sqlx::{FromRow, Result, AnyPool};
 use std::sync::Arc;
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
@@ -25,8 +25,8 @@ struct ShopCustomerGroup {
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 impl ShopCustomerGroup {
@@ -53,12 +53,12 @@ impl ShopCustomerGroup {
 }
 
 pub struct ShopCustomerGroupRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
 }
 
 impl ShopCustomerGroupRepository {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         Self { pool, shop_id }
     }
 
@@ -112,7 +112,7 @@ impl ShopCustomerGroupRepository {
                 min_order_amount = $11,
                 metadata = $12,
                 _status = 'modified',
-                updated_at = datetime('now')
+                updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;
@@ -159,7 +159,7 @@ impl ShopCustomerGroupRepository {
     }
 
     pub async fn delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE customer_groups SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1";
+        let sql = "UPDATE customer_groups SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }

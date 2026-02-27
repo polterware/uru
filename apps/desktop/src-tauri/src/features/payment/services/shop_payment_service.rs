@@ -5,22 +5,22 @@ use crate::features::payment::repositories::shop_payment_repository::ShopPayment
 use crate::features::refund::models::refund_model::Refund;
 use crate::features::refund::repositories::shop_refund_repository::ShopRefundRepository;
 use chrono::Utc;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 use uuid::Uuid;
 
 pub struct ShopPaymentService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     repo: ShopPaymentRepository,
 }
 
 impl ShopPaymentService {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         let repo = ShopPaymentRepository::new(pool.clone());
         Self { pool, repo }
     }
 
-    pub fn pool(&self) -> Arc<SqlitePool> {
+    pub fn pool(&self) -> Arc<AnyPool> {
         self.pool.clone()
     }
 

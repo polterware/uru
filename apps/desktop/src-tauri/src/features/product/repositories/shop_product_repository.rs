@@ -4,7 +4,7 @@
 //! don't have a shop_id column (it's implicit from the database context).
 
 use crate::features::product::models::product_model::Product;
-use sqlx::{QueryBuilder, Result, Sqlite, SqlitePool, Transaction};
+use sqlx::{Any, AnyPool, QueryBuilder, Result, Transaction};
 use std::sync::Arc;
 
 /// Product repository that operates on a shop-specific database.
@@ -13,12 +13,12 @@ use std::sync::Arc;
 /// so there's no shop_id column in the products table. The shop_id is
 /// tracked in memory and set on returned entities for API compatibility.
 pub struct ShopProductRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
 }
 
 impl ShopProductRepository {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         Self { pool, shop_id }
     }
 
@@ -82,7 +82,7 @@ impl ShopProductRepository {
 
     pub async fn create_in_tx(
         &self,
-        tx: &mut Transaction<'_, Sqlite>,
+        tx: &mut Transaction<'_, Any>,
         product: &Product,
     ) -> Result<Product> {
         let sql = r#"
@@ -195,7 +195,7 @@ impl ShopProductRepository {
     }
 
     pub async fn soft_delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE products SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1";
+        let sql = "UPDATE products SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }
@@ -243,7 +243,7 @@ impl ShopProductRepository {
         limit: i64,
         offset: i64,
     ) -> Result<Vec<Product>> {
-        let mut builder = QueryBuilder::<Sqlite>::new(
+        let mut builder = QueryBuilder::<Any>::new(
             "SELECT id, sku, type, status, name, slug, gtin_ean, price, promotional_price, cost_price,
             currency, tax_ncm, is_shippable, weight_g, width_mm, height_mm, depth_mm,
             attributes, metadata, category_id, brand_id, parent_id, _status, created_at, updated_at
@@ -357,8 +357,8 @@ struct ShopProduct {
     pub parent_id: Option<String>,
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
-    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 impl ShopProduct {

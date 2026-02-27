@@ -3,7 +3,7 @@
 use crate::features::inquiry::models::inquiry_model::Inquiry;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Result, SqlitePool};
+use sqlx::{FromRow, Result, AnyPool};
 use std::sync::Arc;
 
 /// Internal struct for shop database (no shop_id column)
@@ -25,13 +25,13 @@ struct ShopInquiry {
     pub related_order_id: Option<String>,
     pub related_product_id: Option<String>,
     pub metadata: Option<String>,
-    pub sla_due_at: Option<DateTime<Utc>>,
-    pub resolved_at: Option<DateTime<Utc>>,
+    pub sla_due_at: Option<String>,
+    pub resolved_at: Option<String>,
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 impl ShopInquiry {
@@ -62,12 +62,12 @@ impl ShopInquiry {
 }
 
 pub struct ShopInquiryRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
 }
 
 impl ShopInquiryRepository {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         Self { pool, shop_id }
     }
 
@@ -194,14 +194,14 @@ impl ShopInquiryRepository {
     }
 
     pub async fn delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE inquiries SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1";
+        let sql = "UPDATE inquiries SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }
 
     pub async fn update_status(&self, id: &str, status: &str) -> Result<Inquiry> {
         let sql = r#"
-            UPDATE inquiries SET status = $2, _status = 'modified', updated_at = datetime('now')
+            UPDATE inquiries SET status = $2, _status = 'modified', updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;
@@ -218,9 +218,9 @@ impl ShopInquiryRepository {
         let sql = r#"
             UPDATE inquiries SET
                 status = 'resolved',
-                resolved_at = datetime('now'),
+                resolved_at = CURRENT_TIMESTAMP,
                 _status = 'modified',
-                updated_at = datetime('now')
+                updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;
@@ -237,7 +237,7 @@ impl ShopInquiryRepository {
             UPDATE inquiries SET
                 assigned_staff_id = $2,
                 _status = 'modified',
-                updated_at = datetime('now')
+                updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;

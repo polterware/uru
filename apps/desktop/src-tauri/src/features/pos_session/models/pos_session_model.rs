@@ -15,12 +15,12 @@ pub struct PosSession {
     // Opening values
     pub opening_cash_amount: Option<f64>,
     pub opening_notes: Option<String>,
-    pub opened_at: Option<DateTime<Utc>>,
+    pub opened_at: Option<String>,
 
     // Closing values
     pub closing_cash_amount: Option<f64>,
     pub closing_notes: Option<String>,
-    pub closed_at: Option<DateTime<Utc>>,
+    pub closed_at: Option<String>,
     pub closed_by: Option<String>,
 
     // Session totals
@@ -38,6 +38,6 @@ pub struct PosSession {
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }

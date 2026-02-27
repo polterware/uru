@@ -1,13 +1,13 @@
 use crate::db::DbTransaction;
 use crate::features::inventory::models::inventory_level_model::InventoryLevel;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct InventoryLevelsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl InventoryLevelsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 

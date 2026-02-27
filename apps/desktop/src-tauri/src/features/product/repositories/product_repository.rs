@@ -1,12 +1,12 @@
 use crate::features::product::models::product_model::Product;
-use sqlx::{QueryBuilder, Result, Sqlite, SqlitePool, Transaction};
+use sqlx::{Any, AnyPool, QueryBuilder, Result, Transaction};
 
 pub struct ProductRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl ProductRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 
@@ -56,7 +56,7 @@ impl ProductRepository {
 
     pub async fn create_in_tx(
         &self,
-        tx: &mut Transaction<'_, Sqlite>,
+        tx: &mut Transaction<'_, Any>,
         product: &Product,
     ) -> Result<Product> {
         let sql = r#"
@@ -209,7 +209,7 @@ impl ProductRepository {
         limit: i64,
         offset: i64,
     ) -> Result<Vec<Product>> {
-        let mut builder = QueryBuilder::<Sqlite>::new("SELECT * FROM products WHERE shop_id = ");
+        let mut builder = QueryBuilder::<Any>::new("SELECT * FROM products WHERE shop_id = ");
         builder.push_bind(shop_id);
         builder.push(" AND _status != 'deleted'");
 

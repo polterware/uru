@@ -1,13 +1,13 @@
 use crate::db::DbTransaction;
 use crate::features::refund::models::refund_model::Refund;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct RefundsRepository<'a> {
-    pool: &'a SqlitePool,
+    pool: &'a AnyPool,
 }
 
 impl<'a> RefundsRepository<'a> {
-    pub fn new(pool: &'a SqlitePool) -> Self {
+    pub fn new(pool: &'a AnyPool) -> Self {
         Self { pool }
     }
 

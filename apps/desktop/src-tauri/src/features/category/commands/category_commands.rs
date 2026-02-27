@@ -12,7 +12,7 @@ pub async fn create_category(
 ) -> Result<Category, String> {
     let shop_id = payload.shop_id.clone();
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -30,7 +30,7 @@ pub async fn update_category(
         .clone()
         .ok_or_else(|| "shop_id is required for update".to_string())?;
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -45,7 +45,7 @@ pub async fn delete_category(
     id: String,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -60,7 +60,7 @@ pub async fn get_category(
     id: String,
 ) -> Result<Option<Category>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -74,7 +74,7 @@ pub async fn list_categories_by_shop(
     shop_id: String,
 ) -> Result<Vec<Category>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -88,7 +88,7 @@ pub async fn list_categories(
     shop_id: String,
 ) -> Result<Vec<Category>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 

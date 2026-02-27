@@ -1,15 +1,15 @@
 //! Shop-scoped Customer Group Membership Repository for Multi-Database Architecture
 
 use crate::features::customer::models::customer_model::CustomerGroupMembership;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 use std::sync::Arc;
 
 pub struct ShopCustomerGroupMembershipRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
 }
 
 impl ShopCustomerGroupMembershipRepository {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         Self { pool }
     }
 

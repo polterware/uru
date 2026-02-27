@@ -1,5 +1,6 @@
 use crate::features::analytics::utils::module_checker;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
+use std::sync::Arc;
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct DashboardStatsRow {
@@ -242,11 +243,11 @@ pub struct RatingDistributionRow {
 }
 
 pub struct AnalyticsRepository {
-    pool: SqlitePool,
+    pool: Arc<AnyPool>,
 }
 
 impl AnalyticsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         Self { pool }
     }
 
@@ -281,7 +282,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, DashboardStatsRow>(sql)
             .bind(low_stock_threshold)
-            .fetch_one(&self.pool)
+            .fetch_one(&*self.pool)
             .await
     }
 
@@ -332,7 +333,7 @@ impl AnalyticsRepository {
         if let Some(ref start_at) = start_at {
             query = query.bind(start_at);
         }
-        query.fetch_all(&self.pool).await
+        query.fetch_all(&*self.pool).await
     }
 
     // ============================================================
@@ -416,7 +417,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, CumulativeRevenueRow>(sql)
             .bind(days)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -446,7 +447,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, StockMovementsAreaRow>(sql)
             .bind(days)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -476,7 +477,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, RevenueByPaymentMethodRow>(sql)
             .bind(days)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -510,7 +511,7 @@ impl AnalyticsRepository {
         sqlx::query_as::<_, TopProductRow>(sql)
             .bind(days)
             .bind(limit)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -533,7 +534,7 @@ impl AnalyticsRepository {
             ORDER BY total_revenue DESC
         "#;
         sqlx::query_as::<_, RevenueByCategoryRow>(sql)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -557,7 +558,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, MonthlySalesRow>(sql)
             .bind(months)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -604,7 +605,7 @@ impl AnalyticsRepository {
                 END
         "#;
         sqlx::query_as::<_, StockStatusRow>(sql)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -639,7 +640,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, DailySalesTrendRow>(sql)
             .bind(days)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -671,7 +672,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, CustomerGrowthRow>(sql)
             .bind(months)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -700,7 +701,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, AverageOrderValueRow>(sql)
             .bind(months)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -734,7 +735,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, PaymentMethodDistributionRow>(sql)
             .bind(days)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -755,7 +756,7 @@ impl AnalyticsRepository {
             ORDER BY product_count DESC
         "#;
         sqlx::query_as::<_, CategoryDistributionRow>(sql)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -785,7 +786,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, OrderStatusDistributionRow>(sql)
             .bind(days)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -809,7 +810,7 @@ impl AnalyticsRepository {
             ORDER BY customer_count DESC
         "#;
         sqlx::query_as::<_, CustomerGroupDistributionRow>(sql)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -870,7 +871,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, MonthlyPerformanceMetricsRow>(sql)
             .bind(months)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -911,7 +912,7 @@ impl AnalyticsRepository {
         sqlx::query_as::<_, ProductMetricsRow>(sql)
             .bind(days)
             .bind(limit)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -946,7 +947,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, MonthlySalesProgressRow>(sql)
             .bind(target_revenue)
-            .fetch_one(&self.pool)
+            .fetch_one(&*self.pool)
             .await
     }
 
@@ -987,7 +988,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, ConversionRateRow>(sql)
             .bind(days)
-            .fetch_one(&self.pool)
+            .fetch_one(&*self.pool)
             .await
     }
 
@@ -1019,7 +1020,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, InventoryCapacityRow>(sql)
             .bind(capacity_limit)
-            .fetch_one(&self.pool)
+            .fetch_one(&*self.pool)
             .await
     }
 
@@ -1055,7 +1056,7 @@ impl AnalyticsRepository {
         sqlx::query_as::<_, ProductRankingRow>(sql)
             .bind(days)
             .bind(limit)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -1083,7 +1084,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, MonthOverMonthGrowthRow>(sql)
             .bind(months)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -1110,7 +1111,7 @@ impl AnalyticsRepository {
             ORDER BY month ASC
         "#;
         sqlx::query_as::<_, YearToDateSalesRow>(sql)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -1141,7 +1142,7 @@ impl AnalyticsRepository {
         sqlx::query_as::<_, TopRatedProductRow>(sql)
             .bind(min_reviews)
             .bind(limit)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -1187,7 +1188,7 @@ impl AnalyticsRepository {
         "#;
         sqlx::query_as::<_, ProductReviewAnalyticsRow>(sql)
             .bind(limit)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 
@@ -1221,7 +1222,7 @@ impl AnalyticsRepository {
                  WHERE r._status != 'deleted' AND r.rating = 1) AS one_star_count
         "#;
         sqlx::query_as::<_, ReviewStatsSummaryRow>(sql)
-            .fetch_one(&self.pool)
+            .fetch_one(&*self.pool)
             .await
     }
 
@@ -1254,7 +1255,7 @@ impl AnalyticsRepository {
             ORDER BY rc.rating DESC
         "#;
         sqlx::query_as::<_, RatingDistributionRow>(sql)
-            .fetch_all(&self.pool)
+            .fetch_all(&*self.pool)
             .await
     }
 }

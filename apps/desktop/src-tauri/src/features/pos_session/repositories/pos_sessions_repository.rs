@@ -1,12 +1,12 @@
 use crate::features::pos_session::models::pos_session_model::PosSession;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct PosSessionsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl PosSessionsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 

@@ -11,7 +11,7 @@ pub async fn get_audit_log(
     id: String,
 ) -> Result<Option<AuditLog>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -27,7 +27,7 @@ pub async fn list_audit_logs(
     _per_page: Option<u32>,
 ) -> Result<Vec<AuditLog>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -42,7 +42,7 @@ pub async fn list_audit_logs_by_table(
     table_name: String,
 ) -> Result<Vec<AuditLog>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -58,7 +58,7 @@ pub async fn list_audit_logs_by_record(
     record_id: String,
 ) -> Result<Vec<AuditLog>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -75,7 +75,7 @@ pub async fn list_audit_logs_filtered(
     changed_by: Option<String>,
 ) -> Result<Vec<AuditLog>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 

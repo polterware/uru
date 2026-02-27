@@ -1,12 +1,12 @@
 use crate::features::review::models::review_model::Review;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct ReviewsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl ReviewsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 
@@ -129,7 +129,7 @@ impl ReviewsRepository {
     // ============================================================
 
     pub async fn create_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         review: Review,
     ) -> Result<Review> {
         let sql = r#"
@@ -160,7 +160,7 @@ impl ReviewsRepository {
     }
 
     pub async fn get_by_id_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         id: &str,
     ) -> Result<Option<Review>> {
         let sql = "SELECT * FROM reviews WHERE id = $1";
@@ -171,7 +171,7 @@ impl ReviewsRepository {
     }
 
     pub async fn delete_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         id: &str,
     ) -> Result<()> {
         let sql = "DELETE FROM reviews WHERE id = $1";
@@ -180,7 +180,7 @@ impl ReviewsRepository {
     }
 
     pub async fn update_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         review: Review,
     ) -> Result<Review> {
         let sql = r#"

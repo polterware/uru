@@ -1,22 +1,22 @@
 //! Shop-scoped Product Categories Repository for Multi-Database Architecture
 
 use crate::features::product::models::product_model::ProductCategory;
-use sqlx::{Result, Sqlite, SqlitePool, Transaction};
+use sqlx::{Any, AnyPool, Result, Transaction};
 use std::sync::Arc;
 
 /// Product categories repository that operates on a shop-specific database.
 pub struct ShopProductCategoriesRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
 }
 
 impl ShopProductCategoriesRepository {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         Self { pool }
     }
 
     pub async fn create_many_in_tx(
         &self,
-        tx: &mut Transaction<'_, Sqlite>,
+        tx: &mut Transaction<'_, Any>,
         categories: Vec<ProductCategory>,
     ) -> Result<Vec<ProductCategory>> {
         let mut created_categories = Vec::new();

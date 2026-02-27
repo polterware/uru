@@ -1,4 +1,4 @@
-use chrono::{DateTime, NaiveDate, Utc};
+use chrono::{DateTime, String, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
@@ -9,15 +9,15 @@ pub struct InventoryLevel {
     pub location_id: String,
     pub batch_number: Option<String>,
     pub serial_number: Option<String>,
-    pub expiry_date: Option<NaiveDate>,
+    pub expiry_date: Option<String>,
     pub quantity_on_hand: f64,        // DEFAULT 0
     pub quantity_reserved: f64,       // DEFAULT 0
     pub stock_status: Option<String>, // DEFAULT 'sellable' check constraint
     pub aisle_bin_slot: Option<String>,
-    pub last_counted_at: Option<DateTime<Utc>>,
+    pub last_counted_at: Option<String>,
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>, // DEFAULT 'created'
-    pub created_at: Option<DateTime<Utc>>, // DEFAULT CURRENT_TIMESTAMP
-    pub updated_at: Option<DateTime<Utc>>, // DEFAULT CURRENT_TIMESTAMP
+    pub created_at: Option<String>, // DEFAULT CURRENT_TIMESTAMP
+    pub updated_at: Option<String>, // DEFAULT CURRENT_TIMESTAMP
 }

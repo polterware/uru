@@ -22,16 +22,16 @@ pub struct Shipment {
     pub invoice_key: Option<String>,
     pub cost_amount: Option<f64>,
     pub insurance_amount: Option<f64>,
-    pub estimated_delivery_at: Option<DateTime<Utc>>,
-    pub shipped_at: Option<DateTime<Utc>>,
-    pub delivered_at: Option<DateTime<Utc>>,
+    pub estimated_delivery_at: Option<String>,
+    pub shipped_at: Option<String>,
+    pub delivered_at: Option<String>,
     pub metadata: Option<String>,     // JSONB
     pub customs_info: Option<String>, // JSONB
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
@@ -45,8 +45,8 @@ pub struct ShipmentItem {
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
@@ -56,11 +56,11 @@ pub struct ShipmentEvent {
     pub status: Option<String>,
     pub description: Option<String>,
     pub location: Option<String>,
-    pub happened_at: Option<DateTime<Utc>>,
+    pub happened_at: Option<String>,
     pub raw_data: Option<String>, // JSONB
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }

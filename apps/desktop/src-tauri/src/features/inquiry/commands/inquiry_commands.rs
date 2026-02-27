@@ -12,7 +12,7 @@ pub async fn create_inquiry(
 ) -> Result<Inquiry, String> {
     let shop_id = payload.shop_id.clone();
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -27,7 +27,7 @@ pub async fn delete_inquiry(
     id: String,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -42,7 +42,7 @@ pub async fn get_inquiry(
     id: String,
 ) -> Result<Option<Inquiry>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -56,7 +56,7 @@ pub async fn list_inquiries(
     shop_id: String,
 ) -> Result<Vec<Inquiry>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -70,7 +70,7 @@ pub async fn list_inquiries_by_shop(
     shop_id: String,
 ) -> Result<Vec<Inquiry>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 

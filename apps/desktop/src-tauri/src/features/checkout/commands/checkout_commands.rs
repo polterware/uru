@@ -15,7 +15,7 @@ pub async fn create_checkout(
         .clone()
         .ok_or_else(|| "shop_id is required".to_string())?;
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -30,7 +30,7 @@ pub async fn update_checkout(
     payload: UpdateCheckoutDTO,
 ) -> Result<Checkout, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -45,7 +45,7 @@ pub async fn delete_checkout(
     id: String,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -60,7 +60,7 @@ pub async fn get_checkout(
     id: String,
 ) -> Result<Option<Checkout>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -75,7 +75,7 @@ pub async fn get_checkout_by_token(
     token: String,
 ) -> Result<Option<Checkout>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -89,7 +89,7 @@ pub async fn list_checkouts(
     shop_id: String,
 ) -> Result<Vec<Checkout>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -103,7 +103,7 @@ pub async fn list_checkouts_by_shop(
     shop_id: String,
 ) -> Result<Vec<Checkout>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 

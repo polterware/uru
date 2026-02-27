@@ -3,17 +3,17 @@
 use crate::features::transaction::dtos::transaction_dto::{CreateTransactionDTO, UpdateTransactionDTO};
 use crate::features::transaction::models::transaction_model::Transaction;
 use crate::features::transaction::repositories::shop_transaction_repository::ShopTransactionRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 pub struct ShopTransactionService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
     repo: ShopTransactionRepository,
 }
 
 impl ShopTransactionService {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         let repo = ShopTransactionRepository::new(pool.clone(), shop_id.clone());
         Self {
             pool,
@@ -26,7 +26,7 @@ impl ShopTransactionService {
         &self.shop_id
     }
 
-    pub fn pool(&self) -> Arc<SqlitePool> {
+    pub fn pool(&self) -> Arc<AnyPool> {
         self.pool.clone()
     }
 

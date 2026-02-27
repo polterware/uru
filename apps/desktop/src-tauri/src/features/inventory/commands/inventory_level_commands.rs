@@ -15,7 +15,7 @@ pub async fn create_inventory_level(
     payload: CreateInventoryLevelDTO,
 ) -> Result<InventoryLevel, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = ShopInventoryService::new(pool);
@@ -30,7 +30,7 @@ pub async fn update_inventory_level(
     payload: UpdateInventoryLevelDTO,
 ) -> Result<InventoryLevel, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = ShopInventoryService::new(pool);
@@ -49,7 +49,7 @@ pub async fn delete_inventory_level(
     id: String,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = ShopInventoryService::new(pool);
@@ -63,7 +63,7 @@ pub async fn get_inventory_level(
     id: String,
 ) -> Result<Option<InventoryLevel>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = ShopInventoryService::new(pool);
@@ -76,7 +76,7 @@ pub async fn list_inventory_levels_by_shop(
     shop_id: String,
 ) -> Result<Vec<InventoryLevel>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = ShopInventoryService::new(pool);
@@ -90,7 +90,7 @@ pub async fn adjust_stock(
     payload: AdjustStockDTO,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = InventoryService::new((*pool).clone());
@@ -111,7 +111,7 @@ pub async fn transfer_stock(
     payload: TransferStockDTO,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = InventoryService::new((*pool).clone());
@@ -134,7 +134,7 @@ pub async fn get_available_quantity(
     location_id: String,
 ) -> Result<f64, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = InventoryService::new((*pool).clone());

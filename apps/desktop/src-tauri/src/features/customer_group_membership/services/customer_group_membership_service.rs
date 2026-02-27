@@ -1,14 +1,14 @@
 use crate::features::customer_group_membership::dtos::customer_group_membership_dto::AssignCustomerGroupsDTO;
 use crate::features::customer::models::customer_model::CustomerGroupMembership;
 use crate::features::customer_group_membership::repositories::customer_group_memberships_repository::CustomerGroupMembershipsRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct CustomerGroupMembershipService {
     repo: CustomerGroupMembershipsRepository,
 }
 
 impl CustomerGroupMembershipService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = CustomerGroupMembershipsRepository::new(pool);
         Self { repo }
     }

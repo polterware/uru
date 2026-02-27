@@ -1,14 +1,14 @@
 use crate::features::refund::dtos::refund_dto::{CreateRefundDTO, UpdateRefundDTO};
 use crate::features::refund::models::refund_model::Refund;
 use crate::features::refund::repositories::refunds_repository::RefundsRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct RefundService<'a> {
     repo: RefundsRepository<'a>,
 }
 
 impl<'a> RefundService<'a> {
-    pub fn new(pool: &'a SqlitePool) -> Self {
+    pub fn new(pool: &'a AnyPool) -> Self {
         let repo = RefundsRepository::new(pool);
         Self { repo }
     }

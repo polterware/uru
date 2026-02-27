@@ -1,12 +1,12 @@
 use crate::features::shipment::models::shipment_model::ShipmentEvent;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct ShipmentEventsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl ShipmentEventsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 
@@ -65,7 +65,7 @@ impl ShipmentEventsRepository {
     // ============================================================
 
     pub async fn create_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         event: ShipmentEvent,
     ) -> Result<ShipmentEvent> {
         let event_sql = r#"

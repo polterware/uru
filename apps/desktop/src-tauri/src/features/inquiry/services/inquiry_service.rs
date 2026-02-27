@@ -3,17 +3,17 @@ use crate::features::inquiry::models::inquiry_model::{Inquiry, InquiryMessage};
 use crate::features::inquiry::repositories::inquiries_repository::InquiriesRepository;
 use crate::features::inquiry::repositories::inquiry_messages_repository::InquiryMessagesRepository;
 use chrono::Utc;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use uuid::Uuid;
 
 pub struct InquiryService {
-    pool: SqlitePool,
+    pool: AnyPool,
     repo: InquiriesRepository,
     messages_repo: InquiryMessagesRepository,
 }
 
 impl InquiryService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = InquiriesRepository::new(pool.clone());
         let messages_repo = InquiryMessagesRepository::new(pool.clone());
         Self {

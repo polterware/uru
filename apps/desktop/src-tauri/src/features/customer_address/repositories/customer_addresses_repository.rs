@@ -1,12 +1,12 @@
 use crate::features::customer::models::customer_model::CustomerAddress;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct CustomerAddressesRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl CustomerAddressesRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 

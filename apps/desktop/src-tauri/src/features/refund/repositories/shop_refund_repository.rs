@@ -1,15 +1,15 @@
 //! Shop-scoped Refund Repository for Multi-Database Architecture
 
 use crate::features::refund::models::refund_model::Refund;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 use std::sync::Arc;
 
 pub struct ShopRefundRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
 }
 
 impl ShopRefundRepository {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         Self { pool }
     }
 
@@ -93,7 +93,7 @@ impl ShopRefundRepository {
     }
 
     pub async fn delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE refunds SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1";
+        let sql = "UPDATE refunds SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }
@@ -101,7 +101,7 @@ impl ShopRefundRepository {
     pub async fn update_status(&self, id: &str, status: &str) -> Result<Refund> {
         let sql = r#"
             UPDATE refunds
-            SET status = $2, _status = 'modified', updated_at = datetime('now')
+            SET status = $2, _status = 'modified', updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;

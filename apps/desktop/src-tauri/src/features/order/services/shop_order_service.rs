@@ -3,17 +3,17 @@
 use crate::features::order::dtos::order_dto::{CreateOrderDTO, UpdateOrderDTO};
 use crate::features::order::models::order_model::Order;
 use crate::features::order::repositories::shop_order_repository::ShopOrderRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 pub struct ShopOrderService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
     repo: ShopOrderRepository,
 }
 
 impl ShopOrderService {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         let repo = ShopOrderRepository::new(pool.clone(), shop_id.clone());
         Self {
             pool,
@@ -26,7 +26,7 @@ impl ShopOrderService {
         &self.shop_id
     }
 
-    pub fn pool(&self) -> Arc<SqlitePool> {
+    pub fn pool(&self) -> Arc<AnyPool> {
         self.pool.clone()
     }
 

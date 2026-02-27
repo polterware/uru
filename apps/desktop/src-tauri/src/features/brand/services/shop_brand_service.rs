@@ -6,7 +6,7 @@
 use crate::features::brand::dtos::brand_dto::{CreateBrandDTO, UpdateBrandDTO};
 use crate::features::brand::models::brand_model::Brand;
 use crate::features::brand::repositories::shop_brand_repository::ShopBrandRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 /// Brand service that operates on a shop-specific database.
@@ -16,7 +16,7 @@ pub struct ShopBrandService {
 }
 
 impl ShopBrandService {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         let repo = ShopBrandRepository::new(pool, shop_id.clone());
         Self { shop_id, repo }
     }

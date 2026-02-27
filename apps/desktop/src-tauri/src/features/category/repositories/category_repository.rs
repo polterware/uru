@@ -1,12 +1,12 @@
 use crate::features::category::models::category_model::Category;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct CategoriesRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl CategoriesRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 

@@ -1,12 +1,12 @@
 use crate::features::location::models::location_model::Location;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct LocationsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl LocationsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 

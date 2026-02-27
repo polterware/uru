@@ -1,12 +1,12 @@
 use crate::features::inquiry::models::inquiry_model::InquiryMessage;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct InquiryMessagesRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl InquiryMessagesRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 
@@ -68,7 +68,7 @@ impl InquiryMessagesRepository {
     // ============================================================
 
     pub async fn create_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         message: InquiryMessage,
     ) -> Result<InquiryMessage> {
         let msg_sql = r#"

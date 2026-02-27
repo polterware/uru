@@ -1,15 +1,15 @@
 use crate::features::product::models::product_model::ProductMetrics;
 use chrono::Utc;
 use sqlx::Result;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct ProductMetricsRepository {
     #[allow(dead_code)]
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl ProductMetricsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 
@@ -19,7 +19,7 @@ impl ProductMetricsRepository {
 
     /// Upsert product metrics within a transaction
     pub async fn upsert_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         product_id: &str,
         review_count: i32,
         review_sum: i32,
@@ -53,7 +53,7 @@ impl ProductMetricsRepository {
 
     /// Increment metrics when adding a review
     pub async fn increment_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         product_id: &str,
         rating: i32,
     ) -> Result<ProductMetrics> {
@@ -79,7 +79,7 @@ impl ProductMetricsRepository {
 
     /// Decrement metrics when removing a review
     pub async fn decrement_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         product_id: &str,
         rating: i32,
     ) -> Result<ProductMetrics> {
@@ -106,7 +106,7 @@ impl ProductMetricsRepository {
 
     /// Recalculate metrics from all reviews for a product
     pub async fn recalculate_from_reviews_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         product_id: &str,
     ) -> Result<ProductMetrics> {
         // First, calculate stats from reviews
@@ -131,7 +131,7 @@ impl ProductMetricsRepository {
 
     /// Get metrics by product ID within a transaction
     pub async fn get_by_product_id_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         product_id: &str,
     ) -> Result<Option<ProductMetrics>> {
         let sql = "SELECT * FROM product_metrics WHERE product_id = $1";

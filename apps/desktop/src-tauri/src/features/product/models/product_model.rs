@@ -32,8 +32,8 @@ pub struct Product {
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>, // DEFAULT 'created'
-    pub created_at: Option<DateTime<Utc>>, // DEFAULT CURRENT_TIMESTAMP
-    pub updated_at: Option<DateTime<Utc>>, // DEFAULT CURRENT_TIMESTAMP
+    pub created_at: Option<String>, // DEFAULT CURRENT_TIMESTAMP
+    pub updated_at: Option<String>, // DEFAULT CURRENT_TIMESTAMP
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
@@ -44,8 +44,8 @@ pub struct ProductCategory {
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
@@ -54,5 +54,5 @@ pub struct ProductMetrics {
     pub review_count: i32,
     pub review_sum: i32,
     pub average_rating: Option<f64>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub updated_at: Option<String>,
 }

@@ -1,14 +1,14 @@
 use crate::features::brand::dtos::brand_dto::{CreateBrandDTO, UpdateBrandDTO};
 use crate::features::brand::models::brand_model::Brand;
 use crate::features::brand::repositories::brand_repository::BrandsRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct BrandService {
     repo: BrandsRepository,
 }
 
 impl BrandService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = BrandsRepository::new(pool);
         Self { repo }
     }

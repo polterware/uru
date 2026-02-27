@@ -3,17 +3,17 @@
 use crate::features::checkout::dtos::checkout_dto::{CreateCheckoutDTO, UpdateCheckoutDTO};
 use crate::features::checkout::models::checkout_model::Checkout;
 use crate::features::checkout::repositories::shop_checkout_repository::ShopCheckoutRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 pub struct ShopCheckoutService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
     repo: ShopCheckoutRepository,
 }
 
 impl ShopCheckoutService {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         let repo = ShopCheckoutRepository::new(pool.clone(), shop_id.clone());
         Self {
             pool,
@@ -26,7 +26,7 @@ impl ShopCheckoutService {
         &self.shop_id
     }
 
-    pub fn pool(&self) -> Arc<SqlitePool> {
+    pub fn pool(&self) -> Arc<AnyPool> {
         self.pool.clone()
     }
 

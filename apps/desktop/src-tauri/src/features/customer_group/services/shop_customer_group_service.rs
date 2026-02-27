@@ -5,17 +5,17 @@ use crate::features::customer_group::dtos::customer_group_dto::{
 };
 use crate::features::customer_group::models::customer_group_model::CustomerGroup;
 use crate::features::customer_group::repositories::shop_customer_group_repository::ShopCustomerGroupRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 pub struct ShopCustomerGroupService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
     repo: ShopCustomerGroupRepository,
 }
 
 impl ShopCustomerGroupService {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         let repo = ShopCustomerGroupRepository::new(pool.clone(), shop_id.clone());
         Self {
             pool,
@@ -53,7 +53,7 @@ impl ShopCustomerGroupService {
 
     pub async fn delete_group(&self, id: &str) -> Result<(), String> {
         // First delete memberships
-        sqlx::query("UPDATE customer_group_memberships SET _status = 'deleted', updated_at = datetime('now') WHERE customer_group_id = $1")
+        sqlx::query("UPDATE customer_group_memberships SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE customer_group_id = $1")
             .bind(id)
             .execute(&*self.pool)
             .await

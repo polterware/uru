@@ -6,7 +6,7 @@
 use crate::features::category::dtos::category_dto::{CreateCategoryDTO, UpdateCategoryDTO};
 use crate::features::category::models::category_model::Category;
 use crate::features::category::repositories::shop_category_repository::ShopCategoryRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 /// Category service that operates on a shop-specific database.
@@ -16,7 +16,7 @@ pub struct ShopCategoryService {
 }
 
 impl ShopCategoryService {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         let repo = ShopCategoryRepository::new(pool, shop_id.clone());
         Self { shop_id, repo }
     }

@@ -121,7 +121,7 @@ impl ShopService {
                 .map_err(|e| format!("Erro ao deletar banco da loja: {}", e))?;
 
             // Soft delete in registry (mark as deleted)
-            sqlx::query("UPDATE shops SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1")
+            sqlx::query("UPDATE shops SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1")
                 .bind(id)
                 .execute(&self.pool)
                 .await

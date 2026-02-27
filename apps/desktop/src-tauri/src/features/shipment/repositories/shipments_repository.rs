@@ -1,12 +1,12 @@
 use crate::features::shipment::models::shipment_model::Shipment;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct ShipmentsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl ShipmentsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 
@@ -157,7 +157,7 @@ impl ShipmentsRepository {
     // ============================================================
 
     pub async fn create_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         shipment: Shipment,
     ) -> Result<Shipment> {
         let sql = r#"
@@ -205,7 +205,7 @@ impl ShipmentsRepository {
     }
 
     pub async fn get_by_id_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         id: &str,
     ) -> Result<Option<Shipment>> {
         let sql = "SELECT * FROM shipments WHERE id = $1";
@@ -216,7 +216,7 @@ impl ShipmentsRepository {
     }
 
     pub async fn update_status_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         id: &str,
         status: &str,
     ) -> Result<Shipment> {
@@ -232,7 +232,7 @@ impl ShipmentsRepository {
     }
 
     pub async fn update_shipped_at_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         id: &str,
         tracking_number: Option<&str>,
     ) -> Result<Shipment> {
@@ -253,7 +253,7 @@ impl ShipmentsRepository {
     }
 
     pub async fn update_delivered_at_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         id: &str,
     ) -> Result<Shipment> {
         let sql = r#"

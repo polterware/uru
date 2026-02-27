@@ -11,10 +11,10 @@ async fn analytics_service(
 ) -> Result<AnalyticsService, String> {
     let registry = repo_factory.registry_pool().clone();
     let shop_pool = repo_factory
-        .shop_pool(shop_id)
+        .shop_db(shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
-    Ok(AnalyticsService::new(registry, (*shop_pool).clone()))
+    Ok(AnalyticsService::new(registry, shop_pool))
 }
 
 #[tauri::command]

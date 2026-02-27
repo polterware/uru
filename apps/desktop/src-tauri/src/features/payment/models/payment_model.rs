@@ -19,9 +19,9 @@ pub struct Payment {
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
-    pub authorized_at: Option<DateTime<Utc>>,
-    pub captured_at: Option<DateTime<Utc>>,
-    pub voided_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
+    pub authorized_at: Option<String>,
+    pub captured_at: Option<String>,
+    pub voided_at: Option<String>,
 }

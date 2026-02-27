@@ -2,17 +2,17 @@ use crate::features::inventory::repositories::inventory_levels_repository::Inven
 use crate::features::inventory::repositories::inventory_movements_repository::InventoryMovementsRepository;
 use crate::features::transaction::models::transaction_model::InventoryMovement;
 use chrono::Utc;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use uuid::Uuid;
 
 pub struct InventoryService {
-    pool: SqlitePool,
+    pool: AnyPool,
     #[allow(dead_code)]
     levels_repo: InventoryLevelsRepository,
 }
 
 impl InventoryService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let levels_repo = InventoryLevelsRepository::new(pool.clone());
         Self { pool, levels_repo }
     }

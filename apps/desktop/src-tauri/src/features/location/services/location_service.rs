@@ -1,14 +1,14 @@
 use crate::features::location::dtos::location_dto::{CreateLocationDTO, UpdateLocationDTO};
 use crate::features::location::models::location_model::Location;
 use crate::features::location::repositories::locations_repository::LocationsRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct LocationService {
     repo: LocationsRepository,
 }
 
 impl LocationService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = LocationsRepository::new(pool);
         Self { repo }
     }

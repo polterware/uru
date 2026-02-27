@@ -5,7 +5,7 @@
 
 use crate::db::error::DbResult;
 use async_trait::async_trait;
-use sqlx::{Sqlite, Transaction};
+use sqlx::{Any, Transaction};
 
 /// Marker trait for entities that can be stored in a database
 pub trait Entity: Send + Sync + Clone {
@@ -41,19 +41,19 @@ pub trait TransactionalRepository: Repository {
     /// Create a new entity within a transaction
     async fn create_in_tx(
         &self,
-        tx: &mut Transaction<'_, Sqlite>,
+        tx: &mut Transaction<'_, Any>,
         entity: &Self::Entity,
     ) -> DbResult<Self::Entity>;
 
     /// Update an entity within a transaction
     async fn update_in_tx(
         &self,
-        tx: &mut Transaction<'_, Sqlite>,
+        tx: &mut Transaction<'_, Any>,
         entity: &Self::Entity,
     ) -> DbResult<Self::Entity>;
 
     /// Soft delete an entity within a transaction
-    async fn delete_in_tx(&self, tx: &mut Transaction<'_, Sqlite>, id: &str) -> DbResult<()>;
+    async fn delete_in_tx(&self, tx: &mut Transaction<'_, Any>, id: &str) -> DbResult<()>;
 }
 
 /// Trait for registry-level repositories (shops, users, roles, modules)
@@ -73,12 +73,12 @@ pub trait ShopRepository: Repository {
 
 /// Helper trait for creating repositories from a pool
 pub trait FromPool: Sized {
-    /// Create a new repository instance from a SQLite pool
-    fn from_pool(pool: sqlx::SqlitePool) -> Self;
+    /// Create a new repository instance from an AnyPool
+    fn from_pool(pool: sqlx::AnyPool) -> Self;
 }
 
 /// Helper trait for creating shop-scoped repositories
 pub trait FromPoolWithShop: Sized {
     /// Create a new repository instance scoped to a specific shop
-    fn from_pool_with_shop(pool: sqlx::SqlitePool, shop_id: String) -> Self;
+    fn from_pool_with_shop(pool: sqlx::AnyPool, shop_id: String) -> Self;
 }

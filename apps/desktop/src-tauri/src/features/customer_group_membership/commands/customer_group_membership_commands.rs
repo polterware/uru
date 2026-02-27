@@ -13,7 +13,7 @@ pub async fn assign_customer_groups(
     payload: AssignCustomerGroupsDTO,
 ) -> Result<Vec<CustomerGroupMembership>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -50,7 +50,7 @@ pub async fn list_customer_group_memberships_by_customer(
     customer_id: String,
 ) -> Result<Vec<CustomerGroupMembership>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -65,7 +65,7 @@ pub async fn list_customer_group_memberships_by_group(
     group_id: String,
 ) -> Result<Vec<CustomerGroupMembership>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -81,7 +81,7 @@ pub async fn delete_customer_group_membership(
     group_id: String,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 

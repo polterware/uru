@@ -2,21 +2,21 @@
 
 use crate::features::customer::models::customer_model::CustomerGroupMembership;
 use crate::features::customer_group_membership::repositories::shop_customer_group_membership_repository::ShopCustomerGroupMembershipRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 pub struct ShopCustomerGroupMembershipService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     repo: ShopCustomerGroupMembershipRepository,
 }
 
 impl ShopCustomerGroupMembershipService {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         let repo = ShopCustomerGroupMembershipRepository::new(pool.clone());
         Self { pool, repo }
     }
 
-    pub fn pool(&self) -> Arc<SqlitePool> {
+    pub fn pool(&self) -> Arc<AnyPool> {
         self.pool.clone()
     }
 

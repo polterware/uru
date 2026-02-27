@@ -25,15 +25,15 @@ pub struct Customer {
     pub customer_group_id: Option<String>,
     pub total_spent: Option<f64>,  // REAL
     pub orders_count: Option<i64>, // INTEGER
-    pub last_order_at: Option<DateTime<Utc>>,
+    pub last_order_at: Option<String>,
     pub notes: Option<String>,
     pub metadata: Option<String>,          // JSONB
     pub custom_attributes: Option<String>, // JSONB
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>, // DEFAULT 'created'
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
@@ -58,8 +58,8 @@ pub struct CustomerAddress {
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>, // DEFAULT 'created'
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
@@ -69,6 +69,6 @@ pub struct CustomerGroupMembership {
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub created_at: String,
+    pub updated_at: String,
 }

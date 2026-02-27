@@ -1,13 +1,13 @@
 use crate::db::DbTransaction;
 use crate::features::payment::models::payment_model::Payment;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct PaymentsRepository<'a> {
-    pool: &'a SqlitePool,
+    pool: &'a AnyPool,
 }
 
 impl<'a> PaymentsRepository<'a> {
-    pub fn new(pool: &'a SqlitePool) -> Self {
+    pub fn new(pool: &'a AnyPool) -> Self {
         Self { pool }
     }
 

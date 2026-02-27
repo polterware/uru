@@ -3,14 +3,14 @@ use crate::features::customer_address::dtos::customer_address_dto::{
     CreateCustomerAddressDTO, UpdateCustomerAddressDTO,
 };
 use crate::features::customer_address::repositories::customer_addresses_repository::CustomerAddressesRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct CustomerAddressService {
     repo: CustomerAddressesRepository,
 }
 
 impl CustomerAddressService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = CustomerAddressesRepository::new(pool);
         Self { repo }
     }

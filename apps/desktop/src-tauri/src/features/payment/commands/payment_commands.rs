@@ -10,7 +10,7 @@ pub async fn list_payments(
     shop_id: String,
 ) -> Result<Vec<Payment>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -24,7 +24,7 @@ pub async fn list_payments_by_shop(
     shop_id: String,
 ) -> Result<Vec<Payment>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -39,7 +39,7 @@ pub async fn get_payment(
     id: String,
 ) -> Result<Option<Payment>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -55,7 +55,7 @@ pub async fn update_payment_status(
     status: String,
 ) -> Result<Payment, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 

@@ -3,7 +3,7 @@
 use crate::features::checkout::models::checkout_model::Checkout;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Result, SqlitePool};
+use sqlx::{FromRow, Result, AnyPool};
 use std::sync::Arc;
 
 /// Internal struct for shop database (no shop_id column)
@@ -25,15 +25,15 @@ struct ShopCheckout {
     pub total_discounts: Option<f64>,
     pub total_price: Option<f64>,
     pub status: Option<String>,
-    pub reservation_expires_at: Option<DateTime<Utc>>,
-    pub completed_at: Option<DateTime<Utc>>,
+    pub reservation_expires_at: Option<String>,
+    pub completed_at: Option<String>,
     pub metadata: Option<String>,
     pub recovery_url: Option<String>,
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 impl ShopCheckout {
@@ -68,12 +68,12 @@ impl ShopCheckout {
 }
 
 pub struct ShopCheckoutRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
 }
 
 impl ShopCheckoutRepository {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         Self { pool, shop_id }
     }
 
@@ -210,7 +210,7 @@ impl ShopCheckoutRepository {
     }
 
     pub async fn delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE checkouts SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1";
+        let sql = "UPDATE checkouts SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }
@@ -219,9 +219,9 @@ impl ShopCheckoutRepository {
         let sql = r#"
             UPDATE checkouts
             SET status = $2,
-                completed_at = CASE WHEN $2 = 'completed' THEN datetime('now') ELSE completed_at END,
+                completed_at = CASE WHEN $2 = 'completed' THEN CURRENT_TIMESTAMP ELSE completed_at END,
                 _status = 'modified',
-                updated_at = datetime('now')
+                updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;

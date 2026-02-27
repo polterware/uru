@@ -3,7 +3,7 @@
 use crate::features::location::dtos::location_dto::{CreateLocationDTO, UpdateLocationDTO};
 use crate::features::location::models::location_model::Location;
 use crate::features::location::repositories::shop_location_repository::ShopLocationRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 pub struct ShopLocationService {
@@ -12,7 +12,7 @@ pub struct ShopLocationService {
 }
 
 impl ShopLocationService {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         let repo = ShopLocationRepository::new(pool, shop_id.clone());
         Self { shop_id, repo }
     }

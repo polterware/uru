@@ -21,13 +21,13 @@ pub struct Checkout {
     pub total_discounts: Option<f64>,
     pub total_price: Option<f64>,
     pub status: Option<String>, // DEFAULT 'open'
-    pub reservation_expires_at: Option<DateTime<Utc>>,
-    pub completed_at: Option<DateTime<Utc>>,
+    pub reservation_expires_at: Option<String>,
+    pub completed_at: Option<String>,
     pub metadata: Option<String>, // JSONB stored as TEXT
     pub recovery_url: Option<String>,
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>, // DEFAULT 'created'
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }

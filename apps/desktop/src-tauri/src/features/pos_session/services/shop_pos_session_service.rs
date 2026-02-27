@@ -5,17 +5,17 @@ use crate::features::pos_session::dtos::pos_session_dto::{
 };
 use crate::features::pos_session::models::pos_session_model::PosSession;
 use crate::features::pos_session::repositories::shop_pos_session_repository::ShopPosSessionRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 pub struct ShopPosSessionService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
     repo: ShopPosSessionRepository,
 }
 
 impl ShopPosSessionService {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         let repo = ShopPosSessionRepository::new(pool.clone(), shop_id.clone());
         Self {
             pool,
@@ -28,7 +28,7 @@ impl ShopPosSessionService {
         &self.shop_id
     }
 
-    pub fn pool(&self) -> Arc<SqlitePool> {
+    pub fn pool(&self) -> Arc<AnyPool> {
         self.pool.clone()
     }
 

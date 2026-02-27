@@ -1,14 +1,14 @@
 use crate::features::audit_log::dtos::audit_log_dto::AuditLogFilterDTO;
 use crate::features::audit_log::models::audit_log_model::AuditLog;
 use crate::features::audit_log::repositories::audit_logs_repository::AuditLogsRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct AuditLogService {
     repo: AuditLogsRepository,
 }
 
 impl AuditLogService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = AuditLogsRepository::new(pool);
         Self { repo }
     }

@@ -1,13 +1,13 @@
 use crate::db::DbTransaction;
 use crate::features::transaction::models::transaction_model::InventoryMovement;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct InventoryMovementsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl InventoryMovementsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 

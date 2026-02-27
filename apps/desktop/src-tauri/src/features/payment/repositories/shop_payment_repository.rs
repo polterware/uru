@@ -1,15 +1,15 @@
 //! Shop-scoped Payment Repository for Multi-Database Architecture
 
 use crate::features::payment::models::payment_model::Payment;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 use std::sync::Arc;
 
 pub struct ShopPaymentRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
 }
 
 impl ShopPaymentRepository {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         Self { pool }
     }
 
@@ -119,14 +119,14 @@ impl ShopPaymentRepository {
     }
 
     pub async fn delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE payments SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1";
+        let sql = "UPDATE payments SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }
 
     pub async fn update_status(&self, id: &str, status: &str) -> Result<Payment> {
         let sql = r#"
-            UPDATE payments SET status = $2, _status = 'modified', updated_at = datetime('now')
+            UPDATE payments SET status = $2, _status = 'modified', updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;
@@ -141,9 +141,9 @@ impl ShopPaymentRepository {
         let sql = r#"
             UPDATE payments
             SET status = 'captured',
-                captured_at = datetime('now'),
+                captured_at = CURRENT_TIMESTAMP,
                 _status = 'modified',
-                updated_at = datetime('now')
+                updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;
@@ -157,9 +157,9 @@ impl ShopPaymentRepository {
         let sql = r#"
             UPDATE payments
             SET status = 'voided',
-                voided_at = datetime('now'),
+                voided_at = CURRENT_TIMESTAMP,
                 _status = 'modified',
-                updated_at = datetime('now')
+                updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;

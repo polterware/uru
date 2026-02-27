@@ -1,15 +1,15 @@
 use crate::features::product::repositories::product_metrics_repository::ProductMetricsRepository;
 use crate::features::review::models::review_model::Review;
 use crate::features::review::repositories::reviews_repository::ReviewsRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct ReviewService {
-    pool: SqlitePool,
+    pool: AnyPool,
     reviews_repo: ReviewsRepository,
 }
 
 impl ReviewService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let reviews_repo = ReviewsRepository::new(pool.clone());
         Self { pool, reviews_repo }
     }

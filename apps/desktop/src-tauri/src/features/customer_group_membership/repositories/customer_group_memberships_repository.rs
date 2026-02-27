@@ -1,12 +1,12 @@
 use crate::features::customer::models::customer_model::CustomerGroupMembership;
-use sqlx::{Result, Sqlite, SqlitePool, Transaction};
+use sqlx::{Any, AnyPool, Result, Transaction};
 
 pub struct CustomerGroupMembershipsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl CustomerGroupMembershipsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 
@@ -42,7 +42,7 @@ impl CustomerGroupMembershipsRepository {
 
     pub async fn create_many_in_tx(
         &self,
-        tx: &mut Transaction<'_, Sqlite>,
+        tx: &mut Transaction<'_, Any>,
         memberships: Vec<CustomerGroupMembership>,
     ) -> Result<Vec<CustomerGroupMembership>> {
         let mut created_memberships = Vec::new();

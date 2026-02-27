@@ -2,21 +2,21 @@
 
 use crate::features::refund::models::refund_model::Refund;
 use crate::features::refund::repositories::shop_refund_repository::ShopRefundRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 pub struct ShopRefundService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     repo: ShopRefundRepository,
 }
 
 impl ShopRefundService {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         let repo = ShopRefundRepository::new(pool.clone());
         Self { pool, repo }
     }
 
-    pub fn pool(&self) -> Arc<SqlitePool> {
+    pub fn pool(&self) -> Arc<AnyPool> {
         self.pool.clone()
     }
 

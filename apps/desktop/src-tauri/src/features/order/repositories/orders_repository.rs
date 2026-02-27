@@ -1,13 +1,13 @@
 use crate::db::DbTransaction;
 use crate::features::order::models::order_model::Order;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct OrdersRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl OrdersRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 

@@ -13,7 +13,7 @@ pub async fn create_shipment(
     payload: CreateShipmentDTO,
 ) -> Result<Shipment, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -31,7 +31,7 @@ pub async fn update_shipment(
     payload: UpdateShipmentDTO,
 ) -> Result<Shipment, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -80,7 +80,7 @@ pub async fn delete_shipment(
     id: String,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -95,7 +95,7 @@ pub async fn get_shipment(
     id: String,
 ) -> Result<Option<Shipment>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -109,7 +109,7 @@ pub async fn list_shipments(
     shop_id: String,
 ) -> Result<Vec<Shipment>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -123,7 +123,7 @@ pub async fn list_shipments_by_shop(
     shop_id: String,
 ) -> Result<Vec<Shipment>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 

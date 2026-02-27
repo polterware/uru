@@ -14,7 +14,7 @@ pub async fn create_transaction(
 ) -> Result<Transaction, String> {
     let shop_id = payload.shop_id.clone();
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -29,7 +29,7 @@ pub async fn update_transaction(
     payload: UpdateTransactionDTO,
 ) -> Result<Transaction, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -44,7 +44,7 @@ pub async fn delete_transaction(
     id: String,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -59,7 +59,7 @@ pub async fn get_transaction(
     id: String,
 ) -> Result<Option<Transaction>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -73,7 +73,7 @@ pub async fn list_transactions(
     shop_id: String,
 ) -> Result<Vec<Transaction>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -87,7 +87,7 @@ pub async fn list_transactions_by_shop(
     shop_id: String,
 ) -> Result<Vec<Transaction>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -102,7 +102,7 @@ pub async fn update_transaction_status(
     payload: UpdateTransactionStatusDTO,
 ) -> Result<Transaction, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -117,7 +117,7 @@ pub async fn complete_sale_transaction(
     payload: CompleteSaleDTO,
 ) -> Result<Transaction, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -132,7 +132,7 @@ pub async fn cancel_transaction(
     id: String,
 ) -> Result<Transaction, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 

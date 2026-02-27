@@ -4,16 +4,16 @@ use crate::features::product::dtos::product_dto::{
 use crate::features::product::models::product_model::Product;
 use crate::features::product::repositories::product_categories_repository::ProductCategoriesRepository;
 use crate::features::product::repositories::product_repository::ProductRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct ProductService {
-    pool: SqlitePool,
+    pool: AnyPool,
     repo: ProductRepository,
     categories_repo: ProductCategoriesRepository,
 }
 
 impl ProductService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = ProductRepository::new(pool.clone());
         let categories_repo = ProductCategoriesRepository::new(pool.clone());
         Self {

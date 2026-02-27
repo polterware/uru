@@ -1,14 +1,14 @@
 use crate::features::category::dtos::category_dto::{CreateCategoryDTO, UpdateCategoryDTO};
 use crate::features::category::models::category_model::Category;
 use crate::features::category::repositories::category_repository::CategoriesRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct CategoryService {
     repo: CategoriesRepository,
 }
 
 impl CategoryService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = CategoriesRepository::new(pool);
         Self { repo }
     }

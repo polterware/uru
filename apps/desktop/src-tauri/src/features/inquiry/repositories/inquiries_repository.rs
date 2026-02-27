@@ -1,12 +1,12 @@
 use crate::features::inquiry::models::inquiry_model::Inquiry;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct InquiriesRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl InquiriesRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 
@@ -194,7 +194,7 @@ impl InquiriesRepository {
     // ============================================================
 
     pub async fn create_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         inquiry: Inquiry,
     ) -> Result<Inquiry> {
         let sql = r#"
@@ -234,7 +234,7 @@ impl InquiriesRepository {
     }
 
     pub async fn get_by_id_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         id: &str,
     ) -> Result<Option<Inquiry>> {
         let sql = "SELECT * FROM inquiries WHERE id = $1";
@@ -245,7 +245,7 @@ impl InquiriesRepository {
     }
 
     pub async fn update_status_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         id: &str,
         status: &str,
     ) -> Result<Inquiry> {
@@ -261,7 +261,7 @@ impl InquiriesRepository {
     }
 
     pub async fn resolve_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         id: &str,
     ) -> Result<Inquiry> {
         let sql = r#"
@@ -280,7 +280,7 @@ impl InquiriesRepository {
     }
 
     pub async fn assign_staff_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         id: &str,
         staff_id: &str,
     ) -> Result<Inquiry> {

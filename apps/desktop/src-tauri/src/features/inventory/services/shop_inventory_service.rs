@@ -3,21 +3,21 @@
 use crate::features::inventory::models::inventory_level_model::InventoryLevel;
 use crate::features::inventory::repositories::shop_inventory_repository::ShopInventoryRepository;
 use crate::features::transaction::models::transaction_model::InventoryMovement;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 pub struct ShopInventoryService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     repo: ShopInventoryRepository,
 }
 
 impl ShopInventoryService {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         let repo = ShopInventoryRepository::new(pool.clone());
         Self { pool, repo }
     }
 
-    pub fn pool(&self) -> Arc<SqlitePool> {
+    pub fn pool(&self) -> Arc<AnyPool> {
         self.pool.clone()
     }
 

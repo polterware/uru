@@ -12,7 +12,7 @@ pub async fn create_inventory_movement(
     payload: CreateInventoryMovementDTO,
 ) -> Result<InventoryMovement, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = ShopInventoryService::new(pool);
@@ -27,7 +27,7 @@ pub async fn list_inventory_movements(
     shop_id: String,
 ) -> Result<Vec<InventoryMovement>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = ShopInventoryService::new(pool);
@@ -41,7 +41,7 @@ pub async fn list_inventory_movements_by_transaction(
     transaction_id: String,
 ) -> Result<Vec<InventoryMovement>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = ShopInventoryService::new(pool);
@@ -57,7 +57,7 @@ pub async fn list_inventory_movements_by_level(
     inventory_level_id: String,
 ) -> Result<Vec<InventoryMovement>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = ShopInventoryService::new(pool);
@@ -72,7 +72,7 @@ pub async fn list_inventory_movements_by_shop(
     shop_id: String,
 ) -> Result<Vec<InventoryMovement>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = ShopInventoryService::new(pool);

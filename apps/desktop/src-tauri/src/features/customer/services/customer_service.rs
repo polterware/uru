@@ -3,17 +3,17 @@ use crate::features::customer::models::customer_model::Customer;
 use crate::features::customer::repositories::customer_repository::CustomerRepository;
 use crate::features::customer_address::repositories::customer_addresses_repository::CustomerAddressesRepository;
 use crate::features::customer_group_membership::repositories::customer_group_memberships_repository::CustomerGroupMembershipsRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct CustomerService {
-    pool: SqlitePool,
+    pool: AnyPool,
     repo: CustomerRepository,
     _addresses_repo: CustomerAddressesRepository,
     memberships_repo: CustomerGroupMembershipsRepository,
 }
 
 impl CustomerService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = CustomerRepository::new(pool.clone());
         let addresses_repo = CustomerAddressesRepository::new(pool.clone());
         let memberships_repo = CustomerGroupMembershipsRepository::new(pool.clone());

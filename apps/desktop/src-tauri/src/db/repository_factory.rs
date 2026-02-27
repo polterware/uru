@@ -5,15 +5,15 @@
 
 use crate::db::error::DbResult;
 use crate::db::migrations::MigrationService;
-use crate::db::pool_manager::{PoolManager, ShopPool};
-use crate::db::types::DatabaseConfig;
+use crate::db::pool_manager::PoolManager;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 /// Factory for creating repository instances.
 ///
 /// The RepositoryFactory provides:
 /// - Registry repositories (always SQLite): shops, users, roles, modules
-/// - Shop repositories (SQLite or Postgres): products, customers, orders, etc.
+/// - Shop repositories (SQLite or Postgres via AnyPool): products, customers, orders, etc.
 pub struct RepositoryFactory {
     pool_manager: Arc<PoolManager>,
 }
@@ -41,103 +41,37 @@ impl RepositoryFactory {
     }
 
     // ============================================================
-    // Shop Repositories (SQLite or Postgres based on shop config)
+    // Shop Repositories (SQLite or Postgres via AnyPool)
     // ============================================================
 
-    /// Get a shop's database pool (SQLite only, for backward compatibility).
+    /// Get a shop's database pool (AnyPool).
     ///
-    /// For Postgres shops, use shop_pool_with_config instead.
     /// This method will:
-    /// 1. Check if the shop database exists
-    /// 2. Create and migrate the database if needed
-    /// 3. Return the SQLite pool
-    pub async fn shop_pool(&self, shop_id: &str) -> DbResult<Arc<sqlx::SqlitePool>> {
+    /// 1. Get shop configuration from registry
+    /// 2. Create/reuse AnyPool with correct backend
+    /// 3. Run migrations if needed
+    /// 4. Return the AnyPool
+    pub async fn shop_db(&self, shop_id: &str) -> DbResult<Arc<AnyPool>> {
         // Get shop configuration
         let config = self.pool_manager.get_shop_database_config(shop_id).await?;
-        
-        // If Postgres, return error (use shop_pool_with_config)
-        if matches!(config.database_type, crate::db::types::DatabaseType::Postgres) {
-            return Err(crate::db::error::DatabaseError::invalid_config(
-                "Shop uses Postgres database. Use shop_pool_with_config() instead."
-            ));
-        }
 
-        // Get or create the pool
-        let pool = self.pool_manager.get_shop_pool(shop_id).await?;
+        // Get or create pool
+        let pool = self.pool_manager.get_shop_pool(shop_id, &config).await?;
 
-        // Always run migrations (migrate_shop checks version and only migrates if needed)
+        // Run migrations (migrate_shop checks version and only migrates if needed)
         let migration_service = MigrationService::new(self.pool_manager.clone());
         migration_service.migrate_shop(shop_id).await?;
 
-        // Initialize shop_config table with shop_id (if not exists)
+        // Initialize shop_config table with shop_id
+        // Use INSERT ... ON CONFLICT which works on both SQLite and Postgres
         sqlx::query(
-            "INSERT OR REPLACE INTO shop_config (id, shop_id, initialized_at, schema_version) VALUES ('config', ?, datetime('now'), 1)"
+            "INSERT INTO shop_config (id, shop_id, initialized_at, schema_version) VALUES ('config', $1, CURRENT_TIMESTAMP, 1) ON CONFLICT (id) DO UPDATE SET shop_id = $1, initialized_at = CURRENT_TIMESTAMP"
         )
         .bind(shop_id)
         .execute(&*pool)
         .await?;
 
         Ok(pool)
-    }
-
-    /// Get a shop's database pool with configuration (supports both SQLite and Postgres).
-    ///
-    /// This method will:
-    /// 1. Get shop configuration from registry
-    /// 2. Create pool with correct type
-    /// 3. Run migrations if needed
-    /// 4. Return the appropriate pool type
-    pub async fn shop_pool_with_config(&self, shop_id: &str) -> DbResult<ShopPool> {
-        // Get shop configuration
-        let config = self.pool_manager.get_shop_database_config(shop_id).await?;
-        
-        // Get or create pool with configuration
-        let shop_pool = self.pool_manager.get_shop_pool_with_config(shop_id, &config).await?;
-
-        // Check if we need to migrate (for SQLite, check file existence; for Postgres, always check)
-        let needs_migration = match config.database_type {
-            crate::db::types::DatabaseType::Sqlite => !self.pool_manager.shop_db_exists(shop_id),
-            crate::db::types::DatabaseType::Postgres => {
-                // For Postgres, we'll check migration version in migrate_shop
-                true
-            }
-        };
-
-        if needs_migration {
-            // Run migrations
-            let migration_service = MigrationService::new(self.pool_manager.clone());
-            migration_service.migrate_shop(shop_id).await?;
-
-            // Initialize shop_config table with shop_id
-            match &shop_pool {
-                ShopPool::Sqlite(pool) => {
-                    sqlx::query(
-                        "INSERT OR REPLACE INTO shop_config (id, shop_id, initialized_at, schema_version) VALUES ('config', ?, datetime('now'), 1)"
-                    )
-                    .bind(shop_id)
-                    .execute(pool.as_ref())
-                    .await?;
-                }
-                ShopPool::Postgres(pool) => {
-                    sqlx::query(
-                        "INSERT INTO shop_config (id, shop_id, initialized_at, schema_version) VALUES ('config', $1, CURRENT_TIMESTAMP, 1) ON CONFLICT (id) DO UPDATE SET shop_id = $1, initialized_at = CURRENT_TIMESTAMP"
-                    )
-                    .bind(shop_id)
-                    .execute(pool.as_ref())
-                    .await?;
-                }
-            }
-        }
-
-        Ok(shop_pool)
-    }
-
-    /// Get a shop's database pool without auto-migration.
-    ///
-    /// Use this when you know the shop database already exists and is migrated.
-    /// This is faster but will fail if the database doesn't exist.
-    pub async fn shop_pool_unchecked(&self, shop_id: &str) -> DbResult<Arc<sqlx::SqlitePool>> {
-        self.pool_manager.get_shop_pool(shop_id).await
     }
 
     // ============================================================
@@ -148,39 +82,28 @@ impl RepositoryFactory {
     ///
     /// This creates the database and runs migrations.
     /// Call this when creating a new shop.
-    /// 
-    /// If config is provided, uses it; otherwise reads from shop registry.
     pub async fn provision_shop_database(&self, shop_id: &str) -> DbResult<()> {
         // Get shop configuration (from registry or use default)
-        let config = self.pool_manager.get_shop_database_config(shop_id).await
-            .unwrap_or_else(|_| DatabaseConfig::default());
+        let config = self
+            .pool_manager
+            .get_shop_database_config(shop_id)
+            .await
+            .unwrap_or_else(|_| crate::db::types::DatabaseConfig::default());
 
-        // Get/create the pool with configuration
-        let shop_pool = self.pool_manager.get_shop_pool_with_config(shop_id, &config).await?;
+        // Get/create the pool
+        let pool = self.pool_manager.get_shop_pool(shop_id, &config).await?;
 
         // Run migrations
         let migration_service = MigrationService::new(self.pool_manager.clone());
         migration_service.migrate_shop(shop_id).await?;
 
         // Initialize shop_config
-        match shop_pool {
-            ShopPool::Sqlite(pool) => {
-                sqlx::query(
-                    "INSERT OR REPLACE INTO shop_config (id, shop_id, initialized_at, schema_version) VALUES ('config', ?, datetime('now'), 1)"
-                )
-                .bind(shop_id)
-                .execute(&*pool)
-                .await?;
-            }
-            ShopPool::Postgres(pool) => {
-                sqlx::query(
-                    "INSERT INTO shop_config (id, shop_id, initialized_at, schema_version) VALUES ('config', $1, CURRENT_TIMESTAMP, 1) ON CONFLICT (id) DO UPDATE SET shop_id = $1, initialized_at = CURRENT_TIMESTAMP"
-                )
-                .bind(shop_id)
-                .execute(&*pool)
-                .await?;
-            }
-        }
+        sqlx::query(
+            "INSERT INTO shop_config (id, shop_id, initialized_at, schema_version) VALUES ('config', $1, CURRENT_TIMESTAMP, 1) ON CONFLICT (id) DO UPDATE SET shop_id = $1, initialized_at = CURRENT_TIMESTAMP"
+        )
+        .bind(shop_id)
+        .execute(&*pool)
+        .await?;
 
         Ok(())
     }

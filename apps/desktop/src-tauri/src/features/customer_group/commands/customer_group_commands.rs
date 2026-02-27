@@ -14,7 +14,7 @@ pub async fn create_customer_group(
 ) -> Result<CustomerGroup, String> {
     let shop_id = payload.shop_id.clone();
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -32,7 +32,7 @@ pub async fn update_customer_group(
         .clone()
         .ok_or_else(|| "shop_id is required for update".to_string())?;
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -47,7 +47,7 @@ pub async fn delete_customer_group(
     id: String,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -62,7 +62,7 @@ pub async fn get_customer_group(
     id: String,
 ) -> Result<Option<CustomerGroup>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -76,7 +76,7 @@ pub async fn list_customer_groups(
     shop_id: String,
 ) -> Result<Vec<CustomerGroup>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -90,7 +90,7 @@ pub async fn list_customer_groups_by_shop(
     shop_id: String,
 ) -> Result<Vec<CustomerGroup>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 

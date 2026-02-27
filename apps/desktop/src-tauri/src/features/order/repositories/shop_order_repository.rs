@@ -3,7 +3,7 @@
 use crate::features::order::models::order_model::Order;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Result, Sqlite, SqlitePool, Transaction};
+use sqlx::{Any, AnyPool, FromRow, Result, Transaction};
 use std::sync::Arc;
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
@@ -35,10 +35,10 @@ struct ShopOrder {
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
-    pub cancelled_at: Option<DateTime<Utc>>,
-    pub closed_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
+    pub cancelled_at: Option<String>,
+    pub closed_at: Option<String>,
 }
 
 impl ShopOrder {
@@ -79,12 +79,12 @@ impl ShopOrder {
 }
 
 pub struct ShopOrderRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
 }
 
 impl ShopOrderRepository {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         Self { pool, shop_id }
     }
 
@@ -161,14 +161,14 @@ impl ShopOrderRepository {
     }
 
     pub async fn delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE orders SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1";
+        let sql = "UPDATE orders SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }
 
     pub async fn update_payment_status(&self, id: &str, status: &str) -> Result<Order> {
         let sql = r#"
-            UPDATE orders SET payment_status = $2, _status = 'modified', updated_at = datetime('now')
+            UPDATE orders SET payment_status = $2, _status = 'modified', updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;
@@ -183,7 +183,7 @@ impl ShopOrderRepository {
 
     pub async fn update_fulfillment_status(&self, id: &str, status: &str) -> Result<Order> {
         let sql = r#"
-            UPDATE orders SET fulfillment_status = $2, _status = 'modified', updated_at = datetime('now')
+            UPDATE orders SET fulfillment_status = $2, _status = 'modified', updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;
@@ -198,7 +198,7 @@ impl ShopOrderRepository {
 
     pub async fn cancel(&self, id: &str) -> Result<Order> {
         let sql = r#"
-            UPDATE orders SET status = 'cancelled', cancelled_at = datetime('now'), updated_at = datetime('now')
+            UPDATE orders SET status = 'cancelled', cancelled_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;
@@ -210,9 +210,9 @@ impl ShopOrderRepository {
         Ok(shop_order.into_order(self.shop_id.clone()))
     }
 
-    pub async fn cancel_in_tx(tx: &mut Transaction<'_, Sqlite>, id: &str, shop_id: String) -> Result<Order> {
+    pub async fn cancel_in_tx(tx: &mut Transaction<'_, Any>, id: &str, shop_id: String) -> Result<Order> {
         let sql = r#"
-            UPDATE orders SET status = 'cancelled', cancelled_at = datetime('now'), updated_at = datetime('now')
+            UPDATE orders SET status = 'cancelled', cancelled_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;

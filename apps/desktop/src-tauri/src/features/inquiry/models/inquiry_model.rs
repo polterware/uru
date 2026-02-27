@@ -21,13 +21,13 @@ pub struct Inquiry {
     pub related_order_id: Option<String>,
     pub related_product_id: Option<String>,
     pub metadata: Option<String>, // JSON
-    pub sla_due_at: Option<DateTime<Utc>>,
-    pub resolved_at: Option<DateTime<Utc>>,
+    pub sla_due_at: Option<String>,
+    pub resolved_at: Option<String>,
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
@@ -40,10 +40,10 @@ pub struct InquiryMessage {
     pub is_internal_note: Option<bool>,
     pub attachments: Option<String>, // JSONB string
     pub external_id: Option<String>,
-    pub read_at: Option<DateTime<Utc>>,
+    pub read_at: Option<String>,
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }

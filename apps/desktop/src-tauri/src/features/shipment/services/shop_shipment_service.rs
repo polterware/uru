@@ -2,21 +2,21 @@
 
 use crate::features::shipment::models::shipment_model::Shipment;
 use crate::features::shipment::repositories::shop_shipment_repository::ShopShipmentRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 pub struct ShopShipmentService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     repo: ShopShipmentRepository,
 }
 
 impl ShopShipmentService {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         let repo = ShopShipmentRepository::new(pool.clone());
         Self { pool, repo }
     }
 
-    pub fn pool(&self) -> Arc<SqlitePool> {
+    pub fn pool(&self) -> Arc<AnyPool> {
         self.pool.clone()
     }
 

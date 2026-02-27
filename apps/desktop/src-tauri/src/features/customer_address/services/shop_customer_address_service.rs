@@ -2,21 +2,21 @@
 
 use crate::features::customer::models::customer_model::CustomerAddress;
 use crate::features::customer_address::repositories::shop_customer_address_repository::ShopCustomerAddressRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 pub struct ShopCustomerAddressService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     repo: ShopCustomerAddressRepository,
 }
 
 impl ShopCustomerAddressService {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         let repo = ShopCustomerAddressRepository::new(pool.clone());
         Self { pool, repo }
     }
 
-    pub fn pool(&self) -> Arc<SqlitePool> {
+    pub fn pool(&self) -> Arc<AnyPool> {
         self.pool.clone()
     }
 

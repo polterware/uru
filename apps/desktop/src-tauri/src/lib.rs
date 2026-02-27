@@ -346,6 +346,9 @@ pub fn run() {
             let app_data_dir = app.path().app_data_dir()?;
             fs::create_dir_all(&app_data_dir)?;
 
+            // Install sqlx Any drivers (SQLite + Postgres) for runtime dispatch
+            sqlx::any::install_default_drivers();
+
             // ============================================================
             // Multi-Database Architecture Setup
             // ============================================================

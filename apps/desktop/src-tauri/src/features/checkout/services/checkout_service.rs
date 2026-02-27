@@ -1,14 +1,14 @@
 use crate::features::checkout::dtos::checkout_dto::{CreateCheckoutDTO, UpdateCheckoutDTO};
 use crate::features::checkout::models::checkout_model::Checkout;
 use crate::features::checkout::repositories::checkouts_repository::CheckoutsRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct CheckoutService {
     repo: CheckoutsRepository,
 }
 
 impl CheckoutService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = CheckoutsRepository::new(pool);
         Self { repo }
     }

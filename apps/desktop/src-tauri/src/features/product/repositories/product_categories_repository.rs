@@ -1,12 +1,12 @@
 use crate::features::product::models::product_model::ProductCategory;
-use sqlx::{Result, Sqlite, SqlitePool, Transaction};
+use sqlx::{Any, AnyPool, Result, Transaction};
 
 pub struct ProductCategoriesRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl ProductCategoriesRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 
@@ -43,7 +43,7 @@ impl ProductCategoriesRepository {
 
     pub async fn create_many_in_tx(
         &self,
-        tx: &mut Transaction<'_, Sqlite>,
+        tx: &mut Transaction<'_, Any>,
         categories: Vec<ProductCategory>,
     ) -> Result<Vec<ProductCategory>> {
         let mut created_categories = Vec::new();

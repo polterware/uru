@@ -4,18 +4,18 @@ use crate::features::shipment::repositories::shipment_events_repository::Shipmen
 use crate::features::shipment::repositories::shipment_items_repository::ShipmentItemsRepository;
 use crate::features::shipment::repositories::shipments_repository::ShipmentsRepository;
 use chrono::Utc;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use uuid::Uuid;
 
 pub struct ShipmentService {
-    pool: SqlitePool,
+    pool: AnyPool,
     repo: ShipmentsRepository,
     items_repo: ShipmentItemsRepository,
     events_repo: ShipmentEventsRepository,
 }
 
 impl ShipmentService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = ShipmentsRepository::new(pool.clone());
         let items_repo = ShipmentItemsRepository::new(pool.clone());
         let events_repo = ShipmentEventsRepository::new(pool.clone());

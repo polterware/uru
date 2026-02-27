@@ -1,12 +1,12 @@
 use crate::features::brand::models::brand_model::Brand;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct BrandsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl BrandsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 

@@ -14,7 +14,7 @@ pub async fn create_transaction_item(
     payload: CreateTransactionItemDTO,
 ) -> Result<TransactionItem, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let repo = TransactionItemsRepository::new((*pool).clone());
@@ -31,7 +31,7 @@ pub async fn update_transaction_item(
     payload: UpdateTransactionItemDTO,
 ) -> Result<TransactionItem, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let repo = TransactionItemsRepository::new((*pool).clone());
@@ -55,7 +55,7 @@ pub async fn delete_transaction_item(
     id: String,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let repo = TransactionItemsRepository::new((*pool).clone());
@@ -71,7 +71,7 @@ pub async fn get_transaction_item(
     id: String,
 ) -> Result<Option<TransactionItem>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let repo = TransactionItemsRepository::new((*pool).clone());
@@ -86,7 +86,7 @@ pub async fn list_transaction_items(
     shop_id: String,
 ) -> Result<Vec<TransactionItem>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let repo = TransactionItemsRepository::new((*pool).clone());
@@ -102,7 +102,7 @@ pub async fn list_transaction_items_by_transaction(
     transaction_id: String,
 ) -> Result<Vec<TransactionItem>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let repo = TransactionItemsRepository::new((*pool).clone());

@@ -1,12 +1,12 @@
 use crate::features::shipment::models::shipment_model::ShipmentItem;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct ShipmentItemsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl ShipmentItemsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 
@@ -64,7 +64,7 @@ impl ShipmentItemsRepository {
     // ============================================================
 
     pub async fn create_many_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
         items: Vec<ShipmentItem>,
     ) -> Result<Vec<ShipmentItem>> {
         let mut created_items = Vec::new();

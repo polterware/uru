@@ -1,12 +1,12 @@
 use crate::features::audit_log::models::audit_log_model::AuditLog;
-use sqlx::{QueryBuilder, Result, Sqlite, SqlitePool};
+use sqlx::{Any, AnyPool, QueryBuilder, Result};
 
 pub struct AuditLogsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl AuditLogsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 
@@ -35,7 +35,7 @@ impl AuditLogsRepository {
         limit: i64,
         offset: i64,
     ) -> Result<Vec<AuditLog>> {
-        let mut builder = QueryBuilder::<Sqlite>::new("SELECT * FROM audit_logs WHERE 1 = 1");
+        let mut builder = QueryBuilder::<Any>::new("SELECT * FROM audit_logs WHERE 1 = 1");
 
         if let Some(table_name) = table_name {
             builder.push(" AND table_name = ");

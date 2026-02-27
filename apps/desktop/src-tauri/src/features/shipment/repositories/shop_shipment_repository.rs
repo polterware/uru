@@ -2,15 +2,15 @@
 
 use crate::features::shipment::models::shipment_model::Shipment;
 use chrono::Utc;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 use std::sync::Arc;
 
 pub struct ShopShipmentRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
 }
 
 impl ShopShipmentRepository {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         Self { pool }
     }
 
@@ -144,7 +144,7 @@ impl ShopShipmentRepository {
     }
 
     pub async fn delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE shipments SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1";
+        let sql = "UPDATE shipments SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }

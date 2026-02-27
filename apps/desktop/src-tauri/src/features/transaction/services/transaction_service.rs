@@ -6,18 +6,18 @@ use crate::features::transaction::models::transaction_model::{InventoryMovement,
 use crate::features::transaction::repositories::transaction_items_repository::TransactionItemsRepository;
 use crate::features::transaction::repositories::transactions_repository::TransactionsRepository;
 use chrono::Utc;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use uuid::Uuid;
 
 pub struct TransactionService {
-    pool: SqlitePool,
+    pool: AnyPool,
     repo: TransactionsRepository,
     _items_repo: TransactionItemsRepository,
     _movements_repo: InventoryMovementsRepository,
 }
 
 impl TransactionService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = TransactionsRepository::new(pool.clone());
         let items_repo = TransactionItemsRepository::new(pool.clone());
         let movements_repo = InventoryMovementsRepository::new(pool.clone());

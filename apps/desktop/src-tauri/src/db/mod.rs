@@ -16,16 +16,16 @@ pub mod types;
 // Re-exports for convenience
 pub use error::DatabaseError;
 pub use migrations::MigrationService;
-pub use pool_manager::{PoolManager, ShopPool};
+pub use pool_manager::PoolManager;
 pub use repository_factory::RepositoryFactory;
 pub use traits::*;
 pub use types::*;
 
-// Legacy type aliases for backward compatibility during migration
-use sqlx::{Sqlite, Transaction};
+// Type aliases for the multi-database architecture
+use sqlx::{Any, Transaction};
 
-/// Type alias for SQLite connection pool (legacy, use PoolManager instead)
-pub type DbPool = sqlx::SqlitePool;
+/// Type alias for the shop database pool (AnyPool — dispatches to SQLite or Postgres)
+pub type DbPool = sqlx::AnyPool;
 
-/// Type alias for SQLite transaction
-pub type DbTransaction<'a> = Transaction<'a, Sqlite>;
+/// Type alias for a shop database transaction
+pub type DbTransaction<'a> = Transaction<'a, Any>;

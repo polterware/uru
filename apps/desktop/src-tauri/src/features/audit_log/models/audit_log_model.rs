@@ -13,5 +13,5 @@ pub struct AuditLog {
     pub changed_by: Option<String>,
     pub ip_address: Option<String>,
     pub user_agent: Option<String>,
-    pub created_at: DateTime<Utc>,
+    pub created_at: String,
 }

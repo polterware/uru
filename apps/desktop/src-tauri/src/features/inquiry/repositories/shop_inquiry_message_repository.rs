@@ -1,15 +1,15 @@
 //! Shop-scoped Inquiry Message Repository for Multi-Database Architecture
 
 use crate::features::inquiry::models::inquiry_model::InquiryMessage;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 use std::sync::Arc;
 
 pub struct ShopInquiryMessageRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
 }
 
 impl ShopInquiryMessageRepository {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         Self { pool }
     }
 

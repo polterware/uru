@@ -14,7 +14,7 @@ pub async fn create_pos_session(
 ) -> Result<PosSession, String> {
     let shop_id = payload.shop_id.clone();
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -29,7 +29,7 @@ pub async fn update_pos_session(
     payload: UpdatePosSessionDTO,
 ) -> Result<PosSession, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -44,7 +44,7 @@ pub async fn close_pos_session(
     payload: ClosePosSessionDTO,
 ) -> Result<PosSession, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -59,7 +59,7 @@ pub async fn delete_pos_session(
     id: String,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -74,7 +74,7 @@ pub async fn get_pos_session(
     id: String,
 ) -> Result<Option<PosSession>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -88,7 +88,7 @@ pub async fn list_pos_sessions(
     shop_id: String,
 ) -> Result<Vec<PosSession>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -102,7 +102,7 @@ pub async fn list_pos_sessions_by_shop(
     shop_id: String,
 ) -> Result<Vec<PosSession>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -117,7 +117,7 @@ pub async fn get_open_pos_session_by_operator(
     operator_id: String,
 ) -> Result<Option<PosSession>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 

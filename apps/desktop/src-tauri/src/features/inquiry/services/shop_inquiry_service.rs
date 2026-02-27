@@ -5,19 +5,19 @@ use crate::features::inquiry::models::inquiry_model::{Inquiry, InquiryMessage};
 use crate::features::inquiry::repositories::shop_inquiry_message_repository::ShopInquiryMessageRepository;
 use crate::features::inquiry::repositories::shop_inquiry_repository::ShopInquiryRepository;
 use chrono::Utc;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 use uuid::Uuid;
 
 pub struct ShopInquiryService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
     repo: ShopInquiryRepository,
     messages_repo: ShopInquiryMessageRepository,
 }
 
 impl ShopInquiryService {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         let repo = ShopInquiryRepository::new(pool.clone(), shop_id.clone());
         let messages_repo = ShopInquiryMessageRepository::new(pool.clone());
         Self {
@@ -32,7 +32,7 @@ impl ShopInquiryService {
         &self.shop_id
     }
 
-    pub fn pool(&self) -> Arc<SqlitePool> {
+    pub fn pool(&self) -> Arc<AnyPool> {
         self.pool.clone()
     }
 

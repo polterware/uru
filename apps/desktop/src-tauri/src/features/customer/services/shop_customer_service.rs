@@ -6,18 +6,18 @@
 use crate::features::customer::dtos::customer_dto::{CreateCustomerDTO, UpdateCustomerDTO};
 use crate::features::customer::models::customer_model::Customer;
 use crate::features::customer::repositories::shop_customer_repository::ShopCustomerRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 /// Customer service that operates on a shop-specific database.
 pub struct ShopCustomerService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
     repo: ShopCustomerRepository,
 }
 
 impl ShopCustomerService {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         let repo = ShopCustomerRepository::new(pool.clone(), shop_id.clone());
         Self {
             pool,
@@ -127,7 +127,7 @@ impl ShopCustomerService {
 
         // Soft delete addresses
         sqlx::query(
-            "UPDATE customer_addresses SET _status = 'deleted', updated_at = datetime('now') WHERE customer_id = $1",
+            "UPDATE customer_addresses SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE customer_id = $1",
         )
         .bind(id)
         .execute(&mut *tx)
@@ -136,7 +136,7 @@ impl ShopCustomerService {
 
         // Soft delete memberships
         sqlx::query(
-            "UPDATE customer_group_memberships SET _status = 'deleted', updated_at = datetime('now') WHERE customer_id = $1",
+            "UPDATE customer_group_memberships SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE customer_id = $1",
         )
         .bind(id)
         .execute(&mut *tx)
@@ -145,7 +145,7 @@ impl ShopCustomerService {
 
         // Soft delete customer
         sqlx::query(
-            "UPDATE customers SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1",
+            "UPDATE customers SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1",
         )
         .bind(id)
         .execute(&mut *tx)

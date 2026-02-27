@@ -1,15 +1,15 @@
 //! Shop-scoped Audit Log Repository for Multi-Database Architecture
 
 use crate::features::audit_log::models::audit_log_model::AuditLog;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 use std::sync::Arc;
 
 pub struct ShopAuditLogRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
 }
 
 impl ShopAuditLogRepository {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         Self { pool }
     }
 

@@ -17,7 +17,7 @@ pub async fn create_order(
         .clone()
         .ok_or_else(|| "shop_id is required".to_string())?;
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -35,7 +35,7 @@ pub async fn update_order(
         .clone()
         .ok_or_else(|| "shop_id is required for update".to_string())?;
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -50,7 +50,7 @@ pub async fn delete_order(
     id: String,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -65,7 +65,7 @@ pub async fn get_order(
     id: String,
 ) -> Result<Option<Order>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -79,7 +79,7 @@ pub async fn list_orders(
     shop_id: String,
 ) -> Result<Vec<Order>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -93,7 +93,7 @@ pub async fn list_orders_by_shop(
     shop_id: String,
 ) -> Result<Vec<Order>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -108,7 +108,7 @@ pub async fn update_order_payment_status(
     payload: UpdatePaymentStatusDTO,
 ) -> Result<Order, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -125,7 +125,7 @@ pub async fn update_order_fulfillment_status(
     payload: UpdateFulfillmentStatusDTO,
 ) -> Result<Order, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -142,7 +142,7 @@ pub async fn cancel_order(
     id: String,
 ) -> Result<Order, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 

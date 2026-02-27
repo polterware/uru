@@ -2,7 +2,7 @@ use crate::features::customer_group::dtos::customer_group_dto::{CreateCustomerGr
 use crate::features::customer_group::models::customer_group_model::CustomerGroup;
 use crate::features::customer_group_membership::repositories::customer_group_memberships_repository::CustomerGroupMembershipsRepository;
 use crate::features::customer_group::repositories::customer_groups_repository::CustomerGroupsRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct CustomerGroupService {
     repo: CustomerGroupsRepository,
@@ -10,7 +10,7 @@ pub struct CustomerGroupService {
 }
 
 impl CustomerGroupService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = CustomerGroupsRepository::new(pool.clone());
         let memberships_repo = CustomerGroupMembershipsRepository::new(pool);
         Self {

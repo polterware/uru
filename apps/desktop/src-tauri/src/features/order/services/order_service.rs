@@ -4,11 +4,11 @@ use crate::features::customer::repositories::customer_repository::CustomerReposi
 use crate::features::order::models::order_model::Order;
 use crate::features::order::repositories::orders_repository::OrdersRepository;
 use chrono::Utc;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use uuid::Uuid;
 
 pub struct OrderService {
-    pool: SqlitePool,
+    pool: AnyPool,
     #[allow(dead_code)]
     orders_repo: OrdersRepository,
     #[allow(dead_code)]
@@ -16,7 +16,7 @@ pub struct OrderService {
 }
 
 impl OrderService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let orders_repo = OrdersRepository::new(pool.clone());
         let checkouts_repo = CheckoutsRepository::new(pool.clone());
         Self {

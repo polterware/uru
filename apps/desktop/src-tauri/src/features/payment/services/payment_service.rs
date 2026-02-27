@@ -4,15 +4,15 @@ use crate::features::payment::repositories::payments_repository::PaymentsReposit
 use crate::features::refund::models::refund_model::Refund;
 use crate::features::refund::repositories::refunds_repository::RefundsRepository;
 use chrono::Utc;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use uuid::Uuid;
 
 pub struct PaymentService {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl PaymentService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 

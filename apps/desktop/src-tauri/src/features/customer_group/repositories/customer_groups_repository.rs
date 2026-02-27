@@ -1,12 +1,12 @@
 use crate::features::customer_group::models::customer_group_model::CustomerGroup;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct CustomerGroupsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl CustomerGroupsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 

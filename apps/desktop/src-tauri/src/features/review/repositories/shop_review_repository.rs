@@ -1,15 +1,15 @@
 //! Shop-scoped Review Repository for Multi-Database Architecture
 
 use crate::features::review::models::review_model::Review;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 use std::sync::Arc;
 
 pub struct ShopReviewRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
 }
 
 impl ShopReviewRepository {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         Self { pool }
     }
 
@@ -114,7 +114,7 @@ impl ShopReviewRepository {
     }
 
     pub async fn delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE reviews SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1";
+        let sql = "UPDATE reviews SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }

@@ -7,7 +7,7 @@
 use crate::features::customer::models::customer_model::Customer;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Result, Sqlite, SqlitePool, Transaction};
+use sqlx::{Any, AnyPool, FromRow, Result, Transaction};
 use std::sync::Arc;
 
 /// Internal struct for deserializing from shop database (no shop_id column)
@@ -33,15 +33,15 @@ struct ShopCustomer {
     pub customer_group_id: Option<String>,
     pub total_spent: Option<f64>,
     pub orders_count: Option<i64>,
-    pub last_order_at: Option<DateTime<Utc>>,
+    pub last_order_at: Option<String>,
     pub notes: Option<String>,
     pub metadata: Option<String>,
     pub custom_attributes: Option<String>,
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 impl ShopCustomer {
@@ -80,12 +80,12 @@ impl ShopCustomer {
 
 /// Customer repository that operates on a shop-specific database.
 pub struct ShopCustomerRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
 }
 
 impl ShopCustomerRepository {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         Self { pool, shop_id }
     }
 
@@ -139,7 +139,7 @@ impl ShopCustomerRepository {
 
     pub async fn create_in_tx(
         &self,
-        tx: &mut Transaction<'_, Sqlite>,
+        tx: &mut Transaction<'_, Any>,
         customer: &Customer,
     ) -> Result<Customer> {
         let sql = r#"
@@ -273,7 +273,7 @@ impl ShopCustomerRepository {
     }
 
     pub async fn delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE customers SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1";
+        let sql = "UPDATE customers SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }
@@ -324,7 +324,7 @@ impl ShopCustomerRepository {
 
     /// Increment customer stats after a completed sale within a transaction
     pub async fn increment_stats_in_tx(
-        tx: &mut Transaction<'_, Sqlite>,
+        tx: &mut Transaction<'_, Any>,
         customer_id: &str,
         amount: f64,
         shop_id: String,
@@ -349,7 +349,7 @@ impl ShopCustomerRepository {
 
     /// Decrement customer stats after a return within a transaction
     pub async fn decrement_stats_in_tx(
-        tx: &mut Transaction<'_, Sqlite>,
+        tx: &mut Transaction<'_, Any>,
         customer_id: &str,
         amount: f64,
         shop_id: String,

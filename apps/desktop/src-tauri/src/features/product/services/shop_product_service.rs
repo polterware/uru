@@ -7,19 +7,19 @@ use crate::features::product::dtos::product_dto::{CreateProductDTO, ProductListF
 use crate::features::product::models::product_model::Product;
 use crate::features::product::repositories::shop_product_categories_repository::ShopProductCategoriesRepository;
 use crate::features::product::repositories::shop_product_repository::ShopProductRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 /// Product service that operates on a shop-specific database.
 pub struct ShopProductService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     shop_id: String,
     repo: ShopProductRepository,
     categories_repo: ShopProductCategoriesRepository,
 }
 
 impl ShopProductService {
-    pub fn new(pool: Arc<SqlitePool>, shop_id: String) -> Self {
+    pub fn new(pool: Arc<AnyPool>, shop_id: String) -> Self {
         let repo = ShopProductRepository::new(pool.clone(), shop_id.clone());
         let categories_repo = ShopProductCategoriesRepository::new(pool.clone());
         Self {
@@ -96,7 +96,7 @@ impl ShopProductService {
             .map_err(|e| format!("Failed to delete product categories: {}", e))?;
 
         // Soft delete product
-        sqlx::query("UPDATE products SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1")
+        sqlx::query("UPDATE products SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1")
             .bind(id)
             .execute(&mut *tx)
             .await

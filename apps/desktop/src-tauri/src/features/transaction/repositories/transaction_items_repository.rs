@@ -1,13 +1,13 @@
 use crate::db::DbTransaction;
 use crate::features::transaction::models::transaction_model::TransactionItem;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct TransactionItemsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl TransactionItemsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 

@@ -1,5 +1,6 @@
 use chrono::{DateTime, Duration, Utc};
-use sqlx::SqlitePool;
+use sqlx::{AnyPool, SqlitePool};
+use std::sync::Arc;
 
 use crate::features::analytics::dtos::analytics_dto::*;
 use crate::features::analytics::repositories::analytics_repository::*;
@@ -33,7 +34,7 @@ pub struct AnalyticsService {
 
 impl AnalyticsService {
     /// registry_pool: for shop metadata (features_config). shop_pool: for analytics queries.
-    pub fn new(registry_pool: SqlitePool, shop_pool: SqlitePool) -> Self {
+    pub fn new(registry_pool: SqlitePool, shop_pool: Arc<AnyPool>) -> Self {
         Self {
             repo: AnalyticsRepository::new(shop_pool),
             shop_service: ShopService::new(registry_pool),

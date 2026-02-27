@@ -3,14 +3,14 @@ use crate::features::pos_session::dtos::pos_session_dto::{
 };
 use crate::features::pos_session::models::pos_session_model::PosSession;
 use crate::features::pos_session::repositories::pos_sessions_repository::PosSessionsRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 
 pub struct PosSessionService {
     repo: PosSessionsRepository,
 }
 
 impl PosSessionService {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         let repo = PosSessionsRepository::new(pool);
         Self { repo }
     }

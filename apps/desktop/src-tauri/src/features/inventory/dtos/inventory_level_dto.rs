@@ -1,5 +1,5 @@
 use crate::features::inventory::models::inventory_level_model::InventoryLevel;
-use chrono::{NaiveDate, Utc};
+use chrono::{String, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -9,7 +9,7 @@ pub struct CreateInventoryLevelDTO {
     pub location_id: String,
     pub batch_number: Option<String>,
     pub serial_number: Option<String>,
-    pub expiry_date: Option<NaiveDate>,
+    pub expiry_date: Option<String>,
     pub quantity_on_hand: Option<f64>,
     pub quantity_reserved: Option<f64>,
     pub stock_status: Option<String>,
@@ -44,7 +44,7 @@ pub struct UpdateInventoryLevelDTO {
     pub location_id: Option<String>,
     pub batch_number: Option<String>,
     pub serial_number: Option<String>,
-    pub expiry_date: Option<NaiveDate>,
+    pub expiry_date: Option<String>,
     pub quantity_on_hand: Option<f64>,
     pub quantity_reserved: Option<f64>,
     pub stock_status: Option<String>,

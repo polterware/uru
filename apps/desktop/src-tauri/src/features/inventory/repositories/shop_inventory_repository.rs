@@ -2,15 +2,15 @@
 
 use crate::features::inventory::models::inventory_level_model::InventoryLevel;
 use crate::features::transaction::models::transaction_model::InventoryMovement;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 use std::sync::Arc;
 
 pub struct ShopInventoryRepository {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
 }
 
 impl ShopInventoryRepository {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         Self { pool }
     }
 
@@ -134,7 +134,7 @@ impl ShopInventoryRepository {
     }
 
     pub async fn delete_level(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE inventory_levels SET _status = 'deleted', updated_at = datetime('now') WHERE id = $1";
+        let sql = "UPDATE inventory_levels SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }
@@ -148,7 +148,7 @@ impl ShopInventoryRepository {
             UPDATE inventory_levels
             SET quantity_on_hand = quantity_on_hand + $2,
                 _status = 'modified',
-                updated_at = datetime('now')
+                updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;
@@ -164,7 +164,7 @@ impl ShopInventoryRepository {
             UPDATE inventory_levels
             SET quantity_reserved = quantity_reserved + $2,
                 _status = 'modified',
-                updated_at = datetime('now')
+                updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;
@@ -180,7 +180,7 @@ impl ShopInventoryRepository {
             UPDATE inventory_levels
             SET quantity_reserved = quantity_reserved - $2,
                 _status = 'modified',
-                updated_at = datetime('now')
+                updated_at = CURRENT_TIMESTAMP
             WHERE id = $1
             RETURNING *
         "#;

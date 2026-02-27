@@ -10,7 +10,7 @@ pub async fn list_reviews_by_shop(
     shop_id: String,
 ) -> Result<Vec<Review>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -24,7 +24,7 @@ pub async fn list_reviews(
     shop_id: String,
 ) -> Result<Vec<Review>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -39,7 +39,7 @@ pub async fn delete_review(
     id: String,
 ) -> Result<(), String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -54,7 +54,7 @@ pub async fn get_review(
     id: String,
 ) -> Result<Option<Review>, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -69,7 +69,7 @@ pub async fn create_review(
     payload: Review,
 ) -> Result<Review, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
@@ -85,7 +85,7 @@ pub async fn update_review(
     payload: Review,
 ) -> Result<Review, String> {
     let pool = repo_factory
-        .shop_pool(&shop_id)
+        .shop_db(&shop_id)
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 

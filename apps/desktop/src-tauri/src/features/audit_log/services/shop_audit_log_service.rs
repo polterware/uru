@@ -2,21 +2,21 @@
 
 use crate::features::audit_log::models::audit_log_model::AuditLog;
 use crate::features::audit_log::repositories::shop_audit_log_repository::ShopAuditLogRepository;
-use sqlx::SqlitePool;
+use sqlx::AnyPool;
 use std::sync::Arc;
 
 pub struct ShopAuditLogService {
-    pool: Arc<SqlitePool>,
+    pool: Arc<AnyPool>,
     repo: ShopAuditLogRepository,
 }
 
 impl ShopAuditLogService {
-    pub fn new(pool: Arc<SqlitePool>) -> Self {
+    pub fn new(pool: Arc<AnyPool>) -> Self {
         let repo = ShopAuditLogRepository::new(pool.clone());
         Self { pool, repo }
     }
 
-    pub fn pool(&self) -> Arc<SqlitePool> {
+    pub fn pool(&self) -> Arc<AnyPool> {
         self.pool.clone()
     }
 

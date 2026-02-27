@@ -1,13 +1,13 @@
 use crate::db::DbTransaction;
 use crate::features::checkout::models::checkout_model::Checkout;
-use sqlx::{Result, SqlitePool};
+use sqlx::{Result, AnyPool};
 
 pub struct CheckoutsRepository {
-    pool: SqlitePool,
+    pool: AnyPool,
 }
 
 impl CheckoutsRepository {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(pool: AnyPool) -> Self {
         Self { pool }
     }
 
