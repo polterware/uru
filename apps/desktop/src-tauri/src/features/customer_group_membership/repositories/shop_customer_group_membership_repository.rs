@@ -1,7 +1,7 @@
 //! Shop-scoped Customer Group Membership Repository for Multi-Database Architecture
 
 use crate::features::customer::models::customer_model::CustomerGroupMembership;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 use std::sync::Arc;
 
 pub struct ShopCustomerGroupMembershipRepository {
@@ -13,7 +13,10 @@ impl ShopCustomerGroupMembershipRepository {
         Self { pool }
     }
 
-    pub async fn create(&self, membership: &CustomerGroupMembership) -> Result<CustomerGroupMembership> {
+    pub async fn create(
+        &self,
+        membership: &CustomerGroupMembership,
+    ) -> Result<CustomerGroupMembership> {
         let sql = r#"
             INSERT INTO customer_group_memberships (
                 customer_id, customer_group_id, _status, created_at, updated_at
@@ -30,7 +33,10 @@ impl ShopCustomerGroupMembershipRepository {
             .await
     }
 
-    pub async fn create_many(&self, memberships: Vec<CustomerGroupMembership>) -> Result<Vec<CustomerGroupMembership>> {
+    pub async fn create_many(
+        &self,
+        memberships: Vec<CustomerGroupMembership>,
+    ) -> Result<Vec<CustomerGroupMembership>> {
         let mut tx = self.pool.begin().await?;
         let mut created_memberships = Vec::new();
 
@@ -57,7 +63,10 @@ impl ShopCustomerGroupMembershipRepository {
         Ok(created_memberships)
     }
 
-    pub async fn list_by_customer(&self, customer_id: &str) -> Result<Vec<CustomerGroupMembership>> {
+    pub async fn list_by_customer(
+        &self,
+        customer_id: &str,
+    ) -> Result<Vec<CustomerGroupMembership>> {
         let sql = "SELECT * FROM customer_group_memberships WHERE customer_id = $1 AND (_status IS NULL OR _status != 'deleted')";
         sqlx::query_as::<_, CustomerGroupMembership>(sql)
             .bind(customer_id)

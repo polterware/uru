@@ -1,5 +1,5 @@
 use crate::features::category::models::category_model::Category;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct CategoriesRepository {
     pool: AnyPool,

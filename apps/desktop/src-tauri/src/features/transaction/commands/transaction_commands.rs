@@ -122,7 +122,9 @@ pub async fn complete_sale_transaction(
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
     let service = ShopTransactionService::new(pool, shop_id);
-    service.complete_sale(&payload.id, &payload.location_id).await
+    service
+        .complete_sale(&payload.id, &payload.location_id)
+        .await
 }
 
 #[tauri::command]

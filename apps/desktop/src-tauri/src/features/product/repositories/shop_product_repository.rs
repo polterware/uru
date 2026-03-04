@@ -195,7 +195,8 @@ impl ShopProductRepository {
     }
 
     pub async fn soft_delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE products SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
+        let sql =
+            "UPDATE products SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }

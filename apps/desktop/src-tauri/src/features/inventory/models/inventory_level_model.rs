@@ -1,4 +1,3 @@
-use chrono::{DateTime, String, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 

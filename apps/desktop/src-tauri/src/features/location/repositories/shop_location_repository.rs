@@ -1,9 +1,8 @@
 //! Shop-scoped Location Repository for Multi-Database Architecture
 
 use crate::features::location::models::location_model::Location;
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Result, AnyPool};
+use sqlx::{AnyPool, FromRow, Result};
 use std::sync::Arc;
 
 /// Internal struct for deserializing from shop database (no shop_id column)
@@ -99,7 +98,8 @@ impl ShopLocationRepository {
     }
 
     pub async fn get_by_id(&self, id: &str) -> Result<Option<Location>> {
-        let sql = "SELECT * FROM locations WHERE id = $1 AND (_status IS NULL OR _status != 'deleted')";
+        let sql =
+            "SELECT * FROM locations WHERE id = $1 AND (_status IS NULL OR _status != 'deleted')";
         let result = sqlx::query_as::<_, ShopLocation>(sql)
             .bind(id)
             .fetch_optional(&*self.pool)

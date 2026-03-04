@@ -73,7 +73,7 @@ impl OrderService {
 
         // 4. Update customer stats if customer exists
         if let Some(ref customer_id) = checkout.user_id {
-            let total = checkout.total_price.unwrap_or(0.0);
+            let total = checkout.total_price.unwrap_or(0);
             CustomerRepository::increment_stats_with_tx(&mut tx, customer_id, total)
                 .await
                 .map_err(|e| format!("Erro ao atualizar estatísticas do cliente: {}", e))?;
@@ -204,7 +204,7 @@ impl OrderService {
     // ============================================================
 
     fn build_order_from_checkout(&self, checkout: &Checkout, shop_id: Option<&str>) -> Order {
-        let now = Some(Utc::now());
+        let now = Some(Utc::now().to_string());
 
         // Build customer snapshot from checkout data
         let customer_snapshot = serde_json::json!({
@@ -220,16 +220,18 @@ impl OrderService {
             channel: Some("checkout".to_string()),
             shop_id: shop_id.map(|s| s.to_string()),
             customer_id: checkout.user_id.clone(),
+            payment_intent_id: None,
+            checkout_id: Some(checkout.id.clone()),
             status: Some("open".to_string()),
             payment_status: Some("pending".to_string()),
             fulfillment_status: Some("unfulfilled".to_string()),
             currency: checkout.currency.clone(),
-            subtotal_price: checkout.subtotal_price.unwrap_or(0.0),
+            subtotal_price: checkout.subtotal_price.unwrap_or(0),
             total_discounts: checkout.total_discounts,
             total_tax: checkout.total_tax,
             total_shipping: checkout.total_shipping,
             total_tip: None,
-            total_price: checkout.total_price.unwrap_or(0.0),
+            total_price: checkout.total_price.unwrap_or(0),
             tax_lines: None,
             discount_codes: checkout.applied_discount_codes.clone(),
             note: None,
@@ -240,8 +242,8 @@ impl OrderService {
             billing_address: checkout.billing_address.clone(),
             shipping_address: checkout.shipping_address.clone(),
             sync_status: Some("created".to_string()),
-            created_at: now,
-            updated_at: now,
+            created_at: now.clone(),
+            updated_at: now.clone(),
             cancelled_at: None,
             closed_at: None,
         }

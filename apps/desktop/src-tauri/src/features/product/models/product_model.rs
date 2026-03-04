@@ -1,4 +1,3 @@
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
@@ -14,10 +13,10 @@ pub struct Product {
     pub name: String,
     pub slug: String,
     pub gtin_ean: Option<String>,
-    pub price: i64,                    // centavos
+    pub price: i64,                     // centavos
     pub promotional_price: Option<i64>, // centavos
     pub cost_price: Option<i64>,        // centavos
-    pub currency: Option<String>, // DEFAULT 'BRL'
+    pub currency: Option<String>,       // DEFAULT 'BRL'
     pub tax_ncm: Option<String>,
     pub is_shippable: bool,         // INTEGER DEFAULT 1
     pub weight_g: i64,              // INTEGER DEFAULT 0

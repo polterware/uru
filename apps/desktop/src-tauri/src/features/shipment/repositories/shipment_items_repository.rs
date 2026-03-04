@@ -1,5 +1,5 @@
 use crate::features::shipment::models::shipment_model::ShipmentItem;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct ShipmentItemsRepository {
     pool: AnyPool,

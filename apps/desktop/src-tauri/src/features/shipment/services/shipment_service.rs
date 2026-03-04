@@ -63,11 +63,11 @@ impl ShipmentService {
             status: Some("created".to_string()),
             description: Some("Envio criado".to_string()),
             location: None,
-            happened_at: Some(Utc::now()),
+            happened_at: Some(Utc::now().to_string()),
             raw_data: None,
             sync_status: Some("created".to_string()),
-            created_at: Some(Utc::now()),
-            updated_at: Some(Utc::now()),
+            created_at: Some(Utc::now().to_string()),
+            updated_at: Some(Utc::now().to_string()),
         };
 
         ShipmentEventsRepository::create_with_tx(&mut tx, initial_event)
@@ -107,11 +107,11 @@ impl ShipmentService {
             status: Some(status.to_string()),
             description: description.map(|d| d.to_string()),
             location: None,
-            happened_at: Some(Utc::now()),
+            happened_at: Some(Utc::now().to_string()),
             raw_data: None,
             sync_status: Some("created".to_string()),
-            created_at: Some(Utc::now()),
-            updated_at: Some(Utc::now()),
+            created_at: Some(Utc::now().to_string()),
+            updated_at: Some(Utc::now().to_string()),
         };
 
         ShipmentEventsRepository::create_with_tx(&mut tx, event)
@@ -150,11 +150,11 @@ impl ShipmentService {
             status: Some("shipped".to_string()),
             description: Some("Envio despachado".to_string()),
             location: None,
-            happened_at: Some(Utc::now()),
+            happened_at: Some(Utc::now().to_string()),
             raw_data: None,
             sync_status: Some("created".to_string()),
-            created_at: Some(Utc::now()),
-            updated_at: Some(Utc::now()),
+            created_at: Some(Utc::now().to_string()),
+            updated_at: Some(Utc::now().to_string()),
         };
 
         ShipmentEventsRepository::create_with_tx(&mut tx, event)
@@ -189,11 +189,11 @@ impl ShipmentService {
             status: Some("delivered".to_string()),
             description: Some("Envio entregue".to_string()),
             location: None,
-            happened_at: Some(Utc::now()),
+            happened_at: Some(Utc::now().to_string()),
             raw_data: None,
             sync_status: Some("created".to_string()),
-            created_at: Some(Utc::now()),
-            updated_at: Some(Utc::now()),
+            created_at: Some(Utc::now().to_string()),
+            updated_at: Some(Utc::now().to_string()),
         };
 
         ShipmentEventsRepository::create_with_tx(&mut tx, event)
@@ -344,7 +344,7 @@ impl ShipmentService {
             shipment.customs_info = Some(v);
         }
 
-        shipment.updated_at = Some(Utc::now());
+        shipment.updated_at = Some(Utc::now().to_string());
 
         self.repo
             .update(shipment)

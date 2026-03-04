@@ -23,7 +23,7 @@ impl CreateInquiryDTO {
     pub fn into_models(self) -> (Inquiry, Vec<InquiryMessage>) {
         let inquiry_id = Uuid::new_v4().to_string();
         let protocol_number = format!("INQ-{}", &Uuid::new_v4().to_string()[..8].to_uppercase());
-        let now = Utc::now();
+        let now = Utc::now().to_string();
 
         let inquiry = Inquiry {
             id: inquiry_id.clone(),
@@ -44,8 +44,8 @@ impl CreateInquiryDTO {
             sla_due_at: None,
             resolved_at: None,
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
         };
 
         let message = InquiryMessage {
@@ -59,8 +59,8 @@ impl CreateInquiryDTO {
             external_id: None,
             read_at: None,
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
         };
 
         (inquiry, vec![message])

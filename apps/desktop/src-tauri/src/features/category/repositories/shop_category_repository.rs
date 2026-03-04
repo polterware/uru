@@ -5,9 +5,8 @@
 //! does NOT have a shop_id column.
 
 use crate::features::category::models::category_model::Category;
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Result, AnyPool};
+use sqlx::{AnyPool, FromRow, Result};
 use std::sync::Arc;
 
 /// Internal struct for deserializing from shop database (no shop_id column)
@@ -103,8 +102,8 @@ impl ShopCategoryRepository {
             .bind(&category.template_suffix)
             .bind(&category.metadata)
             .bind(&category.sync_status)
-            .bind(category.created_at)
-            .bind(category.updated_at)
+            .bind(category.created_at.clone())
+            .bind(category.updated_at.clone())
             .fetch_one(&*self.pool)
             .await?;
 
@@ -139,7 +138,7 @@ impl ShopCategoryRepository {
             .bind(&category.template_suffix)
             .bind(&category.metadata)
             .bind(&category.sync_status)
-            .bind(category.updated_at)
+            .bind(category.updated_at.clone())
             .fetch_one(&*self.pool)
             .await?;
 
@@ -147,7 +146,8 @@ impl ShopCategoryRepository {
     }
 
     pub async fn get_by_id(&self, id: &str) -> Result<Option<Category>> {
-        let sql = "SELECT * FROM categories WHERE id = $1 AND (_status IS NULL OR _status != 'deleted')";
+        let sql =
+            "SELECT * FROM categories WHERE id = $1 AND (_status IS NULL OR _status != 'deleted')";
         let result = sqlx::query_as::<_, ShopCategory>(sql)
             .bind(id)
             .fetch_optional(&*self.pool)

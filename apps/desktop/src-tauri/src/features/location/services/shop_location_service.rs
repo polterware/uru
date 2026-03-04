@@ -65,7 +65,10 @@ impl ShopLocationService {
             .map_err(|e| format!("Failed to list locations: {}", e))
     }
 
-    pub async fn list_locations_by_type(&self, location_type: &str) -> Result<Vec<Location>, String> {
+    pub async fn list_locations_by_type(
+        &self,
+        location_type: &str,
+    ) -> Result<Vec<Location>, String> {
         self.repo
             .list_by_type(location_type)
             .await

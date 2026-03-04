@@ -1,5 +1,5 @@
 use crate::features::customer::models::customer_model::CustomerAddress;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct CustomerAddressesRepository {
     pool: AnyPool,

@@ -27,7 +27,7 @@ pub async fn assign_customer_groups(
     }
 
     // Create new memberships
-    let now = Utc::now();
+    let now = Utc::now().to_string();
     let memberships: Vec<CustomerGroupMembership> = payload
         .group_ids
         .iter()
@@ -35,8 +35,8 @@ pub async fn assign_customer_groups(
             customer_id: payload.customer_id.clone(),
             customer_group_id: group_id.clone(),
             sync_status: "created".to_string(),
-            created_at: now,
-            updated_at: now,
+            created_at: now.clone(),
+            updated_at: now.clone(),
         })
         .collect();
 

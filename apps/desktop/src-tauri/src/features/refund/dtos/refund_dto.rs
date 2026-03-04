@@ -14,7 +14,7 @@ pub struct CreateRefundDTO {
 
 impl CreateRefundDTO {
     pub fn into_model(self) -> Refund {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         Refund {
             id: Uuid::new_v4().to_string(),
             payment_id: self.payment_id,
@@ -23,8 +23,8 @@ impl CreateRefundDTO {
             reason: self.reason,
             provider_refund_id: self.provider_refund_id,
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
             created_by: None,
         }
     }
@@ -42,7 +42,7 @@ pub struct UpdateRefundDTO {
 
 impl UpdateRefundDTO {
     pub fn apply_to_model(self, mut refund: Refund) -> Refund {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         if let Some(payment_id) = self.payment_id {
             refund.payment_id = payment_id;
         }
@@ -59,7 +59,7 @@ impl UpdateRefundDTO {
             refund.provider_refund_id = Some(provider_refund_id);
         }
         refund.sync_status = Some("updated".to_string());
-        refund.updated_at = Some(now);
+        refund.updated_at = Some(now.clone());
         refund
     }
 }

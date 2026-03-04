@@ -31,7 +31,7 @@ pub struct CreateTransactionDTO {
 impl CreateTransactionDTO {
     pub fn into_models(self) -> (Transaction, Vec<TransactionItem>) {
         let transaction_id = Uuid::new_v4().to_string();
-        let now = Utc::now();
+        let now = Utc::now().to_string();
 
         let transaction = Transaction {
             id: transaction_id.clone(),
@@ -51,8 +51,8 @@ impl CreateTransactionDTO {
             shipping_address: self.shipping_address,
             billing_address: self.billing_address,
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
         };
 
         let items = self
@@ -71,8 +71,8 @@ impl CreateTransactionDTO {
                 attributes_snapshot: None,
                 tax_details: None,
                 sync_status: Some("created".to_string()),
-                created_at: Some(now),
-                updated_at: Some(now),
+                created_at: Some(now.clone()),
+                updated_at: Some(now.clone()),
             })
             .collect();
 
@@ -101,7 +101,7 @@ pub struct UpdateTransactionDTO {
 
 impl UpdateTransactionDTO {
     pub fn apply_to_model(self, mut transaction: Transaction) -> Transaction {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
 
         if let Some(r#type) = self.r#type {
             transaction.r#type = r#type;
@@ -147,7 +147,7 @@ impl UpdateTransactionDTO {
         }
 
         transaction.sync_status = Some("updated".to_string());
-        transaction.updated_at = Some(now);
+        transaction.updated_at = Some(now.clone());
         transaction
     }
 }

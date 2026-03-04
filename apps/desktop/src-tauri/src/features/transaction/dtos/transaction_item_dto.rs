@@ -10,15 +10,15 @@ pub struct CreateTransactionItemDTO {
     pub sku_snapshot: Option<String>,
     pub name_snapshot: Option<String>,
     pub quantity: f64,
-    pub unit_price: i64,         // centavos
-    pub unit_cost: Option<i64>,  // centavos
+    pub unit_price: i64,        // centavos
+    pub unit_cost: Option<i64>, // centavos
     pub attributes_snapshot: Option<String>,
     pub tax_details: Option<String>,
 }
 
 impl CreateTransactionItemDTO {
     pub fn into_model(self) -> TransactionItem {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         TransactionItem {
             id: Uuid::new_v4().to_string(),
             transaction_id: self.transaction_id,
@@ -32,8 +32,8 @@ impl CreateTransactionItemDTO {
             attributes_snapshot: self.attributes_snapshot,
             tax_details: self.tax_details,
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
         }
     }
 }
@@ -45,15 +45,15 @@ pub struct UpdateTransactionItemDTO {
     pub sku_snapshot: Option<String>,
     pub name_snapshot: Option<String>,
     pub quantity: Option<f64>,
-    pub unit_price: Option<i64>,  // centavos
-    pub unit_cost: Option<i64>,   // centavos
+    pub unit_price: Option<i64>, // centavos
+    pub unit_cost: Option<i64>,  // centavos
     pub attributes_snapshot: Option<String>,
     pub tax_details: Option<String>,
 }
 
 impl UpdateTransactionItemDTO {
     pub fn apply_to_model(self, mut item: TransactionItem) -> TransactionItem {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
 
         if let Some(product_id) = self.product_id {
             item.product_id = Some(product_id);
@@ -83,7 +83,7 @@ impl UpdateTransactionItemDTO {
         // Recalculate total_line
         item.total_line = Some((item.quantity * item.unit_price as f64) as i64);
         item.sync_status = Some("updated".to_string());
-        item.updated_at = Some(now);
+        item.updated_at = Some(now.clone());
         item
     }
 }

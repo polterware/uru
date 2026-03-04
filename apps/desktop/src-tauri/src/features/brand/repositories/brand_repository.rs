@@ -1,5 +1,5 @@
 use crate::features::brand::models::brand_model::Brand;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct BrandsRepository {
     pool: AnyPool,

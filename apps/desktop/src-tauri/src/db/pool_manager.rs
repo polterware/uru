@@ -99,12 +99,11 @@ impl PoolManager {
 
     /// Get shop database configuration from registry.
     pub async fn get_shop_database_config(&self, shop_id: &str) -> DbResult<DatabaseConfig> {
-        let shop: Option<Shop> = sqlx::query_as::<_, Shop>(
-            "SELECT * FROM shops WHERE id = ? AND _status != 'deleted'",
-        )
-        .bind(shop_id)
-        .fetch_optional(&self.registry_pool)
-        .await?;
+        let shop: Option<Shop> =
+            sqlx::query_as::<_, Shop>("SELECT * FROM shops WHERE id = ? AND _status != 'deleted'")
+                .bind(shop_id)
+                .fetch_optional(&self.registry_pool)
+                .await?;
 
         let shop =
             shop.ok_or_else(|| DatabaseError::not_found(format!("Shop {} not found", shop_id)))?;
@@ -125,11 +124,7 @@ impl PoolManager {
     /// Builds the connection URL based on the DatabaseConfig:
     /// - SQLite: `sqlite:path/to/shop_xxx.db?mode=rwc`
     /// - Postgres: uses the connection_string directly
-    async fn create_shop_pool(
-        &self,
-        shop_id: &str,
-        config: &DatabaseConfig,
-    ) -> DbResult<AnyPool> {
+    async fn create_shop_pool(&self, shop_id: &str, config: &DatabaseConfig) -> DbResult<AnyPool> {
         let connection_url = match config.database_type {
             DatabaseType::Sqlite => {
                 let db_path = if let Some(ref path) = config.connection_string {
@@ -172,15 +167,12 @@ impl PoolManager {
             })?;
 
         // Test the connection
-        sqlx::query("SELECT 1")
-            .execute(&pool)
-            .await
-            .map_err(|e| {
-                DatabaseError::connection(format!(
-                    "Connection test failed for shop {}: {}",
-                    shop_id, e
-                ))
-            })?;
+        sqlx::query("SELECT 1").execute(&pool).await.map_err(|e| {
+            DatabaseError::connection(format!(
+                "Connection test failed for shop {}: {}",
+                shop_id, e
+            ))
+        })?;
 
         Ok(pool)
     }

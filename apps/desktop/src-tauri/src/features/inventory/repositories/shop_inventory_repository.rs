@@ -2,7 +2,7 @@
 
 use crate::features::inventory::models::inventory_level_model::InventoryLevel;
 use crate::features::transaction::models::transaction_model::InventoryMovement;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 use std::sync::Arc;
 
 pub struct ShopInventoryRepository {
@@ -139,11 +139,7 @@ impl ShopInventoryRepository {
         Ok(())
     }
 
-    pub async fn adjust_quantity(
-        &self,
-        id: &str,
-        quantity_change: i64,
-    ) -> Result<InventoryLevel> {
+    pub async fn adjust_quantity(&self, id: &str, quantity_change: i64) -> Result<InventoryLevel> {
         let sql = r#"
             UPDATE inventory_levels
             SET quantity_on_hand = quantity_on_hand + $2,
@@ -219,7 +215,10 @@ impl ShopInventoryRepository {
             .await
     }
 
-    pub async fn create_movements(&self, movements: Vec<InventoryMovement>) -> Result<Vec<InventoryMovement>> {
+    pub async fn create_movements(
+        &self,
+        movements: Vec<InventoryMovement>,
+    ) -> Result<Vec<InventoryMovement>> {
         let mut tx = self.pool.begin().await?;
         let mut created_movements = Vec::new();
 
@@ -260,7 +259,10 @@ impl ShopInventoryRepository {
             .await
     }
 
-    pub async fn list_movements_by_transaction(&self, transaction_id: &str) -> Result<Vec<InventoryMovement>> {
+    pub async fn list_movements_by_transaction(
+        &self,
+        transaction_id: &str,
+    ) -> Result<Vec<InventoryMovement>> {
         let sql = "SELECT * FROM inventory_movements WHERE transaction_id = $1";
         sqlx::query_as::<_, InventoryMovement>(sql)
             .bind(transaction_id)
@@ -268,7 +270,10 @@ impl ShopInventoryRepository {
             .await
     }
 
-    pub async fn list_movements_by_inventory_level(&self, inventory_level_id: &str) -> Result<Vec<InventoryMovement>> {
+    pub async fn list_movements_by_inventory_level(
+        &self,
+        inventory_level_id: &str,
+    ) -> Result<Vec<InventoryMovement>> {
         let sql = "SELECT * FROM inventory_movements WHERE inventory_level_id = $1 ORDER BY created_at DESC";
         sqlx::query_as::<_, InventoryMovement>(sql)
             .bind(inventory_level_id)

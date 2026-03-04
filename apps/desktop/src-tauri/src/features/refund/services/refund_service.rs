@@ -75,7 +75,7 @@ impl<'a> RefundService<'a> {
 
         let mut updated = existing;
         updated.status = status.to_string();
-        updated.updated_at = Some(chrono::Utc::now());
+        updated.updated_at = Some(chrono::Utc::now().to_string());
         updated.sync_status = Some("updated".to_string());
 
         self.repo

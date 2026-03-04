@@ -83,8 +83,8 @@ impl InventoryService {
             previous_balance: Some(source_level.quantity_on_hand),
             new_balance: Some(source_level.quantity_on_hand - quantity),
             sync_status: Some("created".to_string()),
-            created_at: Some(Utc::now()),
-            updated_at: Some(Utc::now()),
+            created_at: Some(Utc::now().to_string()),
+            updated_at: Some(Utc::now().to_string()),
         };
 
         InventoryMovementsRepository::create_with_tx(&mut tx, movement_out)
@@ -101,8 +101,8 @@ impl InventoryService {
             previous_balance: Some(dest_level.quantity_on_hand),
             new_balance: Some(dest_level.quantity_on_hand + quantity),
             sync_status: Some("created".to_string()),
-            created_at: Some(Utc::now()),
-            updated_at: Some(Utc::now()),
+            created_at: Some(Utc::now().to_string()),
+            updated_at: Some(Utc::now().to_string()),
         };
 
         InventoryMovementsRepository::create_with_tx(&mut tx, movement_in)
@@ -178,8 +178,8 @@ impl InventoryService {
             previous_balance: Some(current_quantity),
             new_balance: Some(new_quantity),
             sync_status: Some("created".to_string()),
-            created_at: Some(Utc::now()),
-            updated_at: Some(Utc::now()),
+            created_at: Some(Utc::now().to_string()),
+            updated_at: Some(Utc::now().to_string()),
         };
 
         InventoryMovementsRepository::create_with_tx(&mut tx, movement)

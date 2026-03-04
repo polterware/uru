@@ -28,7 +28,10 @@ impl ShopCustomerGroupService {
         &self.shop_id
     }
 
-    pub async fn create_group(&self, payload: CreateCustomerGroupDTO) -> Result<CustomerGroup, String> {
+    pub async fn create_group(
+        &self,
+        payload: CreateCustomerGroupDTO,
+    ) -> Result<CustomerGroup, String> {
         let group = payload.into_model();
         self.repo
             .create(&group)
@@ -36,7 +39,10 @@ impl ShopCustomerGroupService {
             .map_err(|e| format!("Failed to create customer group: {}", e))
     }
 
-    pub async fn update_group(&self, payload: UpdateCustomerGroupDTO) -> Result<CustomerGroup, String> {
+    pub async fn update_group(
+        &self,
+        payload: UpdateCustomerGroupDTO,
+    ) -> Result<CustomerGroup, String> {
         let existing = self
             .repo
             .get_by_id(&payload.id)

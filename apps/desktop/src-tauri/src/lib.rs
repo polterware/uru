@@ -365,10 +365,8 @@ pub fn run() {
 
             // Run registry migrations
             let migration_service = MigrationService::new(pool_manager.clone());
-            tauri::async_runtime::block_on(async {
-                migration_service.migrate_registry().await
-            })
-            .map_err(|e| format!("Failed to run registry migrations: {}", e))?;
+            tauri::async_runtime::block_on(async { migration_service.migrate_registry().await })
+                .map_err(|e| format!("Failed to run registry migrations: {}", e))?;
 
             // Create RepositoryFactory for dependency injection
             let repo_factory = std::sync::Arc::new(RepositoryFactory::new(pool_manager.clone()));

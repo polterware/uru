@@ -3,7 +3,9 @@
 //! This service operates on a shop-specific database where each shop
 //! has its own isolated database file.
 
-use crate::features::product::dtos::product_dto::{CreateProductDTO, ProductListFilterDTO, UpdateProductDTO};
+use crate::features::product::dtos::product_dto::{
+    CreateProductDTO, ProductListFilterDTO, UpdateProductDTO,
+};
 use crate::features::product::models::product_model::Product;
 use crate::features::product::repositories::shop_product_categories_repository::ShopProductCategoriesRepository;
 use crate::features::product::repositories::shop_product_repository::ShopProductRepository;
@@ -96,11 +98,13 @@ impl ShopProductService {
             .map_err(|e| format!("Failed to delete product categories: {}", e))?;
 
         // Soft delete product
-        sqlx::query("UPDATE products SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1")
-            .bind(id)
-            .execute(&mut *tx)
-            .await
-            .map_err(|e| format!("Failed to delete product: {}", e))?;
+        sqlx::query(
+            "UPDATE products SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1",
+        )
+        .bind(id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| format!("Failed to delete product: {}", e))?;
 
         tx.commit()
             .await
@@ -222,7 +226,7 @@ fn merge_product_update(mut product: Product, update: UpdateProductDTO) -> Produ
     }
 
     product.sync_status = Some("modified".to_string());
-    product.updated_at = Some(chrono::Utc::now());
+    product.updated_at = Some(chrono::Utc::now().to_string());
 
     product
 }

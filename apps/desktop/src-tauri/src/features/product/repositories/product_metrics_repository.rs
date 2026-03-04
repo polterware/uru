@@ -1,7 +1,7 @@
 use crate::features::product::models::product_model::ProductMetrics;
 use chrono::Utc;
-use sqlx::Result;
 use sqlx::AnyPool;
+use sqlx::Result;
 
 pub struct ProductMetricsRepository {
     #[allow(dead_code)]
@@ -46,7 +46,7 @@ impl ProductMetricsRepository {
             .bind(review_count)
             .bind(review_sum)
             .bind(average_rating)
-            .bind(Utc::now())
+            .bind(Utc::now().to_string())
             .fetch_one(&mut **tx)
             .await
     }
@@ -72,7 +72,7 @@ impl ProductMetricsRepository {
             .bind(product_id)
             .bind(rating)
             .bind(rating as f64)
-            .bind(Utc::now())
+            .bind(Utc::now().to_string())
             .fetch_one(&mut **tx)
             .await
     }
@@ -99,7 +99,7 @@ impl ProductMetricsRepository {
         sqlx::query_as::<_, ProductMetrics>(sql)
             .bind(product_id)
             .bind(rating)
-            .bind(Utc::now())
+            .bind(Utc::now().to_string())
             .fetch_one(&mut **tx)
             .await
     }

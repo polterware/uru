@@ -48,7 +48,11 @@ impl ShopAuditLogService {
             .map_err(|e| format!("Failed to list audit logs by table: {}", e))
     }
 
-    pub async fn list_by_record(&self, table_name: &str, record_id: &str) -> Result<Vec<AuditLog>, String> {
+    pub async fn list_by_record(
+        &self,
+        table_name: &str,
+        record_id: &str,
+    ) -> Result<Vec<AuditLog>, String> {
         self.repo
             .list_by_record(table_name, record_id)
             .await

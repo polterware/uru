@@ -138,5 +138,7 @@ pub async fn get_available_quantity(
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = InventoryService::new((*pool).clone());
-    service.get_available_quantity(&product_id, &location_id).await
+    service
+        .get_available_quantity(&product_id, &location_id)
+        .await
 }

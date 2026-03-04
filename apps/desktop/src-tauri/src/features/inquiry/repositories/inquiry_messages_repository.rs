@@ -1,5 +1,5 @@
 use crate::features::inquiry::models::inquiry_model::InquiryMessage;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct InquiryMessagesRepository {
     pool: AnyPool,

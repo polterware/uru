@@ -1,7 +1,7 @@
 //! Shop-scoped Payment Repository for Multi-Database Architecture
 
 use crate::features::payment::models::payment_model::Payment;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 use std::sync::Arc;
 
 pub struct ShopPaymentRepository {
@@ -96,7 +96,8 @@ impl ShopPaymentRepository {
     }
 
     pub async fn get_by_id(&self, id: &str) -> Result<Option<Payment>> {
-        let sql = "SELECT * FROM payments WHERE id = $1 AND (_status IS NULL OR _status != 'deleted')";
+        let sql =
+            "SELECT * FROM payments WHERE id = $1 AND (_status IS NULL OR _status != 'deleted')";
         sqlx::query_as::<_, Payment>(sql)
             .bind(id)
             .fetch_optional(&*self.pool)
@@ -119,7 +120,8 @@ impl ShopPaymentRepository {
     }
 
     pub async fn delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE payments SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
+        let sql =
+            "UPDATE payments SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }
@@ -169,13 +171,13 @@ impl ShopPaymentRepository {
             .await
     }
 
-    pub async fn get_refunded_amount(&self, payment_id: &str) -> Result<f64> {
+    pub async fn get_refunded_amount(&self, payment_id: &str) -> Result<i64> {
         let sql = r#"
             SELECT COALESCE(SUM(amount), 0) as total
             FROM refunds
             WHERE payment_id = $1 AND status = 'completed'
         "#;
-        let result: (f64,) = sqlx::query_as(sql)
+        let result: (i64,) = sqlx::query_as(sql)
             .bind(payment_id)
             .fetch_one(&*self.pool)
             .await?;

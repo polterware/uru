@@ -1,5 +1,5 @@
 use crate::features::shipment::models::shipment_model::Shipment;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct ShipmentsRepository {
     pool: AnyPool,
@@ -226,7 +226,7 @@ impl ShipmentsRepository {
         sqlx::query_as::<_, Shipment>(sql)
             .bind(id)
             .bind(status)
-            .bind(chrono::Utc::now())
+            .bind(chrono::Utc::now().to_string())
             .fetch_one(&mut **tx)
             .await
     }
@@ -242,12 +242,12 @@ impl ShipmentsRepository {
             WHERE id = $1
             RETURNING *
         "#;
-        let now = chrono::Utc::now();
+        let now = chrono::Utc::now().to_string();
         sqlx::query_as::<_, Shipment>(sql)
             .bind(id)
-            .bind(now)
+            .bind(now.clone())
             .bind(tracking_number)
-            .bind(now)
+            .bind(now.clone())
             .fetch_one(&mut **tx)
             .await
     }
@@ -262,11 +262,11 @@ impl ShipmentsRepository {
             WHERE id = $1
             RETURNING *
         "#;
-        let now = chrono::Utc::now();
+        let now = chrono::Utc::now().to_string();
         sqlx::query_as::<_, Shipment>(sql)
             .bind(id)
-            .bind(now)
-            .bind(now)
+            .bind(now.clone())
+            .bind(now.clone())
             .fetch_one(&mut **tx)
             .await
     }

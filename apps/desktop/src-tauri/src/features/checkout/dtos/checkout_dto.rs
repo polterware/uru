@@ -31,7 +31,7 @@ pub struct CreateCheckoutDTO {
 
 impl CreateCheckoutDTO {
     pub fn into_model(self) -> Checkout {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         let token = generate_token();
 
         Checkout {
@@ -57,8 +57,8 @@ impl CreateCheckoutDTO {
             metadata: self.metadata,
             recovery_url: self.recovery_url,
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
         }
     }
 }
@@ -85,11 +85,11 @@ pub struct UpdateCheckoutDTO {
 
 impl UpdateCheckoutDTO {
     pub fn apply_to_checkout(self, existing: Checkout) -> Checkout {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
 
         let completed_at =
             if self.status.as_deref() == Some("completed") && existing.completed_at.is_none() {
-                Some(now)
+                Some(now.clone())
             } else {
                 existing.completed_at
             };
@@ -120,7 +120,7 @@ impl UpdateCheckoutDTO {
             recovery_url: self.recovery_url.or(existing.recovery_url),
             sync_status: Some("updated".to_string()),
             created_at: existing.created_at,
-            updated_at: Some(now),
+            updated_at: Some(now.clone()),
         }
     }
 }

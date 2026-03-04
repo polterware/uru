@@ -176,17 +176,18 @@ impl TransactionService {
                     })?;
 
                 // Create inventory movement (OUT)
+                let movement_quantity = item.quantity as i64;
                 let movement = InventoryMovement {
                     id: Uuid::new_v4().to_string(),
                     transaction_id: Some(transaction_id.to_string()),
                     inventory_level_id: Some(inventory_level.id.clone()),
                     movement_type: Some("out".to_string()),
-                    quantity: item.quantity,
+                    quantity: movement_quantity,
                     previous_balance: Some(inventory_level.quantity_on_hand),
-                    new_balance: Some(inventory_level.quantity_on_hand - item.quantity),
+                    new_balance: Some(inventory_level.quantity_on_hand - movement_quantity),
                     sync_status: Some("created".to_string()),
-                    created_at: Some(Utc::now()),
-                    updated_at: Some(Utc::now()),
+                    created_at: Some(Utc::now().to_string()),
+                    updated_at: Some(Utc::now().to_string()),
                 };
 
                 InventoryMovementsRepository::create_with_tx(&mut tx, movement)
@@ -206,7 +207,7 @@ impl TransactionService {
 
         // 5. Update customer stats if customer exists
         if let Some(ref customer_id) = updated_transaction.customer_id {
-            let total = updated_transaction.total_net.unwrap_or(0.0);
+            let total = updated_transaction.total_net.unwrap_or(0);
             CustomerRepository::increment_stats_with_tx(&mut tx, customer_id, total)
                 .await
                 .map_err(|e| format!("Erro ao atualizar estatísticas do cliente: {}", e))?;

@@ -24,8 +24,8 @@ impl CreateInventoryMovementDTO {
             previous_balance: self.previous_balance,
             new_balance: self.new_balance,
             sync_status: Some("created".to_string()),
-            created_at: Some(Utc::now()),
-            updated_at: Some(Utc::now()),
+            created_at: Some(Utc::now().to_string()),
+            updated_at: Some(Utc::now().to_string()),
         }
     }
 }

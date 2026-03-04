@@ -1,6 +1,6 @@
 use crate::db::DbTransaction;
 use crate::features::checkout::models::checkout_model::Checkout;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct CheckoutsRepository {
     pool: AnyPool,

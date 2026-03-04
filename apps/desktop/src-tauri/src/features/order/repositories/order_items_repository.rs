@@ -1,6 +1,6 @@
 use crate::db::DbTransaction;
 use crate::features::order::models::order_item_model::OrderItem;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct OrderItemsRepository {
     pool: AnyPool,

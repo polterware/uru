@@ -23,7 +23,7 @@ pub struct CreateBrandDTO {
 
 impl CreateBrandDTO {
     pub fn into_model(self) -> Brand {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         Brand {
             id: Uuid::new_v4().to_string(),
             shop_id: self.shop_id,
@@ -41,8 +41,8 @@ impl CreateBrandDTO {
             seo_keywords: self.seo_keywords,
             metadata: self.metadata,
             sync_status: "created".to_string(),
-            created_at: now,
-            updated_at: now,
+            created_at: now.clone(),
+            updated_at: now.clone(),
         }
     }
 }
@@ -68,7 +68,7 @@ pub struct UpdateBrandDTO {
 
 impl UpdateBrandDTO {
     pub fn apply_to_model(self, mut brand: Brand) -> Brand {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         if let Some(shop_id) = self.shop_id {
             brand.shop_id = shop_id;
         }

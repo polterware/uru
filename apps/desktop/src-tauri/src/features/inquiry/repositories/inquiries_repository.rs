@@ -1,5 +1,5 @@
 use crate::features::inquiry::models::inquiry_model::Inquiry;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct InquiriesRepository {
     pool: AnyPool,
@@ -255,7 +255,7 @@ impl InquiriesRepository {
         sqlx::query_as::<_, Inquiry>(sql)
             .bind(id)
             .bind(status)
-            .bind(chrono::Utc::now())
+            .bind(chrono::Utc::now().to_string())
             .fetch_one(&mut **tx)
             .await
     }
@@ -274,7 +274,7 @@ impl InquiriesRepository {
         "#;
         sqlx::query_as::<_, Inquiry>(sql)
             .bind(id)
-            .bind(chrono::Utc::now())
+            .bind(chrono::Utc::now().to_string())
             .fetch_one(&mut **tx)
             .await
     }
@@ -294,7 +294,7 @@ impl InquiriesRepository {
         sqlx::query_as::<_, Inquiry>(sql)
             .bind(id)
             .bind(staff_id)
-            .bind(chrono::Utc::now())
+            .bind(chrono::Utc::now().to_string())
             .fetch_one(&mut **tx)
             .await
     }

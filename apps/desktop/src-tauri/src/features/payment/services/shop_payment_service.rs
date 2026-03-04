@@ -48,7 +48,7 @@ impl ShopPaymentService {
 
         let mut updated = payment.clone();
         updated.status = status.to_string();
-        updated.updated_at = Some(Utc::now());
+        updated.updated_at = Some(Utc::now().to_string());
 
         self.repo
             .update(&updated)
@@ -141,7 +141,7 @@ impl ShopPaymentService {
         }
 
         // Create refund record
-        let now = Some(Utc::now());
+        let now = Some(Utc::now().to_string());
         let refund = Refund {
             id: Uuid::new_v4().to_string(),
             payment_id: payment_id.to_string(),
@@ -150,8 +150,8 @@ impl ShopPaymentService {
             reason: reason.map(|s| s.to_string()),
             provider_refund_id: None,
             sync_status: Some("created".to_string()),
-            created_at: now,
-            updated_at: now,
+            created_at: now.clone(),
+            updated_at: now.clone(),
             created_by: created_by.map(|s| s.to_string()),
         };
 

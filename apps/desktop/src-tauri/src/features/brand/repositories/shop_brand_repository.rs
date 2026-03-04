@@ -5,9 +5,8 @@
 //! does NOT have a shop_id column.
 
 use crate::features::brand::models::brand_model::Brand;
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Result, AnyPool};
+use sqlx::{AnyPool, FromRow, Result};
 use std::sync::Arc;
 
 /// Internal struct for deserializing from shop database (no shop_id column)
@@ -98,8 +97,8 @@ impl ShopBrandRepository {
             .bind(&brand.seo_keywords)
             .bind(&brand.metadata)
             .bind(&brand.sync_status)
-            .bind(brand.created_at)
-            .bind(brand.updated_at)
+            .bind(brand.created_at.clone())
+            .bind(brand.updated_at.clone())
             .fetch_one(&*self.pool)
             .await?;
 
@@ -133,7 +132,7 @@ impl ShopBrandRepository {
             .bind(&brand.seo_keywords)
             .bind(&brand.metadata)
             .bind(&brand.sync_status)
-            .bind(brand.updated_at)
+            .bind(brand.updated_at.clone())
             .fetch_one(&*self.pool)
             .await?;
 
@@ -151,7 +150,8 @@ impl ShopBrandRepository {
     }
 
     pub async fn list(&self) -> Result<Vec<Brand>> {
-        let sql = "SELECT * FROM brands WHERE _status != 'deleted' ORDER BY sort_order ASC, name ASC";
+        let sql =
+            "SELECT * FROM brands WHERE _status != 'deleted' ORDER BY sort_order ASC, name ASC";
         let results = sqlx::query_as::<_, ShopBrand>(sql)
             .fetch_all(&*self.pool)
             .await?;
@@ -163,7 +163,8 @@ impl ShopBrandRepository {
     }
 
     pub async fn delete(&self, id: &str) -> Result<()> {
-        let sql = "UPDATE brands SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
+        let sql =
+            "UPDATE brands SET _status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&*self.pool).await?;
         Ok(())
     }

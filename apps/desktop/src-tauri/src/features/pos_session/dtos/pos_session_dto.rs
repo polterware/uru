@@ -16,7 +16,7 @@ pub struct CreatePosSessionDTO {
 
 impl CreatePosSessionDTO {
     pub fn into_model(self) -> PosSession {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
 
         PosSession {
             id: Uuid::new_v4().to_string(),
@@ -28,7 +28,7 @@ impl CreatePosSessionDTO {
             status: Some("open".to_string()),
             opening_cash_amount: self.opening_cash_amount.or(Some(0)),
             opening_notes: self.opening_notes,
-            opened_at: Some(now),
+            opened_at: Some(now.clone()),
             closing_cash_amount: None,
             closing_notes: None,
             closed_at: None,
@@ -42,8 +42,8 @@ impl CreatePosSessionDTO {
             cash_difference: None,
             metadata: self.metadata,
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
         }
     }
 }
@@ -63,7 +63,7 @@ pub struct UpdatePosSessionDTO {
 
 impl UpdatePosSessionDTO {
     pub fn apply_to_session(self, existing: PosSession) -> PosSession {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
 
         PosSession {
             id: existing.id,
@@ -90,7 +90,7 @@ impl UpdatePosSessionDTO {
             metadata: self.metadata.or(existing.metadata),
             sync_status: Some("updated".to_string()),
             created_at: existing.created_at,
-            updated_at: Some(now),
+            updated_at: Some(now.clone()),
         }
     }
 }
@@ -105,7 +105,7 @@ pub struct ClosePosSessionDTO {
 
 impl ClosePosSessionDTO {
     pub fn apply_to_session(self, existing: PosSession) -> PosSession {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
 
         // Calculate expected cash amount
         let opening = existing.opening_cash_amount.unwrap_or(0);
@@ -129,7 +129,7 @@ impl ClosePosSessionDTO {
             opened_at: existing.opened_at,
             closing_cash_amount: Some(self.closing_cash_amount),
             closing_notes: self.closing_notes,
-            closed_at: Some(now),
+            closed_at: Some(now.clone()),
             closed_by: Some(self.closed_by),
             total_sales: existing.total_sales,
             total_returns: existing.total_returns,
@@ -141,7 +141,7 @@ impl ClosePosSessionDTO {
             metadata: existing.metadata,
             sync_status: Some("updated".to_string()),
             created_at: existing.created_at,
-            updated_at: Some(now),
+            updated_at: Some(now.clone()),
         }
     }
 }

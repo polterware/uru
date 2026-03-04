@@ -10,15 +10,15 @@ pub struct AssignCustomerGroupsDTO {
 
 impl AssignCustomerGroupsDTO {
     pub fn into_models(self) -> Vec<CustomerGroupMembership> {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         self.group_ids
             .into_iter()
             .map(|group_id| CustomerGroupMembership {
                 customer_id: self.customer_id.clone(),
                 customer_group_id: group_id,
                 sync_status: "created".to_string(),
-                created_at: now,
-                updated_at: now,
+                created_at: now.clone(),
+                updated_at: now.clone(),
             })
             .collect()
     }

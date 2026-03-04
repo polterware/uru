@@ -34,7 +34,7 @@ pub struct CreateCustomerDTO {
 impl CreateCustomerDTO {
     pub fn into_models(self) -> (Customer, Vec<CustomerAddress>, Vec<CustomerGroupMembership>) {
         let customer_id = Uuid::new_v4().to_string();
-        let now = Utc::now();
+        let now = Utc::now().to_string();
 
         let customer = Customer {
             id: customer_id.clone(),
@@ -54,15 +54,15 @@ impl CreateCustomerDTO {
             tags: self.tags,
             accepts_marketing: self.accepts_marketing,
             customer_group_id: self.customer_group_id,
-            total_spent: Some(0.0),
+            total_spent: Some(0),
             orders_count: Some(0),
             last_order_at: None,
             notes: self.notes,
             metadata: self.metadata,
             custom_attributes: self.custom_attributes,
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
         };
 
         let addresses = self
@@ -85,8 +85,8 @@ impl CreateCustomerDTO {
                 phone: a.phone,
                 metadata: a.metadata,
                 sync_status: Some("created".to_string()),
-                created_at: Some(now),
-                updated_at: Some(now),
+                created_at: Some(now.clone()),
+                updated_at: Some(now.clone()),
             })
             .collect();
 
@@ -97,8 +97,8 @@ impl CreateCustomerDTO {
                 customer_id: customer_id.clone(),
                 customer_group_id: gid,
                 sync_status: "created".to_string(),
-                created_at: now,
-                updated_at: now,
+                created_at: now.clone(),
+                updated_at: now.clone(),
             })
             .collect();
 
@@ -132,7 +132,7 @@ pub struct UpdateCustomerDTO {
 
 impl UpdateCustomerDTO {
     pub fn into_models(self) -> Customer {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         Customer {
             id: self.id,
             shop_id: self.shop_id,
@@ -159,7 +159,7 @@ impl UpdateCustomerDTO {
             custom_attributes: self.custom_attributes,
             sync_status: Some("modified".to_string()),
             created_at: None,
-            updated_at: Some(now),
+            updated_at: Some(now.clone()),
         }
     }
 }

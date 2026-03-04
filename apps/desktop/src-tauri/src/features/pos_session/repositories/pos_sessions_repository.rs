@@ -1,5 +1,5 @@
 use crate::features::pos_session::models::pos_session_model::PosSession;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct PosSessionsRepository {
     pool: AnyPool,

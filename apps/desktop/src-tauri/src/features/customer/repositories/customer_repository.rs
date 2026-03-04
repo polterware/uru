@@ -1,6 +1,6 @@
 use crate::db::DbTransaction;
 use crate::features::customer::models::customer_model::Customer;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct CustomerRepository {
     pool: AnyPool,

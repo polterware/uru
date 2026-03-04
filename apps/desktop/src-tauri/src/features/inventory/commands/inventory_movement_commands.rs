@@ -45,9 +45,7 @@ pub async fn list_inventory_movements_by_transaction(
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
     let service = ShopInventoryService::new(pool);
-    service
-        .list_movements_by_transaction(&transaction_id)
-        .await
+    service.list_movements_by_transaction(&transaction_id).await
 }
 
 #[tauri::command]

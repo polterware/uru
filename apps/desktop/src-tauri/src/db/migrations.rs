@@ -17,7 +17,8 @@ pub const REGISTRY_SCHEMA: &str = include_str!("../../migrations/001_registry_sc
 pub const SHOP_SCHEMA_SQLITE: &str = include_str!("../../migrations/002_shop_schema_sqlite.sql");
 
 /// SQL for shop schema (products, customers, orders, etc.) - PostgreSQL version
-pub const SHOP_SCHEMA_POSTGRES: &str = include_str!("../../migrations/002_shop_schema_postgres.sql");
+pub const SHOP_SCHEMA_POSTGRES: &str =
+    include_str!("../../migrations/002_shop_schema_postgres.sql");
 
 /// Service for managing database migrations
 pub struct MigrationService {
@@ -162,33 +163,24 @@ impl MigrationService {
     }
 
     /// Run a migration script on an AnyPool (shop databases — SQLite or Postgres).
-    async fn run_migration_any(
-        &self,
-        pool: &AnyPool,
-        sql: &str,
-        name: &str,
-    ) -> DbResult<()> {
+    async fn run_migration_any(&self, pool: &AnyPool, sql: &str, name: &str) -> DbResult<()> {
         // Ensure migration tracking table exists
         // Use CURRENT_TIMESTAMP which works on both SQLite and Postgres
-        pool.execute(
-            sqlx::query(
-                r#"
+        pool.execute(sqlx::query(
+            r#"
                 CREATE TABLE IF NOT EXISTS _migrations (
                     id INTEGER PRIMARY KEY,
                     version INTEGER NOT NULL DEFAULT 0,
                     applied_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
                 )
                 "#,
-            ),
-        )
+        ))
         .await?;
 
         // Ensure at least one row exists — use ON CONFLICT for cross-DB compat
-        pool.execute(
-            sqlx::query(
-                r#"INSERT INTO _migrations (id, version) VALUES (1, 0) ON CONFLICT (id) DO NOTHING"#,
-            ),
-        )
+        pool.execute(sqlx::query(
+            r#"INSERT INTO _migrations (id, version) VALUES (1, 0) ON CONFLICT (id) DO NOTHING"#,
+        ))
         .await?;
 
         // Check current migration version

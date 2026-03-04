@@ -20,21 +20,30 @@ impl ShopCustomerAddressService {
         self.pool.clone()
     }
 
-    pub async fn create_address(&self, address: &CustomerAddress) -> Result<CustomerAddress, String> {
+    pub async fn create_address(
+        &self,
+        address: &CustomerAddress,
+    ) -> Result<CustomerAddress, String> {
         self.repo
             .create(address)
             .await
             .map_err(|e| format!("Failed to create customer address: {}", e))
     }
 
-    pub async fn create_many(&self, addresses: Vec<CustomerAddress>) -> Result<Vec<CustomerAddress>, String> {
+    pub async fn create_many(
+        &self,
+        addresses: Vec<CustomerAddress>,
+    ) -> Result<Vec<CustomerAddress>, String> {
         self.repo
             .create_many(addresses)
             .await
             .map_err(|e| format!("Failed to create customer addresses: {}", e))
     }
 
-    pub async fn update_address(&self, address: &CustomerAddress) -> Result<CustomerAddress, String> {
+    pub async fn update_address(
+        &self,
+        address: &CustomerAddress,
+    ) -> Result<CustomerAddress, String> {
         self.repo
             .update(address)
             .await
@@ -55,7 +64,10 @@ impl ShopCustomerAddressService {
             .map_err(|e| format!("Failed to list customer addresses: {}", e))
     }
 
-    pub async fn list_by_customer(&self, customer_id: &str) -> Result<Vec<CustomerAddress>, String> {
+    pub async fn list_by_customer(
+        &self,
+        customer_id: &str,
+    ) -> Result<Vec<CustomerAddress>, String> {
         self.repo
             .list_by_customer(customer_id)
             .await

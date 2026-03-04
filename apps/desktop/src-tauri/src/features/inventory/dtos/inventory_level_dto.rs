@@ -1,5 +1,5 @@
 use crate::features::inventory::models::inventory_level_model::InventoryLevel;
-use chrono::{String, Utc};
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -31,8 +31,8 @@ impl CreateInventoryLevelDTO {
             aisle_bin_slot: self.aisle_bin_slot,
             last_counted_at: None,
             sync_status: Some("created".to_string()),
-            created_at: Some(Utc::now()),
-            updated_at: Some(Utc::now()),
+            created_at: Some(Utc::now().to_string()),
+            updated_at: Some(Utc::now().to_string()),
         }
     }
 }
@@ -80,7 +80,7 @@ impl UpdateInventoryLevelDTO {
         if self.aisle_bin_slot.is_some() {
             level.aisle_bin_slot = self.aisle_bin_slot;
         }
-        level.updated_at = Some(Utc::now());
+        level.updated_at = Some(Utc::now().to_string());
         level
     }
 }

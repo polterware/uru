@@ -172,10 +172,18 @@ impl ShopInventoryService {
         self.repo
             .list_movements_by_inventory_level(inventory_level_id)
             .await
-            .map_err(|e| format!("Failed to list inventory movements by inventory level: {}", e))
+            .map_err(|e| {
+                format!(
+                    "Failed to list inventory movements by inventory level: {}",
+                    e
+                )
+            })
     }
 
-    pub async fn delete_movements_by_transaction(&self, transaction_id: &str) -> Result<(), String> {
+    pub async fn delete_movements_by_transaction(
+        &self,
+        transaction_id: &str,
+    ) -> Result<(), String> {
         self.repo
             .delete_movements_by_transaction(transaction_id)
             .await

@@ -1,5 +1,5 @@
 use crate::features::review::models::review_model::Review;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct ReviewsRepository {
     pool: AnyPool,
@@ -170,10 +170,7 @@ impl ReviewsRepository {
             .await
     }
 
-    pub async fn delete_with_tx(
-        tx: &mut sqlx::Transaction<'_, sqlx::Any>,
-        id: &str,
-    ) -> Result<()> {
+    pub async fn delete_with_tx(tx: &mut sqlx::Transaction<'_, sqlx::Any>, id: &str) -> Result<()> {
         let sql = "DELETE FROM reviews WHERE id = $1";
         sqlx::query(sql).bind(id).execute(&mut **tx).await?;
         Ok(())

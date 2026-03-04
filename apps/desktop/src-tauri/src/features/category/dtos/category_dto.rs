@@ -24,7 +24,7 @@ pub struct CreateCategoryDTO {
 
 impl CreateCategoryDTO {
     pub fn into_model(self) -> Category {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         Category {
             id: Uuid::new_v4().to_string(),
             shop_id: self.shop_id,
@@ -43,8 +43,8 @@ impl CreateCategoryDTO {
             template_suffix: self.template_suffix,
             metadata: self.metadata.or_else(|| Some("{}".to_string())),
             sync_status: Some("created".to_string()),
-            created_at: now,
-            updated_at: now,
+            created_at: now.clone(),
+            updated_at: now.clone(),
         }
     }
 }
@@ -71,7 +71,7 @@ pub struct UpdateCategoryDTO {
 
 impl UpdateCategoryDTO {
     pub fn apply_to_model(self, mut category: Category) -> Category {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         if let Some(shop_id) = self.shop_id {
             category.shop_id = shop_id;
         }

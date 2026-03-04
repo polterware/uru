@@ -1,7 +1,7 @@
 //! Shop-scoped Customer Address Repository for Multi-Database Architecture
 
 use crate::features::customer::models::customer_model::CustomerAddress;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 use std::sync::Arc;
 
 pub struct ShopCustomerAddressRepository {
@@ -45,7 +45,10 @@ impl ShopCustomerAddressRepository {
             .await
     }
 
-    pub async fn create_many(&self, addresses: Vec<CustomerAddress>) -> Result<Vec<CustomerAddress>> {
+    pub async fn create_many(
+        &self,
+        addresses: Vec<CustomerAddress>,
+    ) -> Result<Vec<CustomerAddress>> {
         let mut tx = self.pool.begin().await?;
         let mut created_addresses = Vec::new();
 

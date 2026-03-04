@@ -5,7 +5,6 @@
 //! does NOT have a shop_id column.
 
 use crate::features::customer::models::customer_model::Customer;
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::{Any, AnyPool, FromRow, Result, Transaction};
 use std::sync::Arc;
@@ -251,7 +250,8 @@ impl ShopCustomerRepository {
     }
 
     pub async fn get_by_id(&self, id: &str) -> Result<Option<Customer>> {
-        let sql = "SELECT * FROM customers WHERE id = $1 AND (_status IS NULL OR _status != 'deleted')";
+        let sql =
+            "SELECT * FROM customers WHERE id = $1 AND (_status IS NULL OR _status != 'deleted')";
         let result = sqlx::query_as::<_, ShopCustomer>(sql)
             .bind(id)
             .fetch_optional(&*self.pool)

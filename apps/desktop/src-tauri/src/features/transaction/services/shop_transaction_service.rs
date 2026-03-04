@@ -1,6 +1,8 @@
 //! Shop-scoped Transaction Service for Multi-Database Architecture
 
-use crate::features::transaction::dtos::transaction_dto::{CreateTransactionDTO, UpdateTransactionDTO};
+use crate::features::transaction::dtos::transaction_dto::{
+    CreateTransactionDTO, UpdateTransactionDTO,
+};
 use crate::features::transaction::models::transaction_model::Transaction;
 use crate::features::transaction::repositories::shop_transaction_repository::ShopTransactionRepository;
 use sqlx::AnyPool;
@@ -30,7 +32,10 @@ impl ShopTransactionService {
         self.pool.clone()
     }
 
-    pub async fn create_transaction(&self, payload: CreateTransactionDTO) -> Result<Transaction, String> {
+    pub async fn create_transaction(
+        &self,
+        payload: CreateTransactionDTO,
+    ) -> Result<Transaction, String> {
         let (transaction, items) = payload.into_models();
 
         let mut tx = self
@@ -114,7 +119,10 @@ impl ShopTransactionService {
             .ok_or_else(|| "Created transaction not found".to_string())
     }
 
-    pub async fn update_transaction(&self, payload: UpdateTransactionDTO) -> Result<Transaction, String> {
+    pub async fn update_transaction(
+        &self,
+        payload: UpdateTransactionDTO,
+    ) -> Result<Transaction, String> {
         let existing = self
             .repo
             .get_by_id(&payload.id)

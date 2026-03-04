@@ -1,9 +1,8 @@
 //! Shop-scoped Inquiry Repository for Multi-Database Architecture
 
 use crate::features::inquiry::models::inquiry_model::Inquiry;
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Result, AnyPool};
+use sqlx::{AnyPool, FromRow, Result};
 use std::sync::Arc;
 
 /// Internal struct for shop database (no shop_id column)
@@ -159,7 +158,8 @@ impl ShopInquiryRepository {
     }
 
     pub async fn get_by_id(&self, id: &str) -> Result<Option<Inquiry>> {
-        let sql = "SELECT * FROM inquiries WHERE id = $1 AND (_status IS NULL OR _status != 'deleted')";
+        let sql =
+            "SELECT * FROM inquiries WHERE id = $1 AND (_status IS NULL OR _status != 'deleted')";
         let result = sqlx::query_as::<_, ShopInquiry>(sql)
             .bind(id)
             .fetch_optional(&*self.pool)

@@ -1,4 +1,3 @@
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
@@ -15,12 +14,12 @@ pub struct Checkout {
     pub shipping_line: Option<String>,          // JSONB stored as TEXT
     pub applied_discount_codes: Option<String>, // JSONB stored as TEXT
     pub currency: Option<String>,               // DEFAULT 'BRL'
-    pub subtotal_price: Option<i64>,  // centavos
-    pub total_tax: Option<i64>,       // centavos
-    pub total_shipping: Option<i64>,  // centavos
-    pub total_discounts: Option<i64>, // centavos
-    pub total_price: Option<i64>,     // centavos
-    pub status: Option<String>, // DEFAULT 'open'
+    pub subtotal_price: Option<i64>,            // centavos
+    pub total_tax: Option<i64>,                 // centavos
+    pub total_shipping: Option<i64>,            // centavos
+    pub total_discounts: Option<i64>,           // centavos
+    pub total_price: Option<i64>,               // centavos
+    pub status: Option<String>,                 // DEFAULT 'open'
     pub reservation_expires_at: Option<String>,
     pub completed_at: Option<String>,
     pub metadata: Option<String>, // JSONB stored as TEXT

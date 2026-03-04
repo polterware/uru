@@ -46,7 +46,7 @@ pub struct UpdateProductDTO {
     pub name: Option<String>,
     pub slug: Option<String>,
     pub gtin_ean: Option<String>,
-    pub price: Option<i64>,              // centavos
+    pub price: Option<i64>,             // centavos
     pub promotional_price: Option<i64>, // centavos
     pub cost_price: Option<i64>,        // centavos
     pub currency: Option<String>,
@@ -80,7 +80,7 @@ pub struct ProductListFilterDTO {
 impl CreateProductDTO {
     pub fn into_models(self) -> (Product, Vec<ProductCategory>) {
         let product_id = Uuid::new_v4().to_string();
-        let now = Utc::now();
+        let now = Utc::now().to_string();
 
         let product = Product {
             id: product_id.clone(),
@@ -107,8 +107,8 @@ impl CreateProductDTO {
             brand_id: self.brand_id,
             parent_id: self.parent_id,
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
         };
 
         let categories = self
@@ -119,8 +119,8 @@ impl CreateProductDTO {
                 category_id: c.category_id,
                 position: c.position,
                 sync_status: Some("created".to_string()),
-                created_at: Some(now),
-                updated_at: Some(now),
+                created_at: Some(now.clone()),
+                updated_at: Some(now.clone()),
             })
             .collect();
 
@@ -130,7 +130,7 @@ impl CreateProductDTO {
 
 impl UpdateProductDTO {
     pub fn into_models(self) -> (Product, Vec<ProductCategory>) {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         let product = Product {
             id: self.id,
             shop_id: self.shop_id,
@@ -157,7 +157,7 @@ impl UpdateProductDTO {
             parent_id: self.parent_id,
             sync_status: Some("modified".to_string()),
             created_at: None,
-            updated_at: Some(now),
+            updated_at: Some(now.clone()),
         };
 
         (product, Vec::new())

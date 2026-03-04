@@ -76,10 +76,10 @@ impl ShopInquiryService {
             message.id = Uuid::new_v4().to_string();
         }
         if message.created_at.is_none() {
-            message.created_at = Some(Utc::now());
+            message.created_at = Some(Utc::now().to_string());
         }
         if message.updated_at.is_none() {
-            message.updated_at = Some(Utc::now());
+            message.updated_at = Some(Utc::now().to_string());
         }
 
         self.messages_repo

@@ -1,4 +1,3 @@
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
@@ -25,8 +24,8 @@ pub struct Transaction {
     #[serde(rename = "_status")]
     #[sqlx(rename = "_status")]
     pub sync_status: Option<String>, // DEFAULT 'created'
-    pub created_at: Option<String>, // DEFAULT CURRENT_TIMESTAMP
-    pub updated_at: Option<String>, // DEFAULT CURRENT_TIMESTAMP
+    pub created_at: Option<String>,       // DEFAULT CURRENT_TIMESTAMP
+    pub updated_at: Option<String>,       // DEFAULT CURRENT_TIMESTAMP
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
@@ -37,9 +36,9 @@ pub struct TransactionItem {
     pub sku_snapshot: Option<String>,
     pub name_snapshot: Option<String>,
     pub quantity: f64,
-    pub unit_price: i64,                       // centavos
-    pub unit_cost: Option<i64>,                // centavos
-    pub total_line: Option<i64>,               // centavos, Generated Always
+    pub unit_price: i64,                     // centavos
+    pub unit_cost: Option<i64>,              // centavos
+    pub total_line: Option<i64>,             // centavos, Generated Always
     pub attributes_snapshot: Option<String>, // JSONB
     pub tax_details: Option<String>,         // JSONB
     #[serde(rename = "_status")]

@@ -1,9 +1,8 @@
 //! Shop-scoped POS Session Repository for Multi-Database Architecture
 
 use crate::features::pos_session::models::pos_session_model::PosSession;
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Result, AnyPool};
+use sqlx::{AnyPool, FromRow, Result};
 use std::sync::Arc;
 
 /// Internal struct for shop database (no shop_id column)
@@ -102,10 +101,10 @@ impl ShopPosSessionRepository {
             .bind(&session.status)
             .bind(session.opening_cash_amount)
             .bind(&session.opening_notes)
-            .bind(session.opened_at)
+            .bind(session.opened_at.clone())
             .bind(session.closing_cash_amount)
             .bind(&session.closing_notes)
-            .bind(session.closed_at)
+            .bind(session.closed_at.clone())
             .bind(&session.closed_by)
             .bind(session.total_sales)
             .bind(session.total_returns)
@@ -116,8 +115,8 @@ impl ShopPosSessionRepository {
             .bind(session.cash_difference)
             .bind(&session.metadata)
             .bind(&session.sync_status)
-            .bind(session.created_at)
-            .bind(session.updated_at)
+            .bind(session.created_at.clone())
+            .bind(session.updated_at.clone())
             .fetch_one(&*self.pool)
             .await?;
 
@@ -155,7 +154,7 @@ impl ShopPosSessionRepository {
             .bind(&session.opening_notes)
             .bind(session.closing_cash_amount)
             .bind(&session.closing_notes)
-            .bind(session.closed_at)
+            .bind(session.closed_at.clone())
             .bind(&session.closed_by)
             .bind(session.total_sales)
             .bind(session.total_returns)
@@ -166,7 +165,7 @@ impl ShopPosSessionRepository {
             .bind(session.cash_difference)
             .bind(&session.metadata)
             .bind(&session.sync_status)
-            .bind(session.updated_at)
+            .bind(session.updated_at.clone())
             .fetch_one(&*self.pool)
             .await?;
 
@@ -207,9 +206,7 @@ impl ShopPosSessionRepository {
 
     pub async fn get_next_session_number(&self) -> Result<i32> {
         let sql = "SELECT COALESCE(MAX(session_number), 0) + 1 as next_number FROM pos_sessions";
-        let result: (i32,) = sqlx::query_as(sql)
-            .fetch_one(&*self.pool)
-            .await?;
+        let result: (i32,) = sqlx::query_as(sql).fetch_one(&*self.pool).await?;
 
         Ok(result.0)
     }

@@ -1,5 +1,5 @@
 use crate::features::shipment::models::shipment_model::ShipmentEvent;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct ShipmentEventsRepository {
     pool: AnyPool,

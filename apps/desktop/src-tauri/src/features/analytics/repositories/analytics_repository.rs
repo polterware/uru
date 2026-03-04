@@ -539,10 +539,7 @@ impl AnalyticsRepository {
     }
 
     /// Query 6: Vendas Mensais. Shop DB only.
-    pub async fn get_monthly_sales(
-        &self,
-        months: i64,
-    ) -> sqlx::Result<Vec<MonthlySalesRow>> {
+    pub async fn get_monthly_sales(&self, months: i64) -> sqlx::Result<Vec<MonthlySalesRow>> {
         let sql = r#"
             SELECT
                 strftime('%Y-%m', created_at) AS month,
@@ -614,10 +611,7 @@ impl AnalyticsRepository {
     // ============================================================
 
     /// Query 8: Tendência de Vendas Diárias. Shop DB only.
-    pub async fn get_daily_sales_trend(
-        &self,
-        days: i64,
-    ) -> sqlx::Result<Vec<DailySalesTrendRow>> {
+    pub async fn get_daily_sales_trend(&self, days: i64) -> sqlx::Result<Vec<DailySalesTrendRow>> {
         let sql = r#"
             SELECT
                 DATE(created_at) AS date,
@@ -645,10 +639,7 @@ impl AnalyticsRepository {
     }
 
     /// Query 9: Crescimento de Clientes. Shop DB only.
-    pub async fn get_customer_growth(
-        &self,
-        months: i64,
-    ) -> sqlx::Result<Vec<CustomerGrowthRow>> {
+    pub async fn get_customer_growth(&self, months: i64) -> sqlx::Result<Vec<CustomerGrowthRow>> {
         let sql = r#"
             SELECT
                 strftime('%Y-%m', c.created_at) AS month,

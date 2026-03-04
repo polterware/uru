@@ -1,5 +1,5 @@
 use crate::features::customer_group::models::customer_group_model::CustomerGroup;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct CustomerGroupsRepository {
     pool: AnyPool,

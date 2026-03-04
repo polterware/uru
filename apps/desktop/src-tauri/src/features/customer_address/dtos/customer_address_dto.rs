@@ -23,7 +23,7 @@ pub struct CreateCustomerAddressDTO {
 
 impl CreateCustomerAddressDTO {
     pub fn into_model(self) -> CustomerAddress {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         CustomerAddress {
             id: Uuid::new_v4().to_string(),
             customer_id: self.customer_id,
@@ -41,8 +41,8 @@ impl CreateCustomerAddressDTO {
             phone: self.phone,
             metadata: self.metadata,
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
         }
     }
 }
@@ -69,7 +69,7 @@ pub struct UpdateCustomerAddressDTO {
 
 impl UpdateCustomerAddressDTO {
     pub fn apply_to_model(self, mut address: CustomerAddress) -> CustomerAddress {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         if let Some(customer_id) = self.customer_id {
             address.customer_id = customer_id;
         }
@@ -115,7 +115,7 @@ impl UpdateCustomerAddressDTO {
         if let Some(sync_status) = self.sync_status {
             address.sync_status = Some(sync_status);
         }
-        address.updated_at = Some(now);
+        address.updated_at = Some(now.clone());
         address
     }
 }

@@ -20,7 +20,7 @@ pub async fn create_customer_address(
         .await
         .map_err(|e| format!("Failed to get shop pool: {}", e))?;
 
-    let now = Utc::now();
+    let now = Utc::now().to_string();
     let address = CustomerAddress {
         id: Uuid::new_v4().to_string(),
         customer_id: payload.customer_id,
@@ -38,8 +38,8 @@ pub async fn create_customer_address(
         phone: payload.phone,
         metadata: payload.metadata,
         sync_status: Some("created".to_string()),
-        created_at: Some(now),
-        updated_at: Some(now),
+        created_at: Some(now.clone()),
+        updated_at: Some(now.clone()),
     };
 
     let service = ShopCustomerAddressService::new(pool);
@@ -81,7 +81,7 @@ pub async fn update_customer_address(
         metadata: payload.metadata.or(existing.metadata),
         sync_status: Some("modified".to_string()),
         created_at: existing.created_at,
-        updated_at: Some(Utc::now()),
+        updated_at: Some(Utc::now().to_string()),
     };
 
     service.update_address(&updated).await

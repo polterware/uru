@@ -1,5 +1,5 @@
 use crate::features::shipment::models::shipment_model::{Shipment, ShipmentItem};
-use chrono::{DateTime, Utc};
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -39,7 +39,7 @@ pub struct CreateShipmentDTO {
 impl CreateShipmentDTO {
     pub fn into_models(self) -> (Shipment, Vec<ShipmentItem>) {
         let shipment_id = Uuid::new_v4().to_string();
-        let now = Utc::now();
+        let now = Utc::now().to_string();
 
         let shipment = Shipment {
             id: shipment_id.clone(),
@@ -66,8 +66,8 @@ impl CreateShipmentDTO {
             metadata: self.metadata,
             customs_info: self.customs_info,
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
         };
 
         let items = self
@@ -81,8 +81,8 @@ impl CreateShipmentDTO {
                 batch_number: i.batch_number,
                 serial_numbers: i.serial_numbers,
                 sync_status: Some("created".to_string()),
-                created_at: Some(now),
-                updated_at: Some(now),
+                created_at: Some(now.clone()),
+                updated_at: Some(now.clone()),
             })
             .collect();
 

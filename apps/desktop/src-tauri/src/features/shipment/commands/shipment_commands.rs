@@ -60,14 +60,16 @@ pub async fn update_shipment(
         invoice_key: payload.invoice_key.or(existing.invoice_key),
         cost_amount: payload.cost_amount.or(existing.cost_amount),
         insurance_amount: payload.insurance_amount.or(existing.insurance_amount),
-        estimated_delivery_at: payload.estimated_delivery_at.or(existing.estimated_delivery_at),
+        estimated_delivery_at: payload
+            .estimated_delivery_at
+            .or(existing.estimated_delivery_at),
         shipped_at: payload.shipped_at.or(existing.shipped_at),
         delivered_at: payload.delivered_at.or(existing.delivered_at),
         metadata: payload.metadata.or(existing.metadata),
         customs_info: payload.customs_info.or(existing.customs_info),
         sync_status: Some("modified".to_string()),
         created_at: existing.created_at,
-        updated_at: Some(Utc::now()),
+        updated_at: Some(Utc::now().to_string()),
     };
 
     service.update_shipment(&updated).await

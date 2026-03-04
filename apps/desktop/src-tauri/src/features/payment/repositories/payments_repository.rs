@@ -1,6 +1,6 @@
 use crate::db::DbTransaction;
 use crate::features::payment::models::payment_model::Payment;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct PaymentsRepository<'a> {
     pool: &'a AnyPool,

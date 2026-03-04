@@ -21,7 +21,7 @@ pub struct CreateCustomerGroupDTO {
 
 impl CreateCustomerGroupDTO {
     pub fn into_model(self) -> CustomerGroup {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         CustomerGroup {
             id: Uuid::new_v4().to_string(),
             shop_id: self.shop_id,
@@ -37,8 +37,8 @@ impl CreateCustomerGroupDTO {
             min_order_amount: self.min_order_amount.or(Some(0)),
             metadata: self.metadata.or_else(|| Some("{}".to_string())),
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
         }
     }
 }
@@ -63,7 +63,7 @@ pub struct UpdateCustomerGroupDTO {
 
 impl UpdateCustomerGroupDTO {
     pub fn apply_to_model(self, mut group: CustomerGroup) -> CustomerGroup {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         if let Some(shop_id) = self.shop_id {
             group.shop_id = shop_id;
         }
@@ -103,7 +103,7 @@ impl UpdateCustomerGroupDTO {
         if let Some(sync_status) = self.sync_status {
             group.sync_status = Some(sync_status);
         }
-        group.updated_at = Some(now);
+        group.updated_at = Some(now.clone());
         group
     }
 }

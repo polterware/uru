@@ -63,7 +63,9 @@ pub async fn get_revenue_by_payment_method(
     days: Option<i64>,
 ) -> Result<Vec<RevenueByPaymentMethodDto>, String> {
     let service = analytics_service(repo_factory.inner(), &shop_id).await?;
-    service.get_revenue_by_payment_method(Some(shop_id), days).await
+    service
+        .get_revenue_by_payment_method(Some(shop_id), days)
+        .await
 }
 
 #[tauri::command]
@@ -112,7 +114,9 @@ pub async fn get_payment_method_distribution(
     days: Option<i64>,
 ) -> Result<Vec<PaymentMethodDistributionDto>, String> {
     let service = analytics_service(repo_factory.inner(), &shop_id).await?;
-    service.get_payment_method_distribution(Some(shop_id), days).await
+    service
+        .get_payment_method_distribution(Some(shop_id), days)
+        .await
 }
 
 #[tauri::command]
@@ -131,7 +135,9 @@ pub async fn get_order_status_distribution(
     days: Option<i64>,
 ) -> Result<Vec<OrderStatusDistributionDto>, String> {
     let service = analytics_service(repo_factory.inner(), &shop_id).await?;
-    service.get_order_status_distribution(Some(shop_id), days).await
+    service
+        .get_order_status_distribution(Some(shop_id), days)
+        .await
 }
 
 #[tauri::command]
@@ -180,7 +186,9 @@ pub async fn get_monthly_performance_metrics(
     months: Option<i64>,
 ) -> Result<Vec<MonthlyPerformanceMetricsDto>, String> {
     let service = analytics_service(repo_factory.inner(), &shop_id).await?;
-    service.get_monthly_performance_metrics(Some(shop_id), months).await
+    service
+        .get_monthly_performance_metrics(Some(shop_id), months)
+        .await
 }
 
 #[tauri::command]
@@ -191,7 +199,9 @@ pub async fn get_product_metrics(
     limit: Option<i64>,
 ) -> Result<Vec<ProductMetricsDto>, String> {
     let service = analytics_service(repo_factory.inner(), &shop_id).await?;
-    service.get_product_metrics(Some(shop_id), days, limit).await
+    service
+        .get_product_metrics(Some(shop_id), days, limit)
+        .await
 }
 
 #[tauri::command]
@@ -201,7 +211,9 @@ pub async fn get_monthly_sales_progress(
     target_revenue: Option<f64>,
 ) -> Result<MonthlySalesProgressDto, String> {
     let service = analytics_service(repo_factory.inner(), &shop_id).await?;
-    service.get_monthly_sales_progress(Some(shop_id), target_revenue).await
+    service
+        .get_monthly_sales_progress(Some(shop_id), target_revenue)
+        .await
 }
 
 #[tauri::command]
@@ -221,7 +233,9 @@ pub async fn get_inventory_capacity(
     capacity_limit: Option<f64>,
 ) -> Result<InventoryCapacityDto, String> {
     let service = analytics_service(repo_factory.inner(), &shop_id).await?;
-    service.get_inventory_capacity(Some(shop_id), capacity_limit).await
+    service
+        .get_inventory_capacity(Some(shop_id), capacity_limit)
+        .await
 }
 
 #[tauri::command]
@@ -232,7 +246,9 @@ pub async fn get_product_ranking(
     limit: Option<i64>,
 ) -> Result<Vec<ProductRankingDto>, String> {
     let service = analytics_service(repo_factory.inner(), &shop_id).await?;
-    service.get_product_ranking(Some(shop_id), days, limit).await
+    service
+        .get_product_ranking(Some(shop_id), days, limit)
+        .await
 }
 
 #[tauri::command]
@@ -242,7 +258,9 @@ pub async fn get_month_over_month_growth(
     months: Option<i64>,
 ) -> Result<Vec<MonthOverMonthGrowthDto>, String> {
     let service = analytics_service(repo_factory.inner(), &shop_id).await?;
-    service.get_month_over_month_growth(Some(shop_id), months).await
+    service
+        .get_month_over_month_growth(Some(shop_id), months)
+        .await
 }
 
 #[tauri::command]
@@ -262,7 +280,9 @@ pub async fn get_top_rated_products(
     min_reviews: Option<i64>,
 ) -> Result<Vec<TopRatedProductDto>, String> {
     let service = analytics_service(repo_factory.inner(), &shop_id).await?;
-    service.get_top_rated_products(Some(shop_id), limit, min_reviews).await
+    service
+        .get_top_rated_products(Some(shop_id), limit, min_reviews)
+        .await
 }
 
 #[tauri::command]
@@ -272,7 +292,9 @@ pub async fn get_product_review_analytics(
     limit: Option<i64>,
 ) -> Result<Vec<ProductReviewAnalyticsDto>, String> {
     let service = analytics_service(repo_factory.inner(), &shop_id).await?;
-    service.get_product_review_analytics(Some(shop_id), limit).await
+    service
+        .get_product_review_analytics(Some(shop_id), limit)
+        .await
 }
 
 #[tauri::command]

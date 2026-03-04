@@ -1,6 +1,6 @@
 use crate::db::DbTransaction;
 use crate::features::transaction::models::transaction_model::TransactionItem;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct TransactionItemsRepository {
     pool: AnyPool,

@@ -1,9 +1,8 @@
 //! Shop-scoped Customer Group Repository for Multi-Database Architecture
 
 use crate::features::customer_group::models::customer_group_model::CustomerGroup;
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Result, AnyPool};
+use sqlx::{AnyPool, FromRow, Result};
 use std::sync::Arc;
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]

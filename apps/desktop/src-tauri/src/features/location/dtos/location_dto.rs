@@ -14,7 +14,7 @@ pub struct CreateLocationDTO {
 
 impl CreateLocationDTO {
     pub fn into_model(self) -> Location {
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         Location {
             id: Uuid::new_v4().to_string(),
             shop_id: self.shop_id,
@@ -23,8 +23,8 @@ impl CreateLocationDTO {
             is_sellable: self.is_sellable.unwrap_or(true),
             address_data: self.address_data,
             sync_status: Some("created".to_string()),
-            created_at: Some(now),
-            updated_at: Some(now),
+            created_at: Some(now.clone()),
+            updated_at: Some(now.clone()),
         }
     }
 }
@@ -53,7 +53,7 @@ impl UpdateLocationDTO {
         if let Some(address_data) = self.address_data {
             location.address_data = Some(address_data);
         }
-        location.updated_at = Some(Utc::now());
+        location.updated_at = Some(Utc::now().to_string());
         location
     }
 }

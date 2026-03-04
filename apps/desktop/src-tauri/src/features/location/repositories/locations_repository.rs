@@ -1,5 +1,5 @@
 use crate::features::location::models::location_model::Location;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct LocationsRepository {
     pool: AnyPool,

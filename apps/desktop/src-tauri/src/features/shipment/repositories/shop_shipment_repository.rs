@@ -2,7 +2,7 @@
 
 use crate::features::shipment::models::shipment_model::Shipment;
 use chrono::Utc;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 use std::sync::Arc;
 
 pub struct ShopShipmentRepository {
@@ -121,7 +121,8 @@ impl ShopShipmentRepository {
     }
 
     pub async fn get_by_id(&self, id: &str) -> Result<Option<Shipment>> {
-        let sql = "SELECT * FROM shipments WHERE id = $1 AND (_status IS NULL OR _status != 'deleted')";
+        let sql =
+            "SELECT * FROM shipments WHERE id = $1 AND (_status IS NULL OR _status != 'deleted')";
         sqlx::query_as::<_, Shipment>(sql)
             .bind(id)
             .fetch_optional(&*self.pool)
@@ -156,7 +157,7 @@ impl ShopShipmentRepository {
         sqlx::query_as::<_, Shipment>(sql)
             .bind(id)
             .bind(status)
-            .bind(Utc::now())
+            .bind(Utc::now().to_string())
             .fetch_one(&*self.pool)
             .await
     }
@@ -168,12 +169,12 @@ impl ShopShipmentRepository {
             WHERE id = $1
             RETURNING *
         "#;
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         sqlx::query_as::<_, Shipment>(sql)
             .bind(id)
-            .bind(now)
+            .bind(now.clone())
             .bind(tracking_number)
-            .bind(now)
+            .bind(now.clone())
             .fetch_one(&*self.pool)
             .await
     }
@@ -185,11 +186,11 @@ impl ShopShipmentRepository {
             WHERE id = $1
             RETURNING *
         "#;
-        let now = Utc::now();
+        let now = Utc::now().to_string();
         sqlx::query_as::<_, Shipment>(sql)
             .bind(id)
-            .bind(now)
-            .bind(now)
+            .bind(now.clone())
+            .bind(now.clone())
             .fetch_one(&*self.pool)
             .await
     }

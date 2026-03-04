@@ -1,7 +1,6 @@
 //! Shop-scoped Transaction Repository for Multi-Database Architecture
 
 use crate::features::transaction::models::transaction_model::Transaction;
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::{Any, AnyPool, FromRow, Result, Transaction as SqlxTransaction};
 use std::sync::Arc;

@@ -1,6 +1,6 @@
 use crate::db::DbTransaction;
 use crate::features::refund::models::refund_model::Refund;
-use sqlx::{Result, AnyPool};
+use sqlx::{AnyPool, Result};
 
 pub struct RefundsRepository<'a> {
     pool: &'a AnyPool,
