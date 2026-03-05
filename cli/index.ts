@@ -34,35 +34,28 @@ function printHelp() {
 `)
 }
 
-async function main() {
-  if (flags.has('--help') || command === 'help') {
-    printHelp()
-    return
+const isInteractive = !command
+
+async function promptMainMenu(): Promise<string> {
+  const choice = await select({
+    message: 'What do you want to do?',
+    options: [
+      { value: 'dev', label: 'Start development', hint: 'web or desktop' },
+      { value: 'setup', label: 'First-time setup', hint: 'wizard' },
+      { value: 'db', label: 'Database operations', hint: 'push, lint, reset' },
+      { value: 'check', label: 'Code quality', hint: 'prettier + eslint' },
+    ],
+  })
+
+  if (isCancel(choice)) {
+    outro(pc.dim('Cancelled'))
+    process.exit(0)
   }
 
-  const resolved =
-    command ??
-    (await (async () => {
-      intro(pc.bold('URU'))
+  return choice as string
+}
 
-      const choice = await select({
-        message: 'What do you want to do?',
-        options: [
-          { value: 'dev', label: 'Start development', hint: 'web or desktop' },
-          { value: 'setup', label: 'First-time setup', hint: 'wizard' },
-          { value: 'db', label: 'Database operations', hint: 'push, lint, reset' },
-          { value: 'check', label: 'Code quality', hint: 'prettier + eslint' },
-        ],
-      })
-
-      if (isCancel(choice)) {
-        outro(pc.dim('Cancelled'))
-        process.exit(0)
-      }
-
-      return choice as string
-    })())
-
+async function runCommand(resolved: string): Promise<'back' | void> {
   const forceRelink = flags.has('--relink')
 
   switch (resolved) {
@@ -86,6 +79,27 @@ async function main() {
       console.log(pc.red(`  Unknown command: ${resolved}`))
       printHelp()
       process.exit(1)
+  }
+}
+
+async function main() {
+  if (flags.has('--help') || command === 'help') {
+    printHelp()
+    return
+  }
+
+  if (!isInteractive) {
+    await runCommand(command)
+    return
+  }
+
+  intro(pc.bold('URU'))
+
+  // Loop so "back" returns to the main menu
+  while (true) {
+    const choice = await promptMainMenu()
+    const result = await runCommand(choice)
+    if (result !== 'back') break
   }
 }
 

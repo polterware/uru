@@ -106,6 +106,7 @@ export async function runDb(subcommand?: string, forceRelink = false) {
             label: 'Linked reset',
             hint: pc.yellow('destructive — drops remote data'),
           },
+          { value: 'back', label: pc.dim('← Back') },
         ],
       })
       if (isCancel(choice)) process.exit(0)
@@ -113,6 +114,8 @@ export async function runDb(subcommand?: string, forceRelink = false) {
     })())
 
   switch (action) {
+    case 'back':
+      return 'back' as const
     case 'push':
       return linkedPush(forceRelink)
     case 'lint':

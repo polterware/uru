@@ -17,10 +17,12 @@ export async function runDev() {
     options: [
       { value: 'web', label: 'Web only', hint: 'vite on :3000' },
       { value: 'desktop', label: 'Desktop', hint: 'Tauri + vite' },
+      { value: 'back', label: pc.dim('← Back') },
     ],
   })
 
   if (isCancel(mode)) process.exit(0)
+  if (mode === 'back') return 'back' as const
 
   if (mode === 'desktop' && !commandExists('cargo')) {
     console.log(pc.red('\n  Rust toolchain not found. Install from https://rustup.rs\n'))
