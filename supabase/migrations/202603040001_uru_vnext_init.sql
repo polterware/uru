@@ -101,18 +101,6 @@ begin
 end;
 $$;
 
-create table if not exists public.app_settings (
-  id uuid primary key default gen_random_uuid(),
-  owner_user_id uuid not null references auth.users(id) on delete cascade,
-  key text not null,
-  value jsonb not null default '{}'::jsonb,
-  created_at timestamptz not null default timezone('utc', now()),
-  updated_at timestamptz not null default timezone('utc', now()),
-  deleted_at timestamptz,
-  lifecycle_status text not null default 'active' check (lifecycle_status in ('active', 'inactive', 'archived')),
-  unique (owner_user_id, key)
-);
-
 create table if not exists public.modules (
   id uuid primary key default gen_random_uuid(),
   code text not null unique,
@@ -455,19 +443,6 @@ create table if not exists public.product_metrics (
   unique (product_id, metric_date)
 );
 
-create table if not exists public.audit_logs (
-  id uuid primary key default gen_random_uuid(),
-  actor_user_id uuid references auth.users(id) on delete set null,
-  action text not null,
-  entity_type text not null,
-  entity_id uuid,
-  payload jsonb not null default '{}'::jsonb,
-  created_at timestamptz not null default timezone('utc', now()),
-  updated_at timestamptz not null default timezone('utc', now()),
-  deleted_at timestamptz,
-  lifecycle_status text not null default 'active' check (lifecycle_status in ('active', 'inactive', 'archived'))
-);
-
 create table if not exists public.pos_sessions (
   id uuid primary key default gen_random_uuid(),
   opened_by uuid not null references auth.users(id) on delete restrict,
@@ -498,13 +473,10 @@ create index if not exists idx_inventory_movements_reference on public.inventory
 create index if not exists idx_checkouts_status_created on public.checkouts(status, created_at desc);
 create index if not exists idx_product_metrics_product_date on public.product_metrics(product_id, metric_date desc);
 create index if not exists idx_shipment_events_shipment_created on public.shipment_events(shipment_id, created_at desc);
-create index if not exists idx_audit_logs_entity on public.audit_logs(entity_type, entity_id, created_at desc);
-
 -- Updated-at triggers
 create trigger trg_profiles_updated_at before update on public.profiles for each row execute function app_private.set_updated_at();
 create trigger trg_roles_updated_at before update on public.roles for each row execute function app_private.set_updated_at();
 create trigger trg_user_roles_updated_at before update on public.user_roles for each row execute function app_private.set_updated_at();
-create trigger trg_app_settings_updated_at before update on public.app_settings for each row execute function app_private.set_updated_at();
 create trigger trg_modules_updated_at before update on public.modules for each row execute function app_private.set_updated_at();
 create trigger trg_categories_updated_at before update on public.categories for each row execute function app_private.set_updated_at();
 create trigger trg_brands_updated_at before update on public.brands for each row execute function app_private.set_updated_at();
@@ -530,7 +502,6 @@ create trigger trg_inquiries_updated_at before update on public.inquiries for ea
 create trigger trg_inquiry_messages_updated_at before update on public.inquiry_messages for each row execute function app_private.set_updated_at();
 create trigger trg_reviews_updated_at before update on public.reviews for each row execute function app_private.set_updated_at();
 create trigger trg_product_metrics_updated_at before update on public.product_metrics for each row execute function app_private.set_updated_at();
-create trigger trg_audit_logs_updated_at before update on public.audit_logs for each row execute function app_private.set_updated_at();
 create trigger trg_pos_sessions_updated_at before update on public.pos_sessions for each row execute function app_private.set_updated_at();
 
 insert into public.roles (code, name)
@@ -906,20 +877,6 @@ begin
       fulfillment_status = 'cancelled'
   where id = v_order.id;
 
-  insert into public.audit_logs (
-    actor_user_id,
-    action,
-    entity_type,
-    entity_id,
-    payload
-  ) values (
-    auth.uid(),
-    'order_cancelled',
-    'orders',
-    v_order.id,
-    jsonb_build_object('reason', p_reason)
-  );
-
   return query
   select v_order.id, 'cancelled'::text;
 end;
@@ -1023,7 +980,6 @@ grant execute on function public.update_order_status(uuid, text, text, text) to 
 alter table public.profiles enable row level security;
 alter table public.roles enable row level security;
 alter table public.user_roles enable row level security;
-alter table public.app_settings enable row level security;
 alter table public.modules enable row level security;
 alter table public.products enable row level security;
 alter table public.categories enable row level security;
@@ -1049,7 +1005,6 @@ alter table public.inquiries enable row level security;
 alter table public.inquiry_messages enable row level security;
 alter table public.reviews enable row level security;
 alter table public.product_metrics enable row level security;
-alter table public.audit_logs enable row level security;
 alter table public.pos_sessions enable row level security;
 
 -- Profiles: self-service + admin
@@ -1073,15 +1028,6 @@ for select using (app_private.has_role(array['admin', 'operator', 'analyst']) or
 create policy user_roles_write on public.user_roles
 for all using (app_private.has_role(array['admin']))
 with check (app_private.has_role(array['admin']));
-
--- App settings: owner + admin
-create policy app_settings_select on public.app_settings
-for select using (owner_user_id = auth.uid() or app_private.has_role(array['admin']));
-create policy app_settings_insert on public.app_settings
-for insert with check (owner_user_id = auth.uid() or app_private.has_role(array['admin']));
-create policy app_settings_update on public.app_settings
-for update using (owner_user_id = auth.uid() or app_private.has_role(array['admin']))
-with check (owner_user_id = auth.uid() or app_private.has_role(array['admin']));
 
 -- Generic business tables
 create policy modules_select on public.modules for select using (app_private.has_role(array['admin', 'operator', 'analyst']));
@@ -1158,9 +1104,6 @@ create policy reviews_write on public.reviews for all using (app_private.has_rol
 
 create policy product_metrics_select on public.product_metrics for select using (app_private.has_role(array['admin', 'operator', 'analyst']));
 create policy product_metrics_write on public.product_metrics for all using (app_private.has_role(array['admin', 'operator'])) with check (app_private.has_role(array['admin', 'operator']));
-
-create policy audit_logs_select on public.audit_logs for select using (app_private.has_role(array['admin', 'analyst']));
-create policy audit_logs_insert on public.audit_logs for insert with check (app_private.has_role(array['admin', 'operator']));
 
 create policy pos_sessions_select on public.pos_sessions for select using (app_private.has_role(array['admin', 'operator', 'analyst']));
 create policy pos_sessions_write on public.pos_sessions for all using (app_private.has_role(array['admin', 'operator'])) with check (app_private.has_role(array['admin', 'operator']));

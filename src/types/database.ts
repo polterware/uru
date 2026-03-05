@@ -85,34 +85,6 @@ export interface Database {
           lifecycle_status?: 'active' | 'inactive' | 'archived'
         }
       }
-      app_settings: {
-        Row: {
-          id: string
-          owner_user_id: string
-          key: string
-          value: Json
-          created_at: string
-          updated_at: string
-          deleted_at: string | null
-          lifecycle_status: 'active' | 'inactive' | 'archived'
-        }
-        Insert: {
-          id?: string
-          owner_user_id: string
-          key: string
-          value: Json
-          created_at?: string
-          updated_at?: string
-          deleted_at?: string | null
-          lifecycle_status?: 'active' | 'inactive' | 'archived'
-        }
-        Update: {
-          value?: Json
-          updated_at?: string
-          deleted_at?: string | null
-          lifecycle_status?: 'active' | 'inactive' | 'archived'
-        }
-      }
       modules: {
         Row: {
           id: string
@@ -994,38 +966,6 @@ export interface Database {
           add_to_cart?: number
           sales_count?: number
           revenue_amount?: number
-          updated_at?: string
-          deleted_at?: string | null
-          lifecycle_status?: 'active' | 'inactive' | 'archived'
-        }
-      }
-      audit_logs: {
-        Row: {
-          id: string
-          actor_user_id: string | null
-          action: string
-          entity_type: string
-          entity_id: string | null
-          payload: Json
-          created_at: string
-          updated_at: string
-          deleted_at: string | null
-          lifecycle_status: 'active' | 'inactive' | 'archived'
-        }
-        Insert: {
-          id?: string
-          actor_user_id?: string | null
-          action: string
-          entity_type: string
-          entity_id?: string | null
-          payload?: Json
-          created_at?: string
-          updated_at?: string
-          deleted_at?: string | null
-          lifecycle_status?: 'active' | 'inactive' | 'archived'
-        }
-        Update: {
-          payload?: Json
           updated_at?: string
           deleted_at?: string | null
           lifecycle_status?: 'active' | 'inactive' | 'archived'

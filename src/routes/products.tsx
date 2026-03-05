@@ -74,26 +74,26 @@ function ProductsPage() {
     <section className="space-y-6">
       <header>
         <h1 className="text-2xl font-semibold">Products</h1>
-        <p className="text-sm text-neutral-400">Supabase-only catalog for Dost operations. Active SKUs: {totalSkus}</p>
+        <p className="text-sm text-app-muted">Supabase-only catalog management. Active SKUs: {totalSkus}</p>
       </header>
 
-      <form className="grid gap-3 rounded border border-neutral-800 bg-neutral-900 p-4 md:grid-cols-4" onSubmit={onCreateProduct}>
+      <form className="grid gap-3 rounded border border-app-border bg-app-panel p-4 md:grid-cols-4" onSubmit={onCreateProduct}>
         <input
-          className="rounded border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded border border-app-border bg-app-panel-strong px-3 py-2 text-sm"
           placeholder="Product title"
           required
           value={title}
           onChange={(event) => setTitle(event.target.value)}
         />
         <input
-          className="rounded border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded border border-app-border bg-app-panel-strong px-3 py-2 text-sm"
           placeholder="SKU"
           required
           value={sku}
           onChange={(event) => setSku(event.target.value)}
         />
         <input
-          className="rounded border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm"
+          className="rounded border border-app-border bg-app-panel-strong px-3 py-2 text-sm"
           placeholder="Price"
           type="number"
           min="0"
@@ -102,16 +102,16 @@ function ProductsPage() {
           value={price}
           onChange={(event) => setPrice(event.target.value)}
         />
-        <button type="submit" className="rounded bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-500">
+        <button type="submit" className="rounded bg-app-success px-3 py-2 text-sm font-medium text-black transition-colors hover:opacity-90">
           Add product
         </button>
       </form>
 
-      {error ? <p className="text-sm text-red-400">{error}</p> : null}
+      {error ? <p className="text-sm text-app-danger">{error}</p> : null}
 
-      <div className="overflow-hidden rounded border border-neutral-800">
+      <div className="overflow-hidden rounded border border-app-border">
         <table className="w-full border-collapse text-sm">
-          <thead className="bg-neutral-900 text-left text-neutral-300">
+          <thead className="bg-app-panel text-left text-app-muted">
             <tr>
               <th className="px-4 py-2">Title</th>
               <th className="px-4 py-2">SKU</th>
@@ -122,19 +122,19 @@ function ProductsPage() {
           <tbody>
             {isLoading ? (
               <tr>
-                <td className="px-4 py-3 text-neutral-400" colSpan={4}>
+                <td className="px-4 py-3 text-app-muted" colSpan={4}>
                   Loading...
                 </td>
               </tr>
             ) : products.length === 0 ? (
               <tr>
-                <td className="px-4 py-3 text-neutral-400" colSpan={4}>
+                <td className="px-4 py-3 text-app-muted" colSpan={4}>
                   No products yet.
                 </td>
               </tr>
             ) : (
               products.map((product) => (
-                <tr key={product.id} className="border-t border-neutral-800">
+                <tr key={product.id} className="border-t border-app-border">
                   <td className="px-4 py-2">{product.title}</td>
                   <td className="px-4 py-2">{product.sku}</td>
                   <td className="px-4 py-2">{product.price}</td>

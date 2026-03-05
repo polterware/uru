@@ -5,19 +5,21 @@ let supabaseClient: SupabaseClient<Database> | null = null
 
 function getSupabaseConfig() {
   const url = import.meta.env.VITE_SUPABASE_URL
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+  const publishableDefaultKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
 
-  if (!url || !anonKey) {
-    throw new Error('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.')
+  if (!url || !publishableDefaultKey) {
+    throw new Error(
+      'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY.',
+    )
   }
 
-  return { url, anonKey }
+  return { url, publishableDefaultKey }
 }
 
 export function getSupabaseClient() {
   if (!supabaseClient) {
-    const { url, anonKey } = getSupabaseConfig()
-    supabaseClient = createClient<Database>(url, anonKey, {
+    const { url, publishableDefaultKey } = getSupabaseConfig()
+    supabaseClient = createClient<Database>(url, publishableDefaultKey, {
       auth: {
         autoRefreshToken: true,
         persistSession: true,

@@ -22,7 +22,7 @@ pnpm install
 
 ```bash
 cp .env.example .env
-# fill VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+# fill VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
 ```
 
 3. Reset/apply Supabase schema

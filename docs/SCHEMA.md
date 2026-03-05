@@ -11,6 +11,8 @@ The migration includes:
 - Soft-delete convention (`deleted_at`)
 - Performance indexes for orders, payments, inventory and analytics
 - Strict RLS activation and policies
+- No `app_settings` table (desktop settings are local via Tauri Store)
+- No `audit_logs` table (operational logs should be monitored in Supabase platform logs)
 - Transactional RPCs:
   - `reserve_inventory_stock`
   - `release_inventory_stock`

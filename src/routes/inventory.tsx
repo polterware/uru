@@ -54,14 +54,14 @@ function InventoryPage() {
     <section className="space-y-6">
       <header>
         <h1 className="text-2xl font-semibold">Inventory</h1>
-        <p className="text-sm text-neutral-400">Live inventory levels sourced only from Supabase.</p>
+        <p className="text-sm text-app-muted">Live inventory levels sourced only from Supabase.</p>
       </header>
 
-      {error ? <p className="text-sm text-red-400">{error}</p> : null}
+      {error ? <p className="text-sm text-app-danger">{error}</p> : null}
 
-      <div className="overflow-hidden rounded border border-neutral-800">
+      <div className="overflow-hidden rounded border border-app-border">
         <table className="w-full border-collapse text-sm">
-          <thead className="bg-neutral-900 text-left text-neutral-300">
+          <thead className="bg-app-panel text-left text-app-muted">
             <tr>
               <th className="px-4 py-2">Inventory level</th>
               <th className="px-4 py-2">On hand</th>
@@ -73,19 +73,19 @@ function InventoryPage() {
           <tbody>
             {isLoading ? (
               <tr>
-                <td className="px-4 py-3 text-neutral-400" colSpan={5}>
+                <td className="px-4 py-3 text-app-muted" colSpan={5}>
                   Loading...
                 </td>
               </tr>
             ) : levels.length === 0 ? (
               <tr>
-                <td className="px-4 py-3 text-neutral-400" colSpan={5}>
+                <td className="px-4 py-3 text-app-muted" colSpan={5}>
                   No inventory levels yet.
                 </td>
               </tr>
             ) : (
               levels.map((level) => (
-                <tr key={level.id} className="border-t border-neutral-800">
+                <tr key={level.id} className="border-t border-app-border">
                   <td className="px-4 py-2">{level.id.slice(0, 8)}</td>
                   <td className="px-4 py-2">{level.quantity_on_hand}</td>
                   <td className="px-4 py-2">{level.quantity_reserved}</td>

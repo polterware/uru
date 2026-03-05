@@ -4,6 +4,7 @@
 
 - Single desktop app (Tauri + React)
 - Supabase as only data backend
+- App preferences stored locally via Tauri Store (`settings.json`)
 - JWT session required for all business writes
 - RLS enabled in all sensitive tables
 
@@ -34,7 +35,7 @@ Primary focus is Dost operations while keeping a schema that can be generalized:
 - Payments: transactions, payments, refunds
 - Fulfillment: shipments, shipment_items, shipment_events
 - Inventory: inventory_levels, inventory_movements, locations
-- Governance: profiles, roles, user_roles, app_settings, modules, audit_logs
+- Governance: profiles, roles, user_roles, modules
 
 ## Removed architecture
 

@@ -14,15 +14,39 @@ set -euo pipefail
 #   ./setup_database_and_data.sh linked-reset
 #   ./setup_database_and_data.sh linked-push
 #   ./setup_database_and_data.sh linked-lint
+#   ./setup_database_and_data.sh linked-push --relink
 #   ./setup_database_and_data.sh local-reset
 #
 # Safety:
 #   For linked-reset, set URU_CONFIRM_RESET=YES to skip interactive confirmation.
 #   Optionally set SUPABASE_DB_PASSWORD to avoid password prompts.
+#   Use --relink (or URU_FORCE_RELINK=YES) to force running `supabase link` again.
 
-MODE="${1:-linked-reset}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SUPABASE_DIR="$ROOT_DIR/supabase"
+LINK_REF_FILE="$SUPABASE_DIR/.temp/project-ref"
+MODE="linked-reset"
+FORCE_RELINK=false
+
+for arg in "$@"; do
+  case "$arg" in
+    linked-reset|linked-push|linked-lint|local-reset)
+      MODE="$arg"
+      ;;
+    --relink)
+      FORCE_RELINK=true
+      ;;
+    -h|--help)
+      echo "Usage: ./setup_database_and_data.sh [linked-reset|linked-push|linked-lint|local-reset] [--relink]"
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $arg"
+      echo "Usage: ./setup_database_and_data.sh [linked-reset|linked-push|linked-lint|local-reset] [--relink]"
+      exit 1
+      ;;
+  esac
+done
 
 if ! command -v supabase >/dev/null 2>&1; then
   echo "Error: Supabase CLI is not installed."
@@ -59,10 +83,30 @@ run_db_push_linked() {
   fi
 }
 
+ensure_linked_context() {
+  if [[ "$FORCE_RELINK" == "true" || "${URU_FORCE_RELINK:-}" == "YES" ]]; then
+    echo "Linking project (forced by --relink / URU_FORCE_RELINK=YES)"
+    run_link
+    return
+  fi
+
+  if [[ -s "$LINK_REF_FILE" ]]; then
+    local linked_ref
+    linked_ref="$(tr -d '[:space:]' < "$LINK_REF_FILE")"
+    if [[ -n "$linked_ref" ]]; then
+      echo "Using existing linked project: $linked_ref"
+      return
+    fi
+  fi
+
+  echo "No linked project found. Running supabase link..."
+  run_link
+}
+
 case "$MODE" in
   linked-reset)
-    echo "1) Linking project (if needed)"
-    run_link
+    echo "1) Checking linked project"
+    ensure_linked_context
 
     echo "2) Backup reminder"
     echo "Before running reset, ensure a backup was exported from the current Dost project."
@@ -82,16 +126,16 @@ case "$MODE" in
     ;;
 
   linked-push)
-    echo "1) Linking project (if needed)"
-    run_link
+    echo "1) Checking linked project"
+    ensure_linked_context
 
     echo "2) Applying pending migrations to linked project"
     run_db_push_linked
     ;;
 
   linked-lint)
-    echo "1) Linking project (if needed)"
-    run_link
+    echo "1) Checking linked project"
+    ensure_linked_context
 
     echo "2) Running lint in linked project"
     supabase db lint --linked
@@ -104,7 +148,7 @@ case "$MODE" in
 
   *)
     echo "Unknown mode: $MODE"
-    echo "Valid modes: linked-reset | linked-push | local-reset"
+    echo "Valid modes: linked-reset | linked-push | linked-lint | local-reset"
     exit 1
     ;;
 esac

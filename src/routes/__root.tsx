@@ -15,7 +15,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'URU vNext',
+        title: 'Urú',
       },
     ],
     links: [
@@ -56,28 +56,28 @@ function RootLayout() {
   const isLoginPage = location.pathname === '/login'
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
-      <header className="border-b border-neutral-800 bg-neutral-900/90">
+    <div className="min-h-screen bg-app-shell text-app-foreground">
+      <header className="border-b border-app-border bg-app-panel/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-          <div className="text-sm font-semibold tracking-wide">URU • Dost Manager</div>
+          <span className="truncate text-2xl font-brand">Urú</span>
           {!isLoginPage && (
             <nav className="flex items-center gap-4 text-sm">
-              <Link to="/products" className="text-neutral-300 hover:text-neutral-100">
+              <Link to="/products" className="text-app-muted transition-colors hover:text-app-foreground">
                 Products
               </Link>
-              <Link to="/orders" className="text-neutral-300 hover:text-neutral-100">
+              <Link to="/orders" className="text-app-muted transition-colors hover:text-app-foreground">
                 Orders
               </Link>
-              <Link to="/inventory" className="text-neutral-300 hover:text-neutral-100">
+              <Link to="/inventory" className="text-app-muted transition-colors hover:text-app-foreground">
                 Inventory
               </Link>
-              <Link to="/settings" className="text-neutral-300 hover:text-neutral-100">
+              <Link to="/settings" className="text-app-muted transition-colors hover:text-app-foreground">
                 Settings
               </Link>
               {isAuthenticated ? (
                 <button
                   type="button"
-                  className="rounded bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700"
+                  className="rounded bg-app-panel-strong px-3 py-1 text-xs text-app-foreground transition-colors hover:bg-app-hover"
                   onClick={async () => {
                     await signOut()
                     window.location.href = '/login'
@@ -86,7 +86,7 @@ function RootLayout() {
                   Sign out
                 </button>
               ) : (
-                <Link to="/login" className="rounded bg-neutral-800 px-3 py-1 text-xs hover:bg-neutral-700">
+                <Link to="/login" className="rounded bg-app-panel-strong px-3 py-1 text-xs text-app-foreground transition-colors hover:bg-app-hover">
                   Sign in
                 </Link>
               )}
@@ -104,7 +104,7 @@ function RootLayout() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>

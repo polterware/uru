@@ -54,14 +54,14 @@ function OrdersPage() {
     <section className="space-y-6">
       <header>
         <h1 className="text-2xl font-semibold">Orders</h1>
-        <p className="text-sm text-neutral-400">Single-context order management with Supabase RLS.</p>
+        <p className="text-sm text-app-muted">Single-context order management with Supabase RLS.</p>
       </header>
 
-      {error ? <p className="text-sm text-red-400">{error}</p> : null}
+      {error ? <p className="text-sm text-app-danger">{error}</p> : null}
 
-      <div className="overflow-hidden rounded border border-neutral-800">
+      <div className="overflow-hidden rounded border border-app-border">
         <table className="w-full border-collapse text-sm">
-          <thead className="bg-neutral-900 text-left text-neutral-300">
+          <thead className="bg-app-panel text-left text-app-muted">
             <tr>
               <th className="px-4 py-2">Order</th>
               <th className="px-4 py-2">Status</th>
@@ -73,19 +73,19 @@ function OrdersPage() {
           <tbody>
             {isLoading ? (
               <tr>
-                <td className="px-4 py-3 text-neutral-400" colSpan={5}>
+                <td className="px-4 py-3 text-app-muted" colSpan={5}>
                   Loading...
                 </td>
               </tr>
             ) : orders.length === 0 ? (
               <tr>
-                <td className="px-4 py-3 text-neutral-400" colSpan={5}>
+                <td className="px-4 py-3 text-app-muted" colSpan={5}>
                   No orders yet.
                 </td>
               </tr>
             ) : (
               orders.map((order) => (
-                <tr key={order.id} className="border-t border-neutral-800">
+                <tr key={order.id} className="border-t border-app-border">
                   <td className="px-4 py-2 font-medium">{order.order_number}</td>
                   <td className="px-4 py-2 capitalize">{order.status}</td>
                   <td className="px-4 py-2 capitalize">{order.payment_status}</td>

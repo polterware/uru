@@ -29,13 +29,13 @@ function LoginPage() {
   }
 
   return (
-    <section className="mx-auto mt-20 w-full max-w-sm rounded-lg border border-neutral-800 bg-neutral-900 p-6">
-      <h1 className="mb-6 text-xl font-semibold">Sign in to URU</h1>
+    <section className="mx-auto mt-20 w-full max-w-sm rounded-lg border border-app-border bg-app-panel p-6">
+      <h1 className="mb-6 text-xl font-semibold">Sign in to Urú</h1>
       <form className="space-y-4" onSubmit={onSubmit}>
         <label className="block text-sm">
           Email
           <input
-            className="mt-2 w-full rounded border border-neutral-700 bg-neutral-950 px-3 py-2"
+            className="mt-2 w-full rounded border border-app-border bg-app-panel-strong px-3 py-2"
             type="email"
             autoComplete="email"
             required
@@ -47,7 +47,7 @@ function LoginPage() {
         <label className="block text-sm">
           Password
           <input
-            className="mt-2 w-full rounded border border-neutral-700 bg-neutral-950 px-3 py-2"
+            className="mt-2 w-full rounded border border-app-border bg-app-panel-strong px-3 py-2"
             type="password"
             autoComplete="current-password"
             required
@@ -56,12 +56,12 @@ function LoginPage() {
           />
         </label>
 
-        {error ? <p className="text-sm text-red-400">{error}</p> : null}
+        {error ? <p className="text-sm text-app-danger">{error}</p> : null}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded bg-emerald-600 px-3 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-70"
+          className="w-full rounded bg-app-success px-3 py-2 text-sm font-medium text-black transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {loading ? 'Signing in...' : 'Sign in'}
         </button>
