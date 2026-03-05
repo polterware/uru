@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { escapeCsvValue, getHeaderLabel, normalizeCsvValue } from '@/components/ui/table'
+import { escapeCsvValue, getHeaderLabel, normalizeCsvValue } from '@/lib/table-csv'
 
 describe('table csv helpers', () => {
   it('normalizes primitive and null values', () => {
