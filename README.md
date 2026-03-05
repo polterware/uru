@@ -55,6 +55,7 @@ Manage your business without relying on expensive SaaS. URU is an open-source de
 - [Node.js 20+](https://nodejs.org)
 - [pnpm](https://pnpm.io/installation)
 - [Supabase CLI](https://supabase.com/docs/guides/cli/getting-started)
+- [Polterbase](https://www.npmjs.com/package/@polterware/polterbase) for setup, link, migration, and installation workflows
 
 ### For Desktop Builds
 
@@ -69,10 +70,10 @@ Manage your business without relying on expensive SaaS. URU is an open-source de
 
 ```bash
 pnpm install
-pnpm uru setup
+npx polterbase app setup uru --path .
 ```
 
-The setup wizard will check prerequisites, create `.env.local` interactively, install dependencies, link your Supabase project, and push migrations.
+The Polterbase workflow checks prerequisites, creates or updates `.env.local`, installs dependencies, links your Supabase project, pushes migrations, and prepares the runtime bootstrap payload used by the desktop app.
 
 Once setup is done:
 
@@ -80,27 +81,106 @@ Once setup is done:
 pnpm uru dev
 ```
 
+## Using Polterbase With Uru
+
+Polterbase is the recommended workflow manager for Uru Supabase operations.
+
+- npm: [@polterware/polterbase](https://www.npmjs.com/package/@polterware/polterbase)
+- GitHub: [polterware/polterbase](https://github.com/polterware/polterbase)
+
+### 1. Install dependencies
+
+Uru includes Polterbase as a development dependency, so the normal project install is enough:
+
+```bash
+pnpm install
+```
+
+### 2. Bootstrap a source checkout
+
+From the `uru` directory:
+
+```bash
+npx polterbase app setup uru --path .
+```
+
+This flow:
+
+- validates Node.js, pnpm, and Supabase CLI;
+- creates or updates `.env.local`;
+- installs project dependencies;
+- links the Supabase project;
+- pushes migrations;
+- writes the runtime bootstrap payload for the desktop app.
+
+### 3. Common day-to-day commands
+
+Link or relink the project:
+
+```bash
+npx polterbase app link uru --path .
+```
+
+Push migrations:
+
+```bash
+npx polterbase app migrate uru push --path .
+```
+
+Lint migrations:
+
+```bash
+npx polterbase app migrate uru lint --path .
+```
+
+Reset the linked remote database:
+
+```bash
+npx polterbase app migrate uru reset --path .
+```
+
+Reset the local Docker database:
+
+```bash
+npx polterbase app migrate uru local-reset --path .
+```
+
+Rewrite runtime connection/bootstrap data:
+
+```bash
+npx polterbase app configure uru --path .
+```
+
+### 4. Install the macOS app
+
+If you have a packaged Uru artifact:
+
+```bash
+npx polterbase app install uru --platform macos --artifact-url <url>
+```
+
+Polterbase downloads the artifact, installs the `.app`, writes the Supabase bootstrap payload, and can open the app after installation.
+
 ## CLI Commands
 
-All project operations go through the `pnpm uru` CLI:
+The `pnpm uru` CLI is now intentionally minimal and only starts local development:
 
 | Command                   | Description                                                 |
 | ------------------------- | ----------------------------------------------------------- |
-| `pnpm uru`                | Interactive menu                                            |
-| `pnpm uru setup`          | First-time setup wizard                                     |
+| `pnpm uru`                | Show help and point to Polterbase workflows                 |
 | `pnpm uru dev`            | Start dev server (web or desktop)                           |
-| `pnpm uru db`             | Database operations menu                                    |
-| `pnpm uru db push`        | Push migrations (non-destructive)                           |
-| `pnpm uru db lint`        | Lint migrations                                             |
-| `pnpm uru db reset`       | Reset linked remote DB (destructive, requires confirmation) |
-| `pnpm uru db local-reset` | Reset local Docker stack                                    |
-| `pnpm uru check`          | Run Prettier + ESLint fix                                   |
 | `pnpm uru --help`         | Show all commands                                           |
 
-### Database Flags
+### Polterbase Workflows
 
-- `--relink` — force `supabase link` before running db commands
-- `SUPABASE_DB_PASSWORD` env var — avoid password prompts during link/reset/push
+- `npx polterbase app setup uru --path .` — full source checkout bootstrap
+- `npx polterbase app link uru --path .` — link or relink the current project
+- `npx polterbase app migrate uru push --path .` — push migrations
+- `npx polterbase app migrate uru lint --path .` — lint migrations
+- `npx polterbase app migrate uru reset --path .` — reset linked remote DB
+- `npx polterbase app migrate uru local-reset --path .` — reset the local Docker stack
+- `npx polterbase app configure uru --path .` — rewrite `.env.local` and runtime bootstrap payload
+- `npx polterbase app install uru --platform macos --artifact-url <url>` — install the macOS `.app`, then configure runtime Supabase connection
 
 ## Other Scripts
 
@@ -121,8 +201,13 @@ supabase/
   migrations/        # Database contract: schema, access policies (RLS), and functions (RPC)
 src-tauri/
   src/lib.rs         # Desktop shell (no business logic)
-cli/                 # Interactive CLI toolkit for setup and project operations
+cli/                 # Local development launcher (`pnpm uru dev`)
 ```
+
+Runtime Supabase connection can now come from either:
+
+- build-time env vars (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`) for development and compatibility;
+- runtime config stored by the desktop app after importing the bootstrap payload written by Polterbase.
 
 ## Security Model
 
@@ -138,7 +223,7 @@ URU protects your data across multiple layers. Each user has a role (admin, oper
 1. Fork the repository
 2. Create a branch for your feature or fix (`git checkout -b my-feature`)
 3. Make your changes
-4. Run `pnpm uru check` to ensure formatting and lint pass
+4. Run your formatting and lint commands before opening a PR
 5. Open a Pull Request
 
 Found a bug or have a suggestion? [Open an issue](https://github.com/ericpbarcelos/uru/issues).
@@ -146,20 +231,20 @@ Found a bug or have a suggestion? [Open an issue](https://github.com/ericpbarcel
 ## Troubleshooting
 
 - **`Supabase is not configured...`**
-  - Make sure `.env.local` has `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
-  - Restart `pnpm dev` after editing env vars
+  - For source checkout, make sure `.env.local` has `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
+  - For an installed desktop app, run `polterbase app configure uru` or fill the connection form shown on first launch
 
 - **Auth or network errors in the desktop app**
   - Check firewall/VPN/proxy rules
   - Confirm Supabase project URL and key are correct
-  - Try restarting the app
+  - Try restarting the app so it can reload runtime connection settings
 
 - **Desktop build fails**
   - Confirm the Rust toolchain is installed (`rustc --version`)
   - Install [Tauri system dependencies](https://v2.tauri.app/start/prerequisites/) for your OS
 
-- **`pnpm uru db push` fails**
-  - Check if the Supabase project is linked (`pnpm uru db --relink`)
+- **`polterbase app migrate uru push` fails**
+  - Check if the Supabase project is linked (`polterbase app link uru --path .`)
   - Confirm `SUPABASE_DB_PASSWORD` is set or enter the password when prompted
 
 ## License

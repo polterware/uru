@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "@clack/prompts": "^1.1.0",
+    "@polterware/polterbase": "^0.2.5",
     "@tanstack/devtools-vite": "^0.3.11",
     "@tanstack/eslint-config": "^0.3.0",
     "@tauri-apps/cli": "^2.9.6",

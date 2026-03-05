@@ -114,7 +114,7 @@ export async function signInWithPassword(email: string, password: string) {
       }
 
       throw new Error(
-        "Unable to reach Supabase Auth endpoint. Check internet/firewall/VPN and restart the app to reload env settings.",
+        "Unable to reach Supabase Auth endpoint. Check internet/firewall/VPN and restart the app to reload connection settings.",
       );
     }
 

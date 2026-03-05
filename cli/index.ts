@@ -3,47 +3,44 @@ import pc from "picocolors";
 
 const args = process.argv.slice(2);
 const command = args[0];
-const subcommand = args[1];
-const flags = new Set(args.filter((a) => a.startsWith("--")));
+const flags = new Set(args.filter((arg) => arg.startsWith("--")));
 
 function printHelp() {
   console.log(`
-  ${pc.bold("URU CLI")} — development toolkit
+  ${pc.bold("URU CLI")} — development launcher
 
   ${pc.dim("Usage:")}  pnpm uru [command]
 
   ${pc.dim("Commands:")}
-    ${pc.bold("setup")}          First-time setup wizard
     ${pc.bold("dev")}            Start development server (web or desktop)
-    ${pc.bold("db")}             Database operations
-    ${pc.bold("db push")}        Push migrations (non-destructive)
-    ${pc.bold("db lint")}        Lint migrations
-    ${pc.bold("db reset")}       Reset linked remote DB ${pc.yellow("(destructive)")}
-    ${pc.bold("db local-reset")} Reset local Docker stack
-    ${pc.bold("check")}          Run Prettier + ESLint fix
 
   ${pc.dim("Flags:")}
-    ${pc.bold("--relink")}       Force supabase link (db commands)
     ${pc.bold("--help")}         Show this help message
 
   ${pc.dim("Examples:")}
-    pnpm uru              Interactive menu
-    pnpm uru setup        Run setup wizard
+    pnpm uru              Show this help
     pnpm uru dev          Start dev server
-    pnpm uru db push      Push migrations
+
+  ${pc.dim("Supabase workflows moved to Polterbase:")}
+    npx polterbase app setup uru --path .
+    npx polterbase app link uru --path .
+    npx polterbase app migrate uru push --path .
 `);
 }
 
-const isInteractive = !command;
+function printMovedCommand(commandName: string) {
+  console.log(
+    pc.yellow(
+      `\n  ${commandName} moved to Polterbase.\n  Use ${pc.bold("npx polterbase app ...")} for setup, link, configure, install, and migrations.\n`,
+    ),
+  );
+}
 
 async function promptMainMenu(): Promise<string> {
   const choice = await select({
     message: "What do you want to do?",
     options: [
       { value: "dev", label: "Start development", hint: "web or desktop" },
-      { value: "setup", label: "First-time setup", hint: "wizard" },
-      { value: "db", label: "Database operations", hint: "push, lint, reset" },
-      { value: "check", label: "Code quality", hint: "prettier + eslint" },
     ],
   });
 
@@ -56,26 +53,17 @@ async function promptMainMenu(): Promise<string> {
 }
 
 async function runCommand(resolved: string): Promise<"back" | void> {
-  const forceRelink = flags.has("--relink");
-
   switch (resolved) {
-    case "setup": {
-      const { runSetup } = await import("./commands/setup.js");
-      return runSetup();
-    }
     case "dev": {
       const { runDev } = await import("./commands/dev.js");
       return runDev();
     }
-    case "db": {
-      const { runDb } = await import("./commands/db.js");
-      return runDb(subcommand, forceRelink);
-    }
-    case "check": {
-      const { runCheck } = await import("./commands/check.js");
-      return runCheck();
-    }
     default:
+      if (resolved === "setup" || resolved === "db" || resolved === "check") {
+        printMovedCommand(resolved);
+        return;
+      }
+
       console.log(pc.red(`  Unknown command: ${resolved}`));
       printHelp();
       process.exit(1);
@@ -88,19 +76,16 @@ async function main() {
     return;
   }
 
-  if (!isInteractive) {
+  if (command) {
     await runCommand(command);
     return;
   }
 
   intro(pc.bold("URU"));
-
-  // Loop so "back" returns to the main menu
-  while (true) {
-    const choice = await promptMainMenu();
-    const result = await runCommand(choice);
-    if (result !== "back") break;
-  }
+  printHelp();
+  const choice = await promptMainMenu();
+  await runCommand(choice);
+  outro(pc.dim("Use Polterbase for Supabase workflows."));
 }
 
 main().catch((err) => {

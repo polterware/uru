@@ -2,6 +2,7 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 
+import { SupabaseConnectionForm } from "@/components/app/supabase-connection-form";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,9 +16,21 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { SettingsStore } from "@/lib/stores/settings-store";
 import { getUser, getUserRoles } from "@/lib/supabase/auth";
+import { resetSupabaseClient } from "@/lib/supabase/client";
+import {
+  clearRuntimeSupabaseConfig,
+  refreshResolvedSupabaseConfig,
+  saveRuntimeSupabaseConfig,
+  type RuntimeSupabaseConfig,
+} from "@/lib/supabase/runtime-config";
 
 export const Route = createFileRoute("/settings")({
   beforeLoad: async () => {
+    const config = await refreshResolvedSupabaseConfig();
+    if (!config) {
+      throw redirect({ to: "/login" });
+    }
+
     const user = await getUser();
     if (!user) {
       throw redirect({ to: "/login" });
@@ -32,6 +45,8 @@ function SettingsPage() {
   const [roles, setRoles] = useState<Array<string>>([]);
   const [settingKey, setSettingKey] = useState("dashboard.default_range");
   const [settingValue, setSettingValue] = useState('{"days":30}');
+  const [connectionConfig, setConnectionConfig] =
+    useState<RuntimeSupabaseConfig | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,10 +62,12 @@ function SettingsPage() {
         }
 
         const userRoles = await getUserRoles(user.id);
+        const resolvedConfig = await refreshResolvedSupabaseConfig();
 
         if (!ignore) {
           setUserEmail(user.email ?? null);
           setRoles(userRoles);
+          setConnectionConfig(resolvedConfig);
         }
       } catch (loadError) {
         if (!ignore) {
@@ -126,6 +143,44 @@ function SettingsPage() {
         <CardContent className="space-y-1">
           <p>User: {userEmail ?? "Unknown"}</p>
           <p>Roles: {roles.length ? roles.join(", ") : "No roles found"}</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Runtime Connection</CardTitle>
+          <CardDescription>
+            The installed desktop app can override build-time env vars with a
+            runtime connection.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SupabaseConnectionForm
+            initialConfig={connectionConfig}
+            renderCard={false}
+            submitLabel="Save runtime connection"
+            onSubmit={async (input) => {
+              const saved = await saveRuntimeSupabaseConfig(input);
+              resetSupabaseClient();
+              setConnectionConfig(saved);
+            }}
+            onClear={async () => {
+              await clearRuntimeSupabaseConfig();
+              resetSupabaseClient();
+              const fallbackConfig = await refreshResolvedSupabaseConfig();
+              setConnectionConfig(fallbackConfig);
+            }}
+            footer={
+              connectionConfig ? (
+                <p className="text-muted-foreground text-xs">
+                  Active source:{" "}
+                  {connectionConfig.source === "env"
+                    ? "Environment fallback"
+                    : "Runtime config"}
+                </p>
+              ) : null
+            }
+          />
         </CardContent>
       </Card>
 

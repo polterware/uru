@@ -20,6 +20,11 @@ import {
 import { getTableConfig } from "@/lib/schema-registry";
 import { getSession, signOut } from "@/lib/supabase/auth";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import {
+  refreshResolvedSupabaseConfig,
+  subscribeToSupabaseConfigChanges,
+  type RuntimeSupabaseConfig,
+} from "@/lib/supabase/runtime-config";
 
 export const Route = createRootRoute({
   ssr: false,
@@ -51,11 +56,39 @@ function RootLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [configLoading, setConfigLoading] = useState(true);
+  const [config, setConfig] = useState<RuntimeSupabaseConfig | null>(null);
 
   useEffect(() => {
+    let ignore = false;
+
+    void refreshResolvedSupabaseConfig().then((resolvedConfig) => {
+      if (ignore) {
+        return;
+      }
+
+      setConfig(resolvedConfig);
+      setConfigLoading(false);
+    });
+
+    const unsubscribeConfig = subscribeToSupabaseConfigChanges((nextConfig) => {
+      setConfig(nextConfig);
+    });
+
+    return () => {
+      ignore = true;
+      unsubscribeConfig();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!config) {
+      setIsAuthenticated(false);
+      return;
+    }
+
     let mounted = true;
     const supabase = getSupabaseClient();
-
     const syncSession = async () => {
       try {
         const session = await getSession();
@@ -83,7 +116,7 @@ function RootLayout() {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [config?.publishableKey, config?.url]);
 
   const isLoginPage = location.pathname === "/login";
 
@@ -109,6 +142,26 @@ function RootLayout() {
     return "Urú";
   }, [location.pathname]);
 
+  if (configLoading) {
+    return (
+      <div className="bg-background text-foreground flex h-screen flex-col overflow-hidden">
+        <div
+          data-tauri-drag-region
+          className="bg-background/95 supports-[backdrop-filter]:bg-background/80 h-6 w-full shrink-0 backdrop-blur"
+        />
+
+        <main className="mx-auto flex w-full max-w-lg flex-1 items-center justify-center p-6">
+          <div className="w-full rounded-xl border p-6">
+            <h1 className="text-lg font-semibold">Loading configuration</h1>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Checking runtime configuration and bootstrap payload.
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   if (isLoginPage) {
     return (
       <div className="bg-background text-foreground flex h-screen flex-col overflow-hidden">
@@ -119,6 +172,31 @@ function RootLayout() {
 
         <main className="mx-auto w-full max-w-md flex-1 overflow-auto p-6">
           <Outlet />
+        </main>
+      </div>
+    );
+  }
+
+  if (!config) {
+    return (
+      <div className="bg-background text-foreground flex h-screen flex-col overflow-hidden">
+        <div
+          data-tauri-drag-region
+          className="bg-background/95 supports-[backdrop-filter]:bg-background/80 h-6 w-full shrink-0 backdrop-blur"
+        />
+
+        <main className="mx-auto flex w-full max-w-lg flex-1 items-center justify-center p-6">
+          <div className="w-full rounded-xl border p-6">
+            <h1 className="text-lg font-semibold">Supabase connection required</h1>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Complete the runtime connection setup before using the app.
+            </p>
+            <div className="mt-4">
+              <Button type="button" onClick={() => void navigate({ to: "/login" })}>
+                Open connection setup
+              </Button>
+            </div>
+          </div>
         </main>
       </div>
     );
