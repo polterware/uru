@@ -1,15 +1,62 @@
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+import type { ColumnDef } from '@tanstack/react-table'
+import { useEffect, useMemo, useState } from 'react'
 
-import type { Product } from '@/types/domain'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { getUser } from '@/lib/supabase/auth'
+import { DataTable, type DataTableColumnFilter } from '@/components/ui/table'
 import { ProductsRepository } from '@/lib/db/repositories'
+import { formatCurrency, formatDateTime } from '@/lib/formatters'
+import { getUser } from '@/lib/supabase/auth'
+import type { Product } from '@/types/domain'
+
+const PRODUCT_COLUMNS: Array<ColumnDef<Product>> = [
+  {
+    accessorKey: 'title',
+    header: 'Título',
+  },
+  {
+    accessorKey: 'sku',
+    header: 'SKU',
+  },
+  {
+    accessorKey: 'price',
+    header: 'Preço',
+    cell: ({ row }) => formatCurrency(row.original.price),
+  },
+  {
+    accessorKey: 'lifecycle_status',
+    header: 'Status',
+    filterFn: 'equalsString',
+    cell: ({ row }) => <span className="capitalize">{row.original.lifecycle_status}</span>,
+  },
+  {
+    accessorKey: 'created_at',
+    header: 'Criado em',
+    cell: ({ row }) => formatDateTime(row.original.created_at),
+  },
+]
+
+const PRODUCT_FILTERS: Array<DataTableColumnFilter<Product>> = [
+  {
+    columnId: 'sku',
+    label: 'SKU',
+    type: 'text',
+  },
+  {
+    columnId: 'lifecycle_status',
+    label: 'Status',
+    type: 'select',
+    options: [
+      { label: 'Ativo', value: 'active' },
+      { label: 'Inativo', value: 'inactive' },
+      { label: 'Arquivado', value: 'archived' },
+    ],
+  },
+]
 
 export const Route = createFileRoute('/products')({
   beforeLoad: async () => {
@@ -140,40 +187,14 @@ function ProductsPage() {
           <CardTitle>Catalog</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>SKU</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell className="text-muted-foreground" colSpan={4}>
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : products.length === 0 ? (
-                <TableRow>
-                  <TableCell className="text-muted-foreground" colSpan={4}>
-                    No products yet.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                products.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell>{product.title}</TableCell>
-                    <TableCell>{product.sku}</TableCell>
-                    <TableCell>{product.price}</TableCell>
-                    <TableCell className="capitalize">{product.lifecycle_status}</TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          <DataTable
+            columns={PRODUCT_COLUMNS}
+            data={products}
+            filters={PRODUCT_FILTERS}
+            searchPlaceholder="Buscar por título, SKU ou status..."
+            emptyMessage={isLoading ? 'Carregando produtos...' : 'Nenhum produto encontrado para os filtros atuais.'}
+            exportFileName="uru-products"
+          />
         </CardContent>
       </Card>
     </section>

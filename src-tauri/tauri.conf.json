@@ -12,7 +12,10 @@
   "app": {
     "windows": [
       {
-        "title": "Uru",
+        "label": "main",
+        "create": false,
+        "transparent": true,
+        "title": "",
         "width": 1280,
         "height": 800,
         "minWidth": 1024,
@@ -23,7 +26,8 @@
     ],
     "security": {
       "csp": null
-    }
+    },
+    "macOSPrivateApi": true
   },
   "bundle": {
     "active": true,

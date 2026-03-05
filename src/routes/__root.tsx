@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react'
 import appCss from '../styles.css?url'
 import { Button } from '@/components/ui/button'
 import { getSession, signOut } from '@/lib/supabase/auth'
+import { getSupabaseClient } from '@/lib/supabase/client'
 
 export const Route = createRootRoute({
+  ssr: false,
   head: () => ({
     meta: [
       {
@@ -36,32 +38,49 @@ function RootLayout() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    let ignore = false
+    let mounted = true
+    const supabase = getSupabaseClient()
 
-    getSession()
-      .then((session) => {
-        if (!ignore) {
+    const syncSession = async () => {
+      try {
+        const session = await getSession()
+        if (mounted) {
           setIsAuthenticated(Boolean(session))
         }
-      })
-      .catch(() => {
-        if (!ignore) {
+      } catch {
+        if (mounted) {
           setIsAuthenticated(false)
         }
-      })
+      }
+    }
+
+    void syncSession()
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (mounted) {
+        setIsAuthenticated(Boolean(session))
+      }
+    })
 
     return () => {
-      ignore = true
+      mounted = false
+      subscription.unsubscribe()
     }
-  }, [location.pathname])
+  }, [])
 
   const isLoginPage = location.pathname === '/login'
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <div
+        data-tauri-drag-region
+        className="h-6 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+      />
       <header className="border-b border-border bg-background/95 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-          <span className="truncate text-2xl font-brand">Urú</span>
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-2">
+          <span className="truncate text-xl font-brand">Urú</span>
           {!isLoginPage && (
             <nav className="flex items-center gap-4 text-sm">
               <Link to="/products" className="text-muted-foreground transition-colors hover:text-foreground">
@@ -89,11 +108,7 @@ function RootLayout() {
                   Sign out
                 </Button>
               ) : (
-                <Button
-                  asChild
-                  size="sm"
-                  variant="outline"
-                >
+                <Button asChild size="sm" variant="outline">
                   <Link to="/login">Sign in</Link>
                 </Button>
               )}

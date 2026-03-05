@@ -1,4 +1,8 @@
 use serde_json::{json, Value};
+use tauri::webview::Color;
+use tauri::WebviewWindowBuilder;
+#[cfg(target_os = "macos")]
+use tauri::TitleBarStyle;
 
 #[tauri::command]
 async fn supabase_sign_in_with_password(
@@ -51,6 +55,22 @@ pub fn run() {
                         .build(),
                 )?;
             }
+
+            let window_config = app
+                .config()
+                .app
+                .windows
+                .first()
+                .cloned()
+                .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::NotFound, "missing window config"))?;
+
+            let win_builder =
+                WebviewWindowBuilder::from_config(app.handle(), &window_config)?.background_color(Color(0, 0, 0, 0));
+
+            #[cfg(target_os = "macos")]
+            let win_builder = win_builder.title_bar_style(TitleBarStyle::Overlay);
+
+            let _window = win_builder.build()?;
 
             Ok(())
         })
