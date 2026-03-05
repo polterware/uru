@@ -38,15 +38,15 @@ Manage your business without relying on expensive SaaS. URU is an open-source de
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
+| Layer    | Technology                                                                                                                    |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | Frontend | [React 19](https://react.dev) · [TanStack Router](https://tanstack.com/router) · [TanStack Table](https://tanstack.com/table) |
-| Styling | [Tailwind CSS 4](https://tailwindcss.com) · [Radix UI](https://www.radix-ui.com) · [shadcn/ui](https://ui.shadcn.com) |
-| State | [Zustand](https://zustand.docs.pmnd.rs) |
-| Charts | [Recharts](https://recharts.org) |
-| Desktop | [Tauri 2](https://v2.tauri.app) |
-| Backend | [Supabase](https://supabase.com) (Auth, Database, RLS, RPC) |
-| Build | [Vite](https://vite.dev) · [TypeScript](https://www.typescriptlang.org) |
+| Styling  | [Tailwind CSS 4](https://tailwindcss.com) · [Radix UI](https://www.radix-ui.com) · [shadcn/ui](https://ui.shadcn.com)         |
+| State    | [Zustand](https://zustand.docs.pmnd.rs)                                                                                       |
+| Charts   | [Recharts](https://recharts.org)                                                                                              |
+| Desktop  | [Tauri 2](https://v2.tauri.app)                                                                                               |
+| Backend  | [Supabase](https://supabase.com) (Auth, Database, RLS, RPC)                                                                   |
+| Build    | [Vite](https://vite.dev) · [TypeScript](https://www.typescriptlang.org)                                                       |
 
 ## Prerequisites
 
@@ -84,18 +84,18 @@ pnpm uru dev
 
 All project operations go through the `pnpm uru` CLI:
 
-| Command | Description |
-|---------|-------------|
-| `pnpm uru` | Interactive menu |
-| `pnpm uru setup` | First-time setup wizard |
-| `pnpm uru dev` | Start dev server (web or desktop) |
-| `pnpm uru db` | Database operations menu |
-| `pnpm uru db push` | Push migrations (non-destructive) |
-| `pnpm uru db lint` | Lint migrations |
-| `pnpm uru db reset` | Reset linked remote DB (destructive, requires confirmation) |
-| `pnpm uru db local-reset` | Reset local Docker stack |
-| `pnpm uru check` | Run Prettier + ESLint fix |
-| `pnpm uru --help` | Show all commands |
+| Command                   | Description                                                 |
+| ------------------------- | ----------------------------------------------------------- |
+| `pnpm uru`                | Interactive menu                                            |
+| `pnpm uru setup`          | First-time setup wizard                                     |
+| `pnpm uru dev`            | Start dev server (web or desktop)                           |
+| `pnpm uru db`             | Database operations menu                                    |
+| `pnpm uru db push`        | Push migrations (non-destructive)                           |
+| `pnpm uru db lint`        | Lint migrations                                             |
+| `pnpm uru db reset`       | Reset linked remote DB (destructive, requires confirmation) |
+| `pnpm uru db local-reset` | Reset local Docker stack                                    |
+| `pnpm uru check`          | Run Prettier + ESLint fix                                   |
+| `pnpm uru --help`         | Show all commands                                           |
 
 ### Database Flags
 
@@ -164,4 +164,4 @@ Found a bug or have a suggestion? [Open an issue](https://github.com/ericpbarcel
 
 ## License
 
-This project is open-source. See the license file in the repository for details.
+This project is licensed under the [GNU General Public License v3.0 (GPL-3.0)](LICENSE) — a strong copyleft license that requires any derivatives to also be open-source.
