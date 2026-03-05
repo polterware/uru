@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./header.png" alt="URU header" />
+  <img src="./docs/images/header.png" alt="URU header" />
 </p>
 
 # URU
@@ -13,6 +13,16 @@ Open-source project to help people manage their businesses using a desktop app (
 - Secure-by-default model: JWT, strict RLS, and RPC for critical transactional flows
 - No local SQLite for business data and no domain CRUD in the Tauri backend
 
+## Screenshots
+
+<p align="center">
+  <img src="./docs/images/example.png" alt="Schema-driven data console" width="700" />
+</p>
+
+<p align="center">
+  <img src="./docs/images/example2.png" alt="Analytics dashboard" width="700" />
+</p>
+
 ## Prerequisites
 
 - Node.js 20+
@@ -24,7 +34,7 @@ Open-source project to help people manage their businesses using a desktop app (
 
 ## Recommended Knowledge
 
-It is extremely recommended to have solid software engineering knowledge to use this app in real scenarios. This is not only for contributors: day-to-day operation also requires handling environment variables, Supabase project setup, migrations, and access-control concepts (roles/RLS).
+It is extremely recommended to have solid software engineering knowledge to use this app in real scenarios. This is not only for contributors: day-to-day operation also requires handling environment variables, Supabase project setup, migrations, and access-control concepts (roles/RLS). We are actively working to simplify these areas so more people can use the app with less technical overhead.
 
 ## Quick Start
 
@@ -111,8 +121,3 @@ Useful flags and env vars:
   - Check firewall/VPN/proxy rules
   - Confirm Supabase project URL/key validity
   - Retry after restarting the app
-
-## Docs
-
-- `docs/ARCHITECTURE.md`
-- `docs/SCHEMA.md`

@@ -44,8 +44,8 @@ export function AppSidebar({ pathname }: AppSidebarProps) {
   }, [query])
 
   return (
-    <Sidebar className="pt-4 md:pt-6">
-      <SidebarHeader>
+    <Sidebar>
+      <SidebarHeader className="pt-4 md:pt-6">
         <div className="px-2 py-1">
           <p className="font-brand text-xl">Urú</p>
         </div>
