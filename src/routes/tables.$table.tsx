@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import type { ColumnDef } from '@tanstack/react-table'
+import type { DataTableColumnFilter } from '@/components/ui/table'
+import type {
+  FieldConfig,
+  ListColumnConfig,
+  TableConfig,
+} from '@/lib/schema-registry'
+import type { TableLookupOption } from '@/lib/db/repositories'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,16 +30,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DataTable } from '@/components/ui/table'
-import type { DataTableColumnFilter } from '@/components/ui/table'
 import { Textarea } from '@/components/ui/textarea'
-import { InventoryLevelsRepository, OrdersRepository } from '@/lib/db/repositories'
-import { TableCrudRepository } from '@/lib/db/repositories'
-import type { TableLookupOption } from '@/lib/db/repositories/table-crud-repository'
+import { InventoryLevelsRepository, OrdersRepository, TableCrudRepository } from '@/lib/db/repositories'
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters'
 import {
-  type FieldConfig,
-  type ListColumnConfig,
-  type TableConfig,
   getCreatableFields,
   getNullableFields,
   getRelationFields,
@@ -227,7 +228,7 @@ function parseFieldValue(field: FieldConfig, rawValue: unknown): unknown {
 function renderListValue(
   row: TableRecord,
   column: ListColumnConfig,
-  relationLabels: Record<string, Map<string, string>>,
+  relationLabels: Partial<Record<string, Map<string, string>>>,
 ): string {
   const value = row[column.key]
 
@@ -248,7 +249,7 @@ function renderListValue(
   }
 
   if (column.type === 'boolean') {
-    return value ? 'Sim' : 'Não'
+    return value === true ? 'Sim' : 'Não'
   }
 
   if (column.type === 'json') {
@@ -399,9 +400,9 @@ function TablesBySchemaPage() {
     return Object.fromEntries(
       Object.entries(lookupsByField).map(([fieldKey, options]) => [
         fieldKey,
-        new Map(options.map((option) => [option.value, option.label])),
+        new Map((options ?? []).map((option) => [option.value, option.label])),
       ]),
-    ) as Record<string, Map<string, string>>
+    ) as Partial<Record<string, Map<string, string>>>
   }, [lookupsByField])
 
   const tableColumns = useMemo(() => {

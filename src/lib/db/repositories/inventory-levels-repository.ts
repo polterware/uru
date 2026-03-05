@@ -1,10 +1,10 @@
+import type { InventoryLevel } from '@/types/domain'
 import { getSupabaseClient } from '@/lib/supabase/client'
 import { handleSupabaseError } from '@/lib/supabase/errors'
-import type { InventoryLevel } from '@/types/domain'
 
 export const InventoryLevelsRepository = {
-  async list(): Promise<InventoryLevel[]> {
-    const supabase = getSupabaseClient()
+  async list(): Promise<Array<InventoryLevel>> {
+    const supabase = getSupabaseClient() as any
     const { data, error } = await supabase
       .from('inventory_levels')
       .select('*')
@@ -15,11 +15,11 @@ export const InventoryLevelsRepository = {
       handleSupabaseError(error)
     }
 
-    return data ?? []
+    return data as Array<InventoryLevel>
   },
 
-  async reserveStock(productId: string, locationId: string, quantity: number, reason?: string) {
-    const supabase = getSupabaseClient()
+  async reserveStock(productId: string, locationId: string, quantity: number, reason?: string): Promise<unknown> {
+    const supabase = getSupabaseClient() as any
     const { data, error } = await supabase.rpc('reserve_inventory_stock', {
       p_product_id: productId,
       p_location_id: locationId,
@@ -34,8 +34,8 @@ export const InventoryLevelsRepository = {
     return data
   },
 
-  async releaseStock(productId: string, locationId: string, quantity: number, reason?: string) {
-    const supabase = getSupabaseClient()
+  async releaseStock(productId: string, locationId: string, quantity: number, reason?: string): Promise<unknown> {
+    const supabase = getSupabaseClient() as any
     const { data, error } = await supabase.rpc('release_inventory_stock', {
       p_product_id: productId,
       p_location_id: locationId,

@@ -16,8 +16,7 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from '@/components/ui/sidebar'
-import { SCHEMA_TABLE_GROUPS } from '@/lib/schema-tables'
-import { SCHEMA_TABLES } from '@/lib/schema-tables'
+import * as schemaTables from '@/lib/schema-tables'
 
 type AppSidebarProps = {
   pathname: string
@@ -35,10 +34,10 @@ export function AppSidebar({ pathname }: AppSidebarProps) {
   const filteredGroups = useMemo(() => {
     const normalized = query.trim().toLowerCase()
     if (!normalized) {
-      return SCHEMA_TABLE_GROUPS
+      return schemaTables.SCHEMA_TABLE_GROUPS
     }
 
-    return SCHEMA_TABLE_GROUPS.map((group) => ({
+    return schemaTables.SCHEMA_TABLE_GROUPS.map((group) => ({
       ...group,
       tables: group.tables.filter((table) => {
         return (
@@ -103,7 +102,7 @@ export function AppSidebar({ pathname }: AppSidebarProps) {
 
         <SidebarGroup>
           <SidebarGroupLabel>
-            Tabelas ({visibleTableCount}/{SCHEMA_TABLES.length})
+            Tabelas ({visibleTableCount}/{schemaTables.SCHEMA_TABLES.length})
           </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-4">
             {filteredGroups.length === 0 ? (

@@ -1,10 +1,10 @@
+import type { Product, ProductInsert, ProductUpdate } from '@/types/domain'
 import { getSupabaseClient } from '@/lib/supabase/client'
 import { handleSupabaseError } from '@/lib/supabase/errors'
-import type { Product, ProductInsert, ProductUpdate } from '@/types/domain'
 
 export const ProductsRepository = {
-  async list(): Promise<Product[]> {
-    const supabase = getSupabaseClient()
+  async list(): Promise<Array<Product>> {
+    const supabase = getSupabaseClient() as any
     const { data, error } = await supabase
       .from('products')
       .select('*')
@@ -15,22 +15,22 @@ export const ProductsRepository = {
       handleSupabaseError(error)
     }
 
-    return data ?? []
+    return data as Array<Product>
   },
 
   async create(payload: ProductInsert): Promise<Product> {
-    const supabase = getSupabaseClient()
+    const supabase = getSupabaseClient() as any
     const { data, error } = await supabase.from('products').insert(payload).select('*').single()
 
     if (error) {
       handleSupabaseError(error)
     }
 
-    return data
+    return data as Product
   },
 
   async update(id: string, payload: ProductUpdate): Promise<Product> {
-    const supabase = getSupabaseClient()
+    const supabase = getSupabaseClient() as any
     const { data, error } = await supabase
       .from('products')
       .update({ ...payload, updated_at: new Date().toISOString() })
@@ -43,11 +43,11 @@ export const ProductsRepository = {
       handleSupabaseError(error)
     }
 
-    return data
+    return data as Product
   },
 
   async archive(id: string): Promise<void> {
-    const supabase = getSupabaseClient()
+    const supabase = getSupabaseClient() as any
     const { error } = await supabase
       .from('products')
       .update({ deleted_at: new Date().toISOString(), lifecycle_status: 'archived' })

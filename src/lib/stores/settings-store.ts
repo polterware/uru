@@ -6,13 +6,13 @@ export type LocalSettingValue =
   | boolean
   | null
   | { [key: string]: LocalSettingValue }
-  | LocalSettingValue[]
+  | Array<LocalSettingValue>
 
 let storeInstance: Store | null = null
 
 async function getStore(): Promise<Store> {
   if (!storeInstance) {
-    storeInstance = await Store.load('settings.json', { autoSave: true })
+    storeInstance = await Store.load('settings.json', { autoSave: true, defaults: {} })
   }
   return storeInstance
 }
@@ -20,7 +20,8 @@ async function getStore(): Promise<Store> {
 export const SettingsStore = {
   async get<T = LocalSettingValue>(key: string): Promise<T | null> {
     const store = await getStore()
-    return store.get<T>(key)
+    const value = await store.get<T>(key)
+    return value ?? null
   },
 
   async set<T = LocalSettingValue>(key: string, value: T): Promise<void> {

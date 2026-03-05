@@ -9,12 +9,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import type {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-} from "@tanstack/react-table"
 import {
   ArrowDownIcon,
   ArrowUpDownIcon,
@@ -27,6 +21,12 @@ import {
   DownloadIcon,
   FilterXIcon,
 } from "lucide-react"
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+} from "@tanstack/react-table"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -159,7 +159,7 @@ export type DataTableProps<TData, TValue> = {
   exportFileName?: string
 }
 
-function normalizeCsvValue(value: unknown): string {
+export function normalizeCsvValue(value: unknown): string {
   if (value === null || value === undefined) {
     return ""
   }
@@ -179,11 +179,11 @@ function normalizeCsvValue(value: unknown): string {
   return JSON.stringify(value)
 }
 
-function escapeCsvValue(value: unknown): string {
+export function escapeCsvValue(value: unknown): string {
   return `"${normalizeCsvValue(value).replaceAll('"', '""')}"`
 }
 
-function getHeaderLabel(header: unknown, fallback: string): string {
+export function getHeaderLabel(header: unknown, fallback: string): string {
   return typeof header === "string" ? header : fallback
 }
 

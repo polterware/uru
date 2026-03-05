@@ -1,10 +1,10 @@
+import type { Order } from '@/types/domain'
 import { getSupabaseClient } from '@/lib/supabase/client'
 import { handleSupabaseError } from '@/lib/supabase/errors'
-import type { Order } from '@/types/domain'
 
 export const OrdersRepository = {
-  async list(): Promise<Order[]> {
-    const supabase = getSupabaseClient()
+  async list(): Promise<Array<Order>> {
+    const supabase = getSupabaseClient() as any
     const { data, error } = await supabase
       .from('orders')
       .select('*')
@@ -15,11 +15,11 @@ export const OrdersRepository = {
       handleSupabaseError(error)
     }
 
-    return data ?? []
+    return data as Array<Order>
   },
 
-  async finalizeSale(checkoutId: string) {
-    const supabase = getSupabaseClient()
+  async finalizeSale(checkoutId: string): Promise<unknown> {
+    const supabase = getSupabaseClient() as any
     const { data, error } = await supabase.rpc('finalize_sale', {
       p_checkout_id: checkoutId,
     })
@@ -31,8 +31,8 @@ export const OrdersRepository = {
     return data
   },
 
-  async updateStatus(orderId: string, status: string, paymentStatus?: string, fulfillmentStatus?: string) {
-    const supabase = getSupabaseClient()
+  async updateStatus(orderId: string, status: string, paymentStatus?: string, fulfillmentStatus?: string): Promise<unknown> {
+    const supabase = getSupabaseClient() as any
     const { data, error } = await supabase.rpc('update_order_status', {
       p_order_id: orderId,
       p_status: status,

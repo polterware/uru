@@ -58,6 +58,10 @@ export type FieldConfig = {
   relation?: RelationConfig
 }
 
+export type FieldConfigWithRelation = FieldConfig & {
+  relation: RelationConfig
+}
+
 export type ListColumnConfig = {
   key: string
   label: string
@@ -1496,6 +1500,6 @@ export function getUpdatableFields(config: TableConfig): Array<FieldConfig> {
   return config.fields.filter((field) => field.editableOnUpdate !== false)
 }
 
-export function getRelationFields(config: TableConfig): Array<FieldConfig> {
-  return config.fields.filter((field) => Boolean(field.relation))
+export function getRelationFields(config: TableConfig): Array<FieldConfigWithRelation> {
+  return config.fields.filter((field): field is FieldConfigWithRelation => field.relation !== undefined)
 }

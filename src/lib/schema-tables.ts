@@ -1,5 +1,5 @@
-import { SCHEMA_REGISTRY } from '@/lib/schema-registry'
 import type { SchemaTableName, TableGroup } from '@/lib/schema-registry'
+import { SCHEMA_REGISTRY } from '@/lib/schema-registry'
 
 export type SchemaTable = {
   name: SchemaTableName

@@ -2,17 +2,17 @@
   <img src="./header.png" alt="URU header" />
 </p>
 
-# URU vNext
+# URU
 
-Desktop operations app for Dost, built with Tauri + React and a Supabase-only backend.
+Projeto open source para ajudar pessoas a gerirem seus negocios com um app desktop (Tauri + React) integrado ao Supabase.
 
 ## Overview
 
-- Single desktop app at repository root (no monorepo, no mobile companion)
-- Supabase is the only business data backend (`@supabase/supabase-js`)
-- JWT session + strict RLS for sensitive tables
-- Transactional business flows exposed via SQL RPC
-- No local SQLite runtime and no business CRUD in Tauri backend
+- Open source, foco em operacoes de negocio (catalogo, CRM, vendas, pagamentos, inventario e governanca)
+- Arquitetura pensada para operacao real: app desktop unico + Supabase como backend
+- Modelo seguro por padrao: JWT, RLS estrita e RPC para fluxos transacionais criticos
+- Sem SQLite local para dados de negocio e sem CRUD de dominio no backend Tauri
+- Escopo atual orientado ao contexto Dost, com schema projetado para ser generalizavel
 
 ## Prerequisites
 
@@ -22,6 +22,10 @@ Desktop operations app for Dost, built with Tauri + React and a Supabase-only ba
 - Tauri system dependencies (see Tauri docs for your OS)
 - Supabase CLI (`supabase`)
 - Docker (optional, only for `local-reset` mode)
+
+## Recommended Knowledge
+
+It is extremely recommended to have solid software engineering knowledge before changing this app's architecture, schema, RLS policies, or transactional RPC flows.
 
 ## Quick Start
 

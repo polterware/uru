@@ -68,7 +68,7 @@ export const TableCrudRepository = {
     table: TTable,
     options?: ListOptions,
   ): Promise<Array<TableRow<TTable>>> {
-    const supabase = getSupabaseClient()
+    const supabase = getSupabaseClient() as any
 
     let query = supabase.from(table).select('*')
 
@@ -86,7 +86,7 @@ export const TableCrudRepository = {
       handleSupabaseError(error)
     }
 
-    return data as Array<TableRow<TTable>>
+    return (data ?? []) as Array<TableRow<TTable>>
   },
 
   async create<TTable extends TableName>(
@@ -94,7 +94,7 @@ export const TableCrudRepository = {
     payload: Record<string, unknown>,
     options?: PayloadOptions,
   ): Promise<TableRow<TTable>> {
-    const supabase = getSupabaseClient()
+    const supabase = getSupabaseClient() as any
     const normalizedPayload = normalizePayload(payload, options)
 
     const { data, error } = await supabase
@@ -116,7 +116,7 @@ export const TableCrudRepository = {
     payload: Record<string, unknown>,
     options?: PayloadOptions,
   ): Promise<TableRow<TTable>> {
-    const supabase = getSupabaseClient()
+    const supabase = getSupabaseClient() as any
     const normalizedPayload = normalizePayload(payload, options)
 
     const { data, error } = await supabase
@@ -134,7 +134,7 @@ export const TableCrudRepository = {
   },
 
   async archive<TTable extends TableName>(table: TTable, id: string): Promise<void> {
-    const supabase = getSupabaseClient()
+    const supabase = getSupabaseClient() as any
 
     const { error } = await supabase
       .from(table)
@@ -151,7 +151,7 @@ export const TableCrudRepository = {
   },
 
   async hardDelete<TTable extends TableName>(table: TTable, id: string): Promise<void> {
-    const supabase = getSupabaseClient()
+    const supabase = getSupabaseClient() as any
 
     const { error } = await supabase.from(table).delete().eq('id', id)
 
@@ -164,7 +164,7 @@ export const TableCrudRepository = {
     table: TTable,
     options: LookupOptions,
   ): Promise<Array<TableLookupOption>> {
-    const supabase = getSupabaseClient()
+    const supabase = getSupabaseClient() as any
 
     let query = supabase
       .from(table)
@@ -184,7 +184,7 @@ export const TableCrudRepository = {
       handleSupabaseError(error)
     }
 
-    const rows = data as Array<Record<string, unknown>>
+    const rows = (data ?? []) as Array<Record<string, unknown>>
 
     return rows
       .map((row) => {
