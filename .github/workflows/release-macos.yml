@@ -95,7 +95,7 @@ jobs:
           output_dir="$RUNNER_TEMP/release-assets"
           mkdir -p "$output_dir"
 
-          app_output="$output_dir/polterstore-macos-${{ matrix.asset_arch }}.zip"
+          app_output="$output_dir/ops-macos-${{ matrix.asset_arch }}.zip"
           ditto -c -k --sequesterRsrc --keepParent "$app_bundle" "$app_output"
 
           echo "output_dir=$output_dir" >> "$GITHUB_OUTPUT"
@@ -108,7 +108,7 @@ jobs:
           if ! GH_TOKEN="${{ secrets.GITHUB_TOKEN }}" gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             GH_TOKEN="${{ secrets.GITHUB_TOKEN }}" gh release create "$RELEASE_TAG" \
               --target "$GITHUB_SHA" \
-              --title "Polterstore $RELEASE_VERSION" \
+              --title "Ops $RELEASE_VERSION" \
               --notes "Automated macOS release for $RELEASE_VERSION." \
               || GH_TOKEN="${{ secrets.GITHUB_TOKEN }}" gh release view "$RELEASE_TAG" >/dev/null 2>&1
           fi

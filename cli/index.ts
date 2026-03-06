@@ -7,9 +7,9 @@ const flags = new Set(args.filter((arg) => arg.startsWith("--")));
 
 function printHelp() {
   console.log(`
-  ${pc.bold("Polterstore CLI")} — development launcher
+  ${pc.bold("Ops CLI")} — development launcher
 
-  ${pc.dim("Usage:")}  pnpm polterstore [command]
+  ${pc.dim("Usage:")}  pnpm ops [command]
 
   ${pc.dim("Commands:")}
     ${pc.bold("dev")}            Start development server (web or desktop)
@@ -18,13 +18,13 @@ function printHelp() {
     ${pc.bold("--help")}         Show this help message
 
   ${pc.dim("Examples:")}
-    pnpm polterstore              Show this help
-    pnpm polterstore dev          Start dev server
+    pnpm ops              Show this help
+    pnpm ops dev          Start dev server
 
   ${pc.dim("Supabase workflows moved to Polterbase:")}
-    npx polterbase app setup polterstore --path .
-    npx polterbase app link polterstore --path .
-    npx polterbase app migrate polterstore push --path .
+    npx polterbase app setup ops --path .
+    npx polterbase app link ops --path .
+    npx polterbase app migrate ops push --path .
 `);
 }
 
@@ -81,7 +81,7 @@ async function main() {
     return;
   }
 
-  intro(pc.bold("Polterstore"));
+  intro(pc.bold("Ops"));
   printHelp();
   const choice = await promptMainMenu();
   await runCommand(choice);

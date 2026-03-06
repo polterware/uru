@@ -1,5 +1,5 @@
 {
-  "name": "polterstore-desktop",
+  "name": "ops-desktop",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,7 +11,7 @@
     "lint": "eslint",
     "format": "prettier",
     "check": "prettier --write . && eslint --fix",
-    "polterstore": "tsx cli/index.ts"
+    "ops": "tsx cli/index.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",

@@ -1270,7 +1270,7 @@ function TablesBySchemaPage() {
                 ? "Loading records..."
                 : "No records found for the current filters."
             }
-            exportFileName={`polterstore-${config.table}`}
+            exportFileName={`ops-${config.table}`}
           />
         </CardContent>
       </Card>

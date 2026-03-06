@@ -97,7 +97,7 @@ function LoginPage() {
       <section className="mx-auto mt-16 w-full max-w-lg space-y-4">
         <SupabaseConnectionForm
           initialConfig={null}
-          title="Connect Polterstore to Supabase"
+          title="Connect Ops to Supabase"
           description="This desktop app needs a Supabase connection before anyone can sign in."
           submitLabel="Save connection"
           onSubmit={async (input) => {
@@ -107,7 +107,7 @@ function LoginPage() {
           }}
           footer={
             <p className="text-muted-foreground text-xs">
-              Tip: `polterbase app configure polterstore` can write this configuration
+              Tip: `polterbase app configure ops` can write this configuration
               for the installed app before first launch.
             </p>
           }
@@ -120,7 +120,7 @@ function LoginPage() {
     <section className="mx-auto mt-20 w-full max-w-sm">
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Sign in to Polterstore</CardTitle>
+          <CardTitle className="text-xl">Sign in to Ops</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="bg-primary/6 mb-4 rounded-md border border-primary/15 p-3 text-xs">

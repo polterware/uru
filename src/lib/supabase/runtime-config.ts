@@ -2,8 +2,8 @@ import { invoke, isTauri } from "@tauri-apps/api/core";
 import { SettingsStore } from "@/lib/stores/settings-store";
 
 const RUNTIME_CONFIG_KEY = "supabase.runtime.connection";
-const BROWSER_CONFIG_KEY = "polterstore.supabase.runtime.connection";
-const CONFIG_CHANGED_EVENT = "polterstore:supabase-config-changed";
+const BROWSER_CONFIG_KEY = "ops.supabase.runtime.connection";
+const CONFIG_CHANGED_EVENT = "ops:supabase-config-changed";
 
 export interface RuntimeSupabaseConfig {
   url: string;

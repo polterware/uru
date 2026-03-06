@@ -1,8 +1,8 @@
-# CLAUDE.md - Polterstore vNext Assistant Guide
+# CLAUDE.md - Ops vNext Assistant Guide
 
 ## Project scope
 
-Polterstore is a desktop manager aligned to Dost project operations. The app is Supabase-only and single-context (no `shopId` runtime routing).
+Ops is a desktop manager aligned to Dost project operations. The app is Supabase-only and single-context (no `shopId` runtime routing).
 
 ## Architectural rules
 
@@ -39,4 +39,4 @@ pnpm build
 
 - No `shop-store`, `use-shop`, `/shops/:shopId/*` routes.
 - No mobile/pairing/offline-network architecture.
-- No `@polterstore/types` workspace package; use local types in `src/types`.
+- No `@ops/types` workspace package; use local types in `src/types`.

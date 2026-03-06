@@ -8,7 +8,7 @@ export async function runDev() {
   if (!ok) {
     console.log(
       pc.red(
-        `\n  Missing env vars: ${missing.join(", ")}\n  Run ${pc.bold("pnpm polterstore setup")} first.\n`,
+        `\n  Missing env vars: ${missing.join(", ")}\n  Run ${pc.bold("pnpm ops setup")} first.\n`,
       ),
     );
     process.exit(1);
