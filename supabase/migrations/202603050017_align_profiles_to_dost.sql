@@ -1,4 +1,4 @@
--- Align profiles table for both Uru and Dost compatibility
+-- Align profiles table for both Polterstore and Dost compatibility
 
 -- 1. Ensure columns from both systems exist
 alter table public.profiles 
@@ -31,7 +31,7 @@ returns trigger as $$
 declare
     v_full_name text;
 begin
-    -- Dost uses 'name', Uru uses 'full_name' in raw_user_meta_data
+    -- Dost uses 'name', Polterstore uses 'full_name' in raw_user_meta_data
     v_full_name := coalesce(
         new.raw_user_meta_data ->> 'full_name',
         new.raw_user_meta_data ->> 'name',

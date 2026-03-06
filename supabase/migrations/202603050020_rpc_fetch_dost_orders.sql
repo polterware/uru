@@ -1,5 +1,5 @@
 -- RPC for Dost to fetch orders in its expected format
--- Normalizes Uru's multi-table order structure into Dost's single IOrder structure
+-- Normalizes Polterstore's multi-table order structure into Dost's single IOrder structure
 
 create or replace function public.fetch_dost_orders()
 returns jsonb
@@ -15,7 +15,7 @@ begin
     from (
         select 
             o.id,
-            o.order_number, -- New field from Uru
+            o.order_number, -- New field from Polterstore
             o.status as status,
             o.payment_status,
             o.fulfillment_status,
@@ -34,7 +34,7 @@ begin
                     select 
                         oi.id,
                         oi.product_id,
-                        p.title as name, -- Map Uru product title to Dost item name
+                        p.title as name, -- Map Polterstore product title to Dost item name
                         (oi.unit_price * 100)::integer as price, -- Cents
                         oi.quantity,
                         (oi.line_total * 100)::integer as line_total -- Cents

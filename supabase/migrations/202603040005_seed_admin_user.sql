@@ -1,4 +1,4 @@
--- Seed/admin bootstrap user for local/dev access to URU
+-- Seed/admin bootstrap user for local/dev access to Polterstore
 -- NOTE: rotate this password after first login.
 
 do $$
@@ -75,7 +75,7 @@ begin
       '',
       null,
       '{"provider":"email","providers":["email"]}'::jsonb,
-      '{"full_name":"Admin URU"}'::jsonb,
+      '{"full_name":"Admin Polterstore"}'::jsonb,
       false,
       v_now,
       v_now,
@@ -93,7 +93,7 @@ begin
       encrypted_password = v_password_hash,
       email_confirmed_at = coalesce(email_confirmed_at, v_now),
       raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || '{"provider":"email","providers":["email"]}'::jsonb,
-      raw_user_meta_data = coalesce(raw_user_meta_data, '{}'::jsonb) || '{"full_name":"Admin URU"}'::jsonb,
+      raw_user_meta_data = coalesce(raw_user_meta_data, '{}'::jsonb) || '{"full_name":"Admin Polterstore"}'::jsonb,
       updated_at = v_now,
       deleted_at = null,
       is_anonymous = false
@@ -127,7 +127,7 @@ begin
   );
 
   insert into public.profiles (id, email, full_name, deleted_at, lifecycle_status)
-  values (v_user_id, v_email, 'Admin URU', null, 'active')
+  values (v_user_id, v_email, 'Admin Polterstore', null, 'active')
   on conflict (id) do update
     set
       email = excluded.email,

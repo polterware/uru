@@ -1,4 +1,4 @@
--- Analytics dashboard RPCs for URU sidebar interface
+-- Analytics dashboard RPCs for Polterstore sidebar interface
 -- Domain-oriented functions for sales, payments, checkout, inventory, products and operations.
 
 -- DOMAIN: SALES

@@ -1,4 +1,4 @@
--- RPC to save a Dost order into Uru's normalized schema
+-- RPC to save a Dost order into Polterstore's normalized schema
 -- Called by the Stripe Webhook in the Dost Client
 
 create or replace function public.save_dost_order(
@@ -27,13 +27,13 @@ declare
     v_tax_amount numeric;
     v_subtotal_amount numeric;
 begin
-    -- 1. Convert cents to numeric (BRL standard in Uru)
+    -- 1. Convert cents to numeric (BRL standard in Polterstore)
     v_total_amount := p_total_cents::numeric / 100;
     v_shipping_amount := p_shipping_cents::numeric / 100;
     v_tax_amount := p_tax_cents::numeric / 100;
     v_subtotal_amount := v_total_amount - v_shipping_amount - v_tax_amount;
 
-    -- 2. Ensure customer exists in Uru's table
+    -- 2. Ensure customer exists in Polterstore's table
     insert into public.customers (full_name, email, created_by)
     values (p_customer_name, p_email, coalesce(p_user_id, '00000000-0000-0000-0000-000000000000'::uuid))
     on conflict (email) do update set 

@@ -6,7 +6,7 @@ import { execInteractive, execWithSpinner } from "../utils/exec.js";
 import { existsSync } from "node:fs";
 
 export async function runSetup() {
-  intro(pc.bold("URU Setup Wizard"));
+  intro(pc.bold("Polterstore Setup Wizard"));
 
   // 1. Prerequisites
   console.log(pc.bold("\n  Prerequisites\n"));
@@ -45,7 +45,7 @@ export async function runSetup() {
     if (code !== 0) {
       console.log(
         pc.red(
-          "\n  supabase link failed — you can retry with: pnpm uru db push\n",
+          "\n  supabase link failed — you can retry with: pnpm polterstore db push\n",
         ),
       );
     }
@@ -72,12 +72,12 @@ export async function runSetup() {
       if (code !== 0) {
         console.log(
           pc.yellow(
-            "\n  Migration push failed — run manually: pnpm uru db push\n",
+            "\n  Migration push failed — run manually: pnpm polterstore db push\n",
           ),
         );
       }
     }
   }
 
-  outro(pc.green("Setup complete! Run pnpm uru dev to start developing."));
+  outro(pc.green("Setup complete! Run pnpm polterstore dev to start developing."));
 }

@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="./docs/images/header.png" alt="URU header" />
+  <img src="./docs/images/header.png" alt="Polterstore header" />
 </p>
 
-# URU
+# Polterstore
 
-Manage your business without relying on expensive SaaS. URU is an open-source desktop app that brings together product catalog, inventory, orders, sales, payments, and reports in a single interface powered by [Supabase](https://supabase.com).
+Manage your business without relying on expensive SaaS. Polterstore is an open-source desktop app that brings together product catalog, inventory, orders, sales, payments, and reports in a single interface powered by [Supabase](https://supabase.com).
 
-## What URU Does
+## What Polterstore Does
 
 - **Product catalog** — create, edit, and organize items with flexible fields
 - **Inventory management** — track quantities, movements, and low-stock alerts
@@ -70,7 +70,7 @@ Manage your business without relying on expensive SaaS. URU is an open-source de
 
 ```bash
 pnpm install
-npx polterbase app setup uru --path .
+npx polterbase app setup polterstore --path .
 ```
 
 The Polterbase workflow checks prerequisites, creates or updates `.env.local`, installs dependencies, links your Supabase project, pushes migrations, and prepares the runtime bootstrap payload used by the desktop app.
@@ -78,19 +78,19 @@ The Polterbase workflow checks prerequisites, creates or updates `.env.local`, i
 Once setup is done:
 
 ```bash
-pnpm uru dev
+pnpm polterstore dev
 ```
 
-## Using Polterbase With Uru
+## Using Polterbase With Polterstore
 
-Polterbase is the recommended workflow manager for Uru Supabase operations.
+Polterbase is the recommended workflow manager for Polterstore Supabase operations.
 
 - npm: [@polterware/polterbase](https://www.npmjs.com/package/@polterware/polterbase)
 - GitHub: [polterware/polterbase](https://github.com/polterware/polterbase)
 
 ### 1. Install dependencies
 
-Uru includes Polterbase as a development dependency, so the normal project install is enough:
+Polterstore includes Polterbase as a development dependency, so the normal project install is enough:
 
 ```bash
 pnpm install
@@ -98,10 +98,10 @@ pnpm install
 
 ### 2. Bootstrap a source checkout
 
-From the `uru` directory:
+From the `polterstore` directory:
 
 ```bash
-npx polterbase app setup uru --path .
+npx polterbase app setup polterstore --path .
 ```
 
 This flow:
@@ -118,37 +118,37 @@ This flow:
 Link or relink the project:
 
 ```bash
-npx polterbase app link uru --path .
+npx polterbase app link polterstore --path .
 ```
 
 Push migrations:
 
 ```bash
-npx polterbase app migrate uru push --path .
+npx polterbase app migrate polterstore push --path .
 ```
 
 Lint migrations:
 
 ```bash
-npx polterbase app migrate uru lint --path .
+npx polterbase app migrate polterstore lint --path .
 ```
 
 Reset the linked remote database:
 
 ```bash
-npx polterbase app migrate uru reset --path .
+npx polterbase app migrate polterstore reset --path .
 ```
 
 Reset the local Docker database:
 
 ```bash
-npx polterbase app migrate uru local-reset --path .
+npx polterbase app migrate polterstore local-reset --path .
 ```
 
 Rewrite runtime connection/bootstrap data:
 
 ```bash
-npx polterbase app configure uru --path .
+npx polterbase app configure polterstore --path .
 ```
 
 ### 4. Install the macOS app
@@ -156,46 +156,46 @@ npx polterbase app configure uru --path .
 Install through Polterbase:
 
 ```bash
-npx @polterware/polterbase@latest app install uru
+npx @polterware/polterbase@latest app install polterstore
 ```
 
-This install flow is macOS-only today. Polterbase resolves the latest release from `polterware/uru`, downloads the artifact, installs the `.app`, writes the Supabase bootstrap payload, and can open the app after installation.
+This install flow is macOS-only today. Polterbase resolves the latest release from `polterware/polterstore`, downloads the artifact, installs the `.app`, writes the Supabase bootstrap payload, and can open the app after installation.
 
 Pin a specific release when needed:
 
 ```bash
-npx @polterware/polterbase@latest app install uru --version 1.0.0
+npx @polterware/polterbase@latest app install polterstore --version 1.0.0
 ```
 
 Update an existing installation without rewriting the runtime connection:
 
 ```bash
-npx @polterware/polterbase@latest app update uru
+npx @polterware/polterbase@latest app update polterstore
 ```
 
-This update flow replaces the installed `uru.app` while preserving runtime configuration, local settings, and existing Supabase session data stored outside the app bundle.
+This update flow replaces the installed `polterstore.app` while preserving runtime configuration, local settings, and existing Supabase session data stored outside the app bundle.
 
 ## CLI Commands
 
-The `pnpm uru` CLI is now intentionally minimal and only starts local development:
+The `pnpm polterstore` CLI is now intentionally minimal and only starts local development:
 
 | Command                   | Description                                                 |
 | ------------------------- | ----------------------------------------------------------- |
-| `pnpm uru`                | Show help and point to Polterbase workflows                 |
-| `pnpm uru dev`            | Start dev server (web or desktop)                           |
-| `pnpm uru --help`         | Show all commands                                           |
+| `pnpm polterstore`                | Show help and point to Polterbase workflows                 |
+| `pnpm polterstore dev`            | Start dev server (web or desktop)                           |
+| `pnpm polterstore --help`         | Show all commands                                           |
 
 ### Polterbase Workflows
 
-- `npx polterbase app setup uru --path .` — full source checkout bootstrap
-- `npx polterbase app link uru --path .` — link or relink the current project
-- `npx polterbase app migrate uru push --path .` — push migrations
-- `npx polterbase app migrate uru lint --path .` — lint migrations
-- `npx polterbase app migrate uru reset --path .` — reset linked remote DB
-- `npx polterbase app migrate uru local-reset --path .` — reset the local Docker stack
-- `npx polterbase app configure uru --path .` — rewrite `.env.local` and runtime bootstrap payload
-- `npx @polterware/polterbase@latest app install uru [--version <version>]` — install the macOS `.app` through Polterbase, then configure runtime Supabase connection
-- `npx @polterware/polterbase@latest app update uru [--version <version>]` — replace an existing macOS install while preserving persisted runtime/app state
+- `npx polterbase app setup polterstore --path .` — full source checkout bootstrap
+- `npx polterbase app link polterstore --path .` — link or relink the current project
+- `npx polterbase app migrate polterstore push --path .` — push migrations
+- `npx polterbase app migrate polterstore lint --path .` — lint migrations
+- `npx polterbase app migrate polterstore reset --path .` — reset linked remote DB
+- `npx polterbase app migrate polterstore local-reset --path .` — reset the local Docker stack
+- `npx polterbase app configure polterstore --path .` — rewrite `.env.local` and runtime bootstrap payload
+- `npx @polterware/polterbase@latest app install polterstore [--version <version>]` — install the macOS `.app` through Polterbase, then configure runtime Supabase connection
+- `npx @polterware/polterbase@latest app update polterstore [--version <version>]` — replace an existing macOS install while preserving persisted runtime/app state
 
 ## Other Scripts
 
@@ -216,7 +216,7 @@ supabase/
   migrations/        # Database contract: schema, access policies (RLS), and functions (RPC)
 src-tauri/
   src/lib.rs         # Desktop shell (no business logic)
-cli/                 # Local development launcher (`pnpm uru dev`)
+cli/                 # Local development launcher (`pnpm polterstore dev`)
 ```
 
 Runtime Supabase connection can now come from either:
@@ -226,7 +226,7 @@ Runtime Supabase connection can now come from either:
 
 ## Security Model
 
-URU protects your data across multiple layers. Each user has a role (admin, operator, or analyst) that determines what they can see and do. Access rules are enforced directly in the database, so even if someone tries to hit the API directly, they can only access data allowed for their role.
+Polterstore protects your data across multiple layers. Each user has a role (admin, operator, or analyst) that determines what they can see and do. Access rules are enforced directly in the database, so even if someone tries to hit the API directly, they can only access data allowed for their role.
 
 - **Authentication**: Supabase Auth with JWT tokens
 - **Roles**: `admin` (full access), `operator` (day-to-day operations), `analyst` (read-only)
@@ -241,13 +241,13 @@ URU protects your data across multiple layers. Each user has a role (admin, oper
 4. Run your formatting and lint commands before opening a PR
 5. Open a Pull Request
 
-Found a bug or have a suggestion? [Open an issue](https://github.com/ericpbarcelos/uru/issues).
+Found a bug or have a suggestion? [Open an issue](https://github.com/polterware/polterstore/issues).
 
 ## Troubleshooting
 
 - **`Supabase is not configured...`**
   - For source checkout, make sure `.env.local` has `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
-  - For an installed desktop app, run `polterbase app configure uru` or fill the connection form shown on first launch
+  - For an installed desktop app, run `polterbase app configure polterstore` or fill the connection form shown on first launch
 
 - **Auth or network errors in the desktop app**
   - Check firewall/VPN/proxy rules
@@ -258,8 +258,8 @@ Found a bug or have a suggestion? [Open an issue](https://github.com/ericpbarcel
   - Confirm the Rust toolchain is installed (`rustc --version`)
   - Install [Tauri system dependencies](https://v2.tauri.app/start/prerequisites/) for your OS
 
-- **`polterbase app migrate uru push` fails**
-  - Check if the Supabase project is linked (`polterbase app link uru --path .`)
+- **`polterbase app migrate polterstore push` fails**
+  - Check if the Supabase project is linked (`polterbase app link polterstore --path .`)
   - Confirm `SUPABASE_DB_PASSWORD` is set or enter the password when prompted
 
 ## License

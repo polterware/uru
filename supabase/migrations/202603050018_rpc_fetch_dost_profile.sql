@@ -1,5 +1,5 @@
 -- RPC for Dost to fetch the current user's profile
--- Bridges Uru's full_name and lifecycle_status to Dost's name and expectations
+-- Bridges Polterstore's full_name and lifecycle_status to Dost's name and expectations
 
 create or replace function public.fetch_dost_profile()
 returns jsonb

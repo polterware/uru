@@ -1,8 +1,8 @@
-# CLAUDE.md - URU vNext Assistant Guide
+# CLAUDE.md - Polterstore vNext Assistant Guide
 
 ## Project scope
 
-URU is a desktop manager aligned to Dost project operations. The app is Supabase-only and single-context (no `shopId` runtime routing).
+Polterstore is a desktop manager aligned to Dost project operations. The app is Supabase-only and single-context (no `shopId` runtime routing).
 
 ## Architectural rules
 
@@ -39,4 +39,4 @@ pnpm build
 
 - No `shop-store`, `use-shop`, `/shops/:shopId/*` routes.
 - No mobile/pairing/offline-network architecture.
-- No `@uru/types` workspace package; use local types in `src/types`.
+- No `@polterstore/types` workspace package; use local types in `src/types`.

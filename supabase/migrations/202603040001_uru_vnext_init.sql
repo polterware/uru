@@ -1,4 +1,4 @@
--- URU Supabase-only vNext schema
+-- Polterstore Supabase-only vNext schema
 -- Reset baseline focused on Dost manager flows
 
 create extension if not exists "pgcrypto";

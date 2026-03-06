@@ -1,5 +1,5 @@
--- Bridge Trigger: Sync Uru's inventory_levels back to Dost's product_sizes
--- This ensures that management actions in Uru (desktop) reflect on the website (Dost)
+-- Bridge Trigger: Sync Polterstore's inventory_levels back to Dost's product_sizes
+-- This ensures that management actions in Polterstore (desktop) reflect on the website (Dost)
 
 create or replace function public.sync_inventory_to_dost()
 returns trigger as $$
@@ -21,7 +21,7 @@ begin
     if v_has_size_options then
         -- If it has sizes, for now we sync to a 'Default' size in Dost 
         -- or update all sizes if they are identical. 
-        -- To be truly accurate, Uru inventory_levels should have a 'size' column.
+        -- To be truly accurate, Polterstore inventory_levels should have a 'size' column.
         -- Assuming 'Default' or single size management for this bridge.
         update public.product_sizes
         set quantity = v_total_available,

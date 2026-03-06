@@ -10,7 +10,7 @@ add column if not exists category_id uuid references public.categories(id) on de
 add column if not exists category text,
 add column if not exists subcategory text;
 
--- 3. Migration script: Convert Dost text categories to Uru table entries
+-- 3. Migration script: Convert Dost text categories to Polterstore table entries
 do $$
 declare
     v_admin_id uuid;

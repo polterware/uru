@@ -1,5 +1,5 @@
 -- RPC for Dost to update the current user's profile
--- Syncs 'name' to Uru's 'full_name' automatically via the trigger we created earlier
+-- Syncs 'name' to Polterstore's 'full_name' automatically via the trigger we created earlier
 
 create or replace function public.update_dost_profile(
   p_name text,

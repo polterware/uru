@@ -1270,7 +1270,7 @@ function TablesBySchemaPage() {
                 ? "Loading records..."
                 : "No records found for the current filters."
             }
-            exportFileName={`uru-${config.table}`}
+            exportFileName={`polterstore-${config.table}`}
           />
         </CardContent>
       </Card>

@@ -1,5 +1,5 @@
 -- RPC to fetch products formatted for the Dost Client
--- This bridges the gap between Uru's normalized schema and Dost's expected interface
+-- This bridges the gap between Polterstore's normalized schema and Dost's expected interface
 
 create or replace function public.fetch_dost_products()
 returns jsonb
@@ -17,7 +17,7 @@ begin
             p.id,
             p.sku,
             p.slug,
-            p.title as name, -- Map Uru title to Dost name
+            p.title as name, -- Map Polterstore title to Dost name
             p.description,
             p.price,
             p.is_published,
@@ -31,13 +31,13 @@ begin
                 when parent_cat.id is not null then cat.name 
                 else null 
             end as subcategory,
-            -- Images normalization (Uru text[] -> Dost expected format)
+            -- Images normalization (Polterstore text[] -> Dost expected format)
             case 
                 when array_length(p.images, 1) > 0 then
                     (select jsonb_agg(jsonb_build_object('url', img, 'altText', null)) from unnest(p.images) as img)
                 else '[]'::jsonb
             end as images,
-            -- Logistics normalization (Uru columns -> Dost shipping object)
+            -- Logistics normalization (Polterstore columns -> Dost shipping object)
             jsonb_build_object(
                 'weight', coalesce(p.weight, 0),
                 'length', coalesce(p.depth, 0), -- depth maps to length in Dost
