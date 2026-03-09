@@ -51,8 +51,6 @@ Manage your business without relying on expensive SaaS. Ops is an open-source de
 - [Node.js 20+](https://nodejs.org)
 - [pnpm](https://pnpm.io/installation)
 - [Supabase CLI](https://supabase.com/docs/guides/cli/getting-started)
-- [Polter](https://www.npmjs.com/package/@polterware/polter) for setup, link, migration, and installation workflows
-
 ### For Desktop Builds
 
 - [Rust toolchain](https://rustup.rs)
@@ -64,134 +62,34 @@ Manage your business without relying on expensive SaaS. Ops is an open-source de
 
 ## Quick Start
 
+### Install via script
+
 ```bash
-pnpm install
-npx polter app setup ops --path .
+curl -fsSL https://raw.githubusercontent.com/polterware/ops/main/install.sh | bash
 ```
 
-The Polter workflow checks prerequisites, creates or updates `.env.local`, installs dependencies, links your Supabase project, pushes migrations, and prepares the runtime bootstrap payload used by the desktop app.
+### Manual setup
 
-Once setup is done:
+```bash
+pnpm install
+```
+
+1. Create `.env.local` with your Supabase credentials (`VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`)
+2. Link your Supabase project: `supabase link`
+3. Push migrations: `supabase db push`
+4. Start the dev server:
 
 ```bash
 pnpm ops dev
 ```
 
-## Using Polter With Ops
-
-Polter is the recommended workflow manager for Ops Supabase operations.
-
-- npm: [@polterware/polter](https://www.npmjs.com/package/@polterware/polter)
-- GitHub: [polterware/polter](https://github.com/polterware/polter)
-
-### 1. Install dependencies
-
-Ops includes Polter as a development dependency, so the normal project install is enough:
-
-```bash
-pnpm install
-```
-
-### 2. Bootstrap a source checkout
-
-From the `ops` directory:
-
-```bash
-npx polter app setup ops --path .
-```
-
-This flow:
-
-- validates Node.js, pnpm, and Supabase CLI;
-- creates or updates `.env.local`;
-- installs project dependencies;
-- links the Supabase project;
-- pushes migrations;
-- writes the runtime bootstrap payload for the desktop app.
-
-### 3. Common day-to-day commands
-
-Link or relink the project:
-
-```bash
-npx polter app link ops --path .
-```
-
-Push migrations:
-
-```bash
-npx polter app migrate ops push --path .
-```
-
-Lint migrations:
-
-```bash
-npx polter app migrate ops lint --path .
-```
-
-Reset the linked remote database:
-
-```bash
-npx polter app migrate ops reset --path .
-```
-
-Reset the local Docker database:
-
-```bash
-npx polter app migrate ops local-reset --path .
-```
-
-Rewrite runtime connection/bootstrap data:
-
-```bash
-npx polter app configure ops --path .
-```
-
-### 4. Install the macOS app
-
-Install through Polter:
-
-```bash
-npx @polterware/polter@latest app install ops
-```
-
-This install flow is macOS-only today. Polter resolves the latest release from `polterware/ops`, downloads the artifact, installs the `.app`, writes the Supabase bootstrap payload, and can open the app after installation.
-
-Pin a specific release when needed:
-
-```bash
-npx @polterware/polter@latest app install ops --version 1.0.0
-```
-
-Update an existing installation without rewriting the runtime connection:
-
-```bash
-npx @polterware/polter@latest app update ops
-```
-
-This update flow replaces the installed `ops.app` while preserving runtime configuration, local settings, and existing Supabase session data stored outside the app bundle.
-
 ## CLI Commands
 
-The `pnpm ops` CLI is now intentionally minimal and only starts local development:
-
-| Command            | Description                                 |
-| ------------------ | ------------------------------------------- |
-| `pnpm ops`         | Show help and point to Polter workflows |
-| `pnpm ops dev`     | Start dev server (web or desktop)           |
-| `pnpm ops --help`  | Show all commands                           |
-
-### Polter Workflows
-
-- `npx polter app setup ops --path .` — full source checkout bootstrap
-- `npx polter app link ops --path .` — link or relink the current project
-- `npx polter app migrate ops push --path .` — push migrations
-- `npx polter app migrate ops lint --path .` — lint migrations
-- `npx polter app migrate ops reset --path .` — reset linked remote DB
-- `npx polter app migrate ops local-reset --path .` — reset the local Docker stack
-- `npx polter app configure ops --path .` — rewrite `.env.local` and runtime bootstrap payload
-- `npx @polterware/polter@latest app install ops [--version <version>]` — install the macOS `.app` through Polter, then configure runtime Supabase connection
-- `npx @polterware/polter@latest app update ops [--version <version>]` — replace an existing macOS install while preserving persisted runtime/app state
+| Command            | Description                       |
+| ------------------ | --------------------------------- |
+| `pnpm ops`         | Show help                         |
+| `pnpm ops dev`     | Start dev server (web or desktop) |
+| `pnpm ops --help`  | Show all commands                 |
 
 ## Other Scripts
 
@@ -218,7 +116,7 @@ cli/                 # Local development launcher (`pnpm ops dev`)
 Runtime Supabase connection can now come from either:
 
 - build-time env vars (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`) for development and compatibility;
-- runtime config stored by the desktop app after importing the bootstrap payload written by Polter.
+- runtime config stored by the desktop app after importing the bootstrap payload.
 
 ## Security Model
 
@@ -243,7 +141,7 @@ Found a bug or have a suggestion? [Open an issue](https://github.com/polterware/
 
 - **`Supabase is not configured...`**
   - For source checkout, make sure `.env.local` has `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
-  - For an installed desktop app, run `polter app configure ops` or fill the connection form shown on first launch
+  - For an installed desktop app, fill the connection form shown on first launch
 
 - **Auth or network errors in the desktop app**
   - Check firewall/VPN/proxy rules
@@ -253,10 +151,6 @@ Found a bug or have a suggestion? [Open an issue](https://github.com/polterware/
 - **Desktop build fails**
   - Confirm the Rust toolchain is installed (`rustc --version`)
   - Install [Tauri system dependencies](https://v2.tauri.app/start/prerequisites/) for your OS
-
-- **`polter app migrate ops push` fails**
-  - Check if the Supabase project is linked (`polter app link ops --path .`)
-  - Confirm `SUPABASE_DB_PASSWORD` is set or enter the password when prompted
 
 ## License
 
