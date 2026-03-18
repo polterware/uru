@@ -15,6 +15,7 @@ import type { ReactNode } from "react";
 
 import type { TableGroup } from "@/lib/schema-registry";
 
+import { Badge } from "@/components/ui/badge";
 import {
   Collapsible,
   CollapsibleContent,
@@ -70,8 +71,9 @@ export function AppSidebar({ pathname }: AppSidebarProps) {
   return (
     <Sidebar>
       <SidebarHeader className="pt-4 md:pt-8">
-        <div className="px-2 py-1">
+        <div className="flex items-center gap-2 px-2 py-1">
           <p className="font-medium font-brand text-xl">OPS</p>
+          <Badge variant="secondary" className="bg-emerald-500/15 text-emerald-400 text-[10px] font-medium uppercase tracking-widest">alpha</Badge>
         </div>
         <SidebarInput
           aria-label="Filter tables"
