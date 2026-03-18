@@ -3,7 +3,7 @@ use serde_json::{json, Value};
 use std::fs;
 use std::path::PathBuf;
 use tauri::webview::Color;
-use tauri::WebviewWindowBuilder;
+use tauri::{Manager, WebviewWindowBuilder};
 #[cfg(target_os = "macos")]
 use tauri::TitleBarStyle;
 
@@ -54,7 +54,7 @@ async fn supabase_sign_in_with_password(
     serde_json::from_str(&body).map_err(|error| format!("native_auth_invalid_json: {error}"))
 }
 
-fn get_supabase_bootstrap_payload_path() -> Result<PathBuf, String> {
+fn get_legacy_supabase_bootstrap_payload_path() -> Result<PathBuf, String> {
     #[cfg(target_os = "macos")]
     {
         let home = std::env::var("HOME")
@@ -95,13 +95,26 @@ fn get_supabase_bootstrap_payload_path() -> Result<PathBuf, String> {
     }
 }
 
-#[tauri::command]
-fn consume_supabase_bootstrap_payload() -> Result<Option<Value>, String> {
-    let payload_path = get_supabase_bootstrap_payload_path()?;
+fn get_supabase_bootstrap_payload_paths(app: &tauri::AppHandle) -> Result<Vec<PathBuf>, String> {
+    let preferred_path = app
+        .path()
+        .app_config_dir()
+        .map_err(|error| format!("resolve_app_config_dir_failed: {error}"))?
+        .join("bootstrap")
+        .join("supabase.json");
 
-    if !payload_path.exists() {
+    Ok(vec![preferred_path, get_legacy_supabase_bootstrap_payload_path()?])
+}
+
+#[tauri::command]
+fn consume_supabase_bootstrap_payload(app: tauri::AppHandle) -> Result<Option<Value>, String> {
+    let payload_path = get_supabase_bootstrap_payload_paths(&app)?
+        .into_iter()
+        .find(|candidate| candidate.exists());
+
+    let Some(payload_path) = payload_path else {
         return Ok(None);
-    }
+    };
 
     let payload_contents = fs::read_to_string(&payload_path)
         .map_err(|error| format!("bootstrap_payload_read_failed: {error}"))?;

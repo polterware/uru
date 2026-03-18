@@ -59,7 +59,7 @@ describe("runtime supabase config", () => {
       publishableKey: "pk-demo",
       projectRef: "demo",
       updatedAt: "2026-03-05T00:00:00.000Z",
-      source: "runtime",
+      source: "bootstrap",
     });
     expect(invokeMock).toHaveBeenCalledWith(
       "consume_supabase_bootstrap_payload",

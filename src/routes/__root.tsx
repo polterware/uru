@@ -122,6 +122,7 @@ function RootLayout() {
 
   useEffect(() => {
     if (!isAuthenticated || !config) return;
+    if (import.meta.env.DEV) return;
 
     void checkForAppUpdate().then((status) => {
       if (status.state === "available") {

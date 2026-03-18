@@ -10,7 +10,7 @@ export interface RuntimeSupabaseConfig {
   publishableKey: string;
   projectRef: string | null;
   updatedAt: string;
-  source: "runtime" | "env";
+  source: "saved" | "bootstrap" | "env";
 }
 
 interface BootstrapSupabaseConfigPayload {
@@ -24,20 +24,39 @@ interface BootstrapSupabaseConfigPayload {
 let cachedResolvedConfig: RuntimeSupabaseConfig | null | undefined;
 let bootstrapSyncPromise: Promise<RuntimeSupabaseConfig | null> | null = null;
 
+function normalizeSource(
+  source: string | undefined,
+  fallbackSource: RuntimeSupabaseConfig["source"],
+): RuntimeSupabaseConfig["source"] {
+  if (source === "saved" || source === "bootstrap" || source === "env") {
+    return source;
+  }
+
+  if (source === "runtime") {
+    return "saved";
+  }
+
+  return fallbackSource;
+}
+
 function normalizeConfig(
   config: BootstrapSupabaseConfigPayload,
-  source: RuntimeSupabaseConfig["source"] = "runtime",
+  source: RuntimeSupabaseConfig["source"] = "saved",
 ): RuntimeSupabaseConfig {
   return {
     url: config.url.trim().replace(/\/$/, ""),
     publishableKey: config.publishableKey.trim(),
     projectRef: config.projectRef?.trim() || null,
     updatedAt: config.updatedAt ?? new Date().toISOString(),
-    source,
+    source: normalizeSource(config.source, source),
   };
 }
 
 function getEnvFallbackConfig(): RuntimeSupabaseConfig | null {
+  if (isTauri() && !import.meta.env.DEV) {
+    return null;
+  }
+
   const url = import.meta.env.VITE_SUPABASE_URL?.trim();
   const publishableKey =
     import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY?.trim();
@@ -72,7 +91,7 @@ function emitConfigChanged(config: RuntimeSupabaseConfig | null): void {
 async function readPersistedRuntimeConfig(): Promise<RuntimeSupabaseConfig | null> {
   if (isTauri()) {
     const value = await SettingsStore.get<RuntimeSupabaseConfig>(RUNTIME_CONFIG_KEY);
-    return value ? normalizeConfig(value, "runtime") : null;
+    return value ? normalizeConfig(value, value.source ?? "saved") : null;
   }
 
   if (typeof window === "undefined") {
@@ -85,7 +104,8 @@ async function readPersistedRuntimeConfig(): Promise<RuntimeSupabaseConfig | nul
   }
 
   try {
-    return normalizeConfig(JSON.parse(rawValue), "runtime");
+    const parsed = JSON.parse(rawValue) as BootstrapSupabaseConfigPayload;
+    return normalizeConfig(parsed, parsed.source === "bootstrap" ? "bootstrap" : "saved");
   } catch {
     return null;
   }
@@ -117,7 +137,7 @@ export async function consumeBootstrapSupabaseConfig(): Promise<RuntimeSupabaseC
     return null;
   }
 
-  const normalized = normalizeConfig(payload, "runtime");
+  const normalized = normalizeConfig(payload, "bootstrap");
   await persistRuntimeConfig(normalized);
   cachedResolvedConfig = normalized;
   emitConfigChanged(normalized);
@@ -157,7 +177,7 @@ export function getCachedSupabaseConfig(): RuntimeSupabaseConfig | null {
 export async function saveRuntimeSupabaseConfig(
   config: BootstrapSupabaseConfigPayload,
 ): Promise<RuntimeSupabaseConfig> {
-  const normalized = normalizeConfig(config, "runtime");
+  const normalized = normalizeConfig(config, "saved");
   await persistRuntimeConfig(normalized);
   cachedResolvedConfig = normalized;
   emitConfigChanged(normalized);

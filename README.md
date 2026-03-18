@@ -109,8 +109,8 @@ src-tauri/
 
 Runtime Supabase connection can now come from either:
 
-- build-time env vars (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`) for development and compatibility;
-- runtime config stored by the desktop app after importing the bootstrap payload.
+- build-time env vars (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`) during development;
+- runtime config stored by the desktop app after importing a bootstrap payload or saving the connection in Settings.
 
 ## Security Model
 
@@ -135,12 +135,16 @@ Found a bug or have a suggestion? [Open an issue](https://github.com/polterware/
 
 - **`Supabase is not configured...`**
   - For source checkout, make sure `.env.local` has `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
-  - For an installed desktop app, fill the connection form shown on first launch
+  - For an installed desktop app, fill the connection form shown on first launch or import a bootstrap payload into the app config directory
 
 - **Auth or network errors in the desktop app**
   - Check firewall/VPN/proxy rules
   - Confirm Supabase project URL and key are correct
   - Try restarting the app so it can reload runtime connection settings
+
+- **Desktop app keeps reconnecting after reinstall**
+  - Tauri may preserve app data between uninstall and reinstall
+  - Remove `settings.json` from the app config directory or use `scripts/reset-config.sh` to wipe the saved runtime connection
 
 - **Desktop build fails**
   - Confirm the Rust toolchain is installed (`rustc --version`)

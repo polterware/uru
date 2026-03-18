@@ -101,6 +101,7 @@ export interface Database {
           images: string[];
           category_id: string | null;
           brand_id: string | null;
+          line_id: string | null;
           price: number;
           cost: number | null;
           is_published: boolean;
@@ -124,6 +125,7 @@ export interface Database {
           images?: string[];
           category_id?: string | null;
           brand_id?: string | null;
+          line_id?: string | null;
           price: number;
           cost?: number | null;
           is_published?: boolean;
@@ -146,6 +148,7 @@ export interface Database {
           images?: string[];
           category_id?: string | null;
           brand_id?: string | null;
+          line_id?: string | null;
           price?: number;
           cost?: number | null;
           is_published?: boolean;
@@ -209,6 +212,38 @@ export interface Database {
         };
         Update: {
           name?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          lifecycle_status?: "active" | "inactive" | "archived";
+        };
+      };
+      lines: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          image_url: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+          lifecycle_status: "active" | "inactive" | "archived";
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          image_url?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+          lifecycle_status?: "active" | "inactive" | "archived";
+        };
+        Update: {
+          name?: string;
+          slug?: string;
+          image_url?: string | null;
           updated_at?: string;
           deleted_at?: string | null;
           lifecycle_status?: "active" | "inactive" | "archived";

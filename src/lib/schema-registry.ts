@@ -429,6 +429,29 @@ export const SCHEMA_REGISTRY: Array<TableConfig> = [
     ),
   },
   {
+    table: "lines",
+    label: "Lines",
+    description: "Product lines (e.g. Blue, Face).",
+    group: "catalog",
+    primaryKey: "id",
+    deleteStrategy: "soft",
+    sort: { column: "name", ascending: true },
+    listColumns: [
+      { key: "name", label: "Name", type: "text" },
+      { key: "slug", label: "Slug", type: "text" },
+      { key: "image_url", label: "Image URL", type: "text" },
+      { key: "lifecycle_status", label: "Status", type: "enum" },
+    ],
+    fields: withStandardTableMeta(
+      withLifecycleAndTimestamps([
+        { key: "name", label: "Name", type: "text", required: true },
+        { key: "slug", label: "Slug", type: "text", required: true },
+        { key: "image_url", label: "Image URL", type: "text", nullable: true },
+        createdByField("created_by", "Created by"),
+      ]),
+    ),
+  },
+  {
     table: "products",
     label: "Products",
     description: "Commercialized products.",
@@ -483,6 +506,19 @@ export const SCHEMA_REGISTRY: Array<TableConfig> = [
           nullable: true,
           relation: {
             table: "brands",
+            valueField: "id",
+            labelField: "name",
+            orderBy: "name",
+            ascending: true,
+          },
+        },
+        {
+          key: "line_id",
+          label: "Line",
+          type: "uuid",
+          nullable: true,
+          relation: {
+            table: "lines",
             valueField: "id",
             labelField: "name",
             orderBy: "name",

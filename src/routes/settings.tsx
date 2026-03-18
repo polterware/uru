@@ -257,8 +257,8 @@ function SettingsPage() {
         <CardHeader>
           <CardTitle>Runtime Connection</CardTitle>
           <CardDescription>
-            The installed desktop app can override build-time env vars with a
-            runtime connection.
+            The desktop app persists a runtime connection locally. Build-time
+            env vars are only used during development.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -282,8 +282,10 @@ function SettingsPage() {
                 <p className="text-muted-foreground text-xs">
                   Active source:{" "}
                   {connectionConfig.source === "env"
-                    ? "Environment fallback"
-                    : "Runtime config"}
+                    ? "Development environment fallback"
+                    : connectionConfig.source === "bootstrap"
+                      ? "Imported bootstrap payload"
+                      : "Saved runtime config"}
                 </p>
               ) : null
             }
