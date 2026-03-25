@@ -34,6 +34,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { BrandLockup } from "@/components/app/brand-lockup";
 import * as schemaTables from "@/lib/schema-tables";
 
 const GROUP_ICONS: Record<TableGroup, LucideIcon> = {
@@ -72,7 +73,11 @@ export function AppSidebar({ pathname }: AppSidebarProps) {
     <Sidebar>
       <SidebarHeader className="pt-4 md:pt-8">
         <div className="flex items-center gap-2 px-2 py-1">
-          <p className="font-medium font-brand text-xl">OPS</p>
+          <BrandLockup
+            size="sm"
+            className="min-w-0 flex-1"
+            titleClassName="text-xl font-medium"
+          />
           <Badge variant="secondary" className="bg-emerald-500/15 text-emerald-400 text-[10px] font-medium uppercase tracking-widest">alpha</Badge>
         </div>
         <SidebarInput

@@ -12,6 +12,7 @@ import { Toaster, toast } from "sonner";
 
 import appCss from "../styles.css?url";
 import { AppSidebar } from "@/components/app/app-sidebar";
+import { BrandLockup } from "@/components/app/brand-lockup";
 import { Button } from "@/components/ui/button";
 import {
   SidebarInset,
@@ -40,13 +41,18 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Urú",
+        title: "OPS",
       },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        href: "/ops-logo.png",
       },
     ],
   }),
@@ -160,7 +166,7 @@ function RootLayout() {
       return "Table";
     }
 
-    return "Urú";
+    return "OPS";
   }, [location.pathname]);
 
   if (configLoading) {
@@ -173,6 +179,11 @@ function RootLayout() {
 
         <main className="mx-auto flex w-full max-w-lg flex-1 items-center justify-center p-6">
           <div className="w-full rounded-xl border p-6">
+            <BrandLockup
+              size="sm"
+              subtitle="Preparing your runtime connection and session bootstrap."
+              className="mb-5"
+            />
             <h1 className="text-lg font-semibold">Loading configuration</h1>
             <p className="text-muted-foreground mt-2 text-sm">
               Checking runtime configuration and bootstrap payload.
@@ -212,6 +223,11 @@ function RootLayout() {
 
         <main className="mx-auto flex w-full max-w-lg flex-1 items-center justify-center p-6">
           <div className="w-full rounded-xl border p-6">
+            <BrandLockup
+              size="sm"
+              subtitle="Finish setup before opening the operations workspace."
+              className="mb-5"
+            />
             <h1 className="text-lg font-semibold">Supabase connection required</h1>
             <p className="text-muted-foreground mt-2 text-sm">
               Complete the runtime connection setup before using the app.

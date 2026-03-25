@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
+import { BrandLockup } from "@/components/app/brand-lockup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -76,7 +77,11 @@ function LoginPage() {
     return (
       <section className="mx-auto mt-20 w-full max-w-lg">
         <Card>
-          <CardHeader>
+          <CardHeader className="space-y-4">
+            <BrandLockup
+              size="md"
+              subtitle="Preparing the connection details for this OPS workspace."
+            />
             <CardTitle className="text-xl">Loading connection</CardTitle>
           </CardHeader>
           <CardContent>
@@ -92,7 +97,11 @@ function LoginPage() {
   return (
     <section className="mx-auto mt-20 w-full max-w-sm space-y-3">
       <Card>
-        <CardHeader>
+        <CardHeader className="space-y-4">
+          <BrandLockup
+            size="md"
+            subtitle="Your self-hosted operations workspace"
+          />
           <CardTitle className="text-xl">Sign in to Ops</CardTitle>
         </CardHeader>
         <CardContent>

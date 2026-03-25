@@ -2,6 +2,7 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { AdminSignupForm } from "@/components/app/onboarding/admin-signup-form";
+import { BrandLockup } from "@/components/app/brand-lockup";
 import { SupabaseConnectionForm } from "@/components/app/supabase-connection-form";
 import { StepIndicator } from "@/components/app/onboarding/step-indicator";
 import { WelcomeIllustration } from "@/components/app/onboarding/welcome-illustration";
@@ -86,6 +87,12 @@ function StepWelcome({ onNext }: { onNext: () => void }) {
   return (
     <Card className="w-full">
       <CardHeader className="items-center text-center">
+        <BrandLockup
+          size="lg"
+          align="center"
+          subtitle="Self-hosted operations for inventory, sales, and analytics."
+          className="mb-2"
+        />
         <WelcomeIllustration className="mb-2 h-48 w-full" />
         <CardTitle className="text-2xl">Welcome to Ops</CardTitle>
       </CardHeader>
@@ -112,6 +119,12 @@ function StepHowItWorks({
   return (
     <Card className="w-full">
       <CardHeader className="items-center text-center">
+        <BrandLockup
+          size="md"
+          align="center"
+          subtitle="Connect your own Supabase backend and keep full control."
+          className="mb-2"
+        />
         <SupabaseIllustration className="mb-2 h-48 w-full" />
         <CardTitle className="text-2xl">Powered by Supabase</CardTitle>
       </CardHeader>
@@ -150,6 +163,10 @@ function StepConfigure({
           &larr; Back
         </Button>
       </div>
+      <BrandLockup
+        size="sm"
+        subtitle="Set the project URL and publishable key for this workspace."
+      />
       <SupabaseConnectionForm
         initialConfig={currentConfig}
         title="Connect your Supabase project"
@@ -187,6 +204,10 @@ function StepCreateAdmin({
           &larr; Back
         </Button>
       </div>
+      <BrandLockup
+        size="sm"
+        subtitle="Create the first administrator for this OPS workspace."
+      />
       <AdminSignupForm onDone={onDone} onGoToLogin={onGoToLogin} />
     </div>
   );
