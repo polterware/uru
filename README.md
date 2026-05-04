@@ -1,177 +1,226 @@
 # Ops
 
-> **Status:** Active
-> This project is currently maintained as a Tauri desktop operations app inside the DOST/Ops workspace.
+Ops is a Tauri desktop operations manager backed by Supabase. It provides a schema-driven workspace for product catalog, customers, inventory, orders, payments, shipments, support operations, and analytics without adding a local business database to the desktop app.
 
-Ops is an open-source desktop operations app for product catalog, inventory, orders, sales, payments, and reports, backed by Supabase.
+The repository is a single-package desktop/web app. The renderer is built with React, TanStack Router, TanStack Table, Tailwind CSS, and Supabase JS. The native shell is built with Tauri 2 and Rust, and it stays intentionally thin: business data access goes through Supabase `from`, `rpc`, and `auth` calls.
 
-## Summary
+## Current Status
 
-- Tauri desktop operations app for product catalog, inventory, orders, sales, payments, analytics, and role-based access.
-- Solves a small-business operations workspace backed by Supabase Auth, database, RLS, RPC functions, and native desktop packaging.
-- Main stack: React 19, TanStack Router/Table, Tailwind CSS 4, Radix/shadcn-style UI, Zustand, Recharts, Tauri 2, Vite, TypeScript, Rust, and Supabase.
-- Current status: active desktop app inside the DOST/Ops workspace.
-- Technical value: combines a native shell with Supabase-backed business rules and transactional server-side functions.
+- Active desktop app.
+- Medium-sized single application, not a monorepo.
+- Supabase-only business data layer.
+- No local SQLite, `sqlx`, or Tauri SQL plugin usage.
+- No root-level Supabase migrations directory is present in this checkout.
+- No first-party HTTP API server is present in this checkout.
 
-## Overview
+## Main Features
 
-Ops brings common commerce and operations workflows into one desktop interface: catalog management, inventory tracking, orders, sales, payments, reporting, and user roles. The application is native-packaged with Tauri, while data, authentication, access control, and critical business rules live in Supabase.
+- Runtime Supabase connection onboarding for installed desktop usage.
+- Supabase Auth sign-in, sign-out, first-admin bootstrap, and role lookup.
+- Schema-driven data console for 31 Supabase tables.
+- CRUD forms generated from `src/lib/schema-registry.ts`.
+- Relation selectors, table filtering, sorting, pagination, column visibility, and CSV export.
+- Join editors for user roles, customer groups, product tags and sizes, order items, transaction items, and shipment items.
+- Transactional RPC actions for order status updates and inventory reserve/release flows.
+- Analytics dashboard backed by Supabase RPCs for sales, payments, checkout, inventory, products, and operations.
+- Tauri Store based local settings and runtime connection persistence.
+- Tauri updater integration with GitHub release artifacts.
+- Browser translation protection through `notranslate` metadata and `translate="no"` on the document body.
 
-## Motivation
+## Technology Stack
 
-- Give small teams a desktop operations workspace without forcing them into expensive SaaS suites.
-- Centralize catalog, inventory, orders, sales, payments, and analytics in one app.
-- Keep critical business operations protected by database rules and explicit role-based access.
-- Make the app practical for local desktop use while still relying on a shared backend source of truth.
-
-## Features
-
-- Product catalog editing and organization.
-- Inventory quantities, movements, and low-stock tracking.
-- Orders, sales, status tracking, and transaction history.
-- Analytics dashboard for revenue, product, and trend views.
-- Role-based access for `admin`, `operator`, and `analyst` users.
-- Runtime Supabase connection flow for installed desktop builds.
-- Native desktop shell through Tauri with web-only development fallback.
-
-## Tech Stack
-
-| Layer | Technology |
+| Area | Technology |
 | --- | --- |
-| Frontend | React 19, TanStack Router, TanStack Table |
-| Styling | Tailwind CSS 4, Radix UI, shadcn-style components |
-| State | Zustand |
+| Desktop shell | Tauri 2, Rust 2021 |
+| Renderer | React 19, TypeScript, Vite, TanStack Start/Router |
+| Data tables | TanStack Table |
+| Styling | Tailwind CSS 4, shadcn-style components, Radix UI, Base UI, lucide-react |
 | Charts | Recharts |
-| Desktop | Tauri 2 |
-| Backend | Supabase Auth, Database, RLS, RPC |
-| Build | Vite, TypeScript, Rust |
+| Local UI settings | Tauri Store, browser localStorage fallback. `zustand` is installed but no active source usage was identified. |
+| Backend service | Supabase Auth, Postgres tables, RLS, RPC functions |
+| Tests | Vitest |
+| Release automation | GitHub Actions, Tauri updater artifacts |
 
-## Screenshots / Demo
+## Screenshots
 
 <p align="center">
   <img src="./docs/images/example.png" alt="Data console with table navigation" width="700" />
   <br />
-  <em>Data console with table navigation</em>
+  <em>Schema-driven data console with table navigation.</em>
 </p>
 
 <p align="center">
   <img src="./docs/images/example2.png" alt="Analytics dashboard" width="700" />
   <br />
-  <em>Analytics dashboard with business metrics</em>
+  <em>Analytics dashboard with business metrics.</em>
 </p>
-
-## Getting Started
-
-### Requirements
-
-- Node.js 20+
-- pnpm
-- Supabase CLI
-- Rust toolchain
-- Tauri system dependencies for your OS
-- Docker only when using the local database reset flow
-
-### Installation
-
-```bash
-pnpm install
-```
-
-For an installed build, the historical installer is documented as:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/polterware/ops/main/install.sh | bash
-```
-
-### Environment Variables
-
-Create `.env.local` with:
-
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
-
-Installed desktop apps can also load runtime Supabase settings after importing a bootstrap payload or saving the connection in Settings.
-
-### Running Locally
-
-1. Link your Supabase project with `supabase link`.
-2. Push migrations with `supabase db push`.
-3. Start the desktop or web-only flow:
-
-```bash
-pnpm dev
-pnpm dev:web
-```
-
-### Running Tests
-
-```bash
-pnpm test
-```
-
-## Usage
-
-- `pnpm dev` starts the desktop app via Tauri.
-- `pnpm dev:web` starts the web dev server only.
-- `pnpm build` creates a production web build.
-- `pnpm preview` previews build output.
-- `pnpm test` runs tests via Vitest.
-
-The app expects users to authenticate through Supabase, then work through operational routes such as login, products, orders, inventory, reports, and settings.
 
 ## Project Structure
 
 ```text
 ops/
-├── src/
-│   ├── routes/       # App routes such as login, products, orders, inventory, settings
-│   └── lib/
-│       ├── supabase/ # Supabase client, authentication, and error handling
-│       └── db/       # Repository-style data access
-├── supabase/
-│   └── migrations/   # Schema, RLS policies, and RPC functions
-└── src-tauri/
-    └── src/lib.rs    # Native desktop shell
+|-- src/
+|   |-- routes/                  # TanStack Router routes
+|   |-- components/app/          # Product-specific app and onboarding components
+|   |-- components/ui/           # shadcn-style UI primitives and DataTable
+|   |-- lib/
+|   |   |-- supabase/            # Supabase client, auth, runtime config, errors
+|   |   |-- db/repositories/     # Supabase table and RPC repositories
+|   |   |-- analytics/           # Analytics range helpers
+|   |   `-- schema-registry.ts   # Table metadata that drives the console UI
+|   `-- types/                   # Supabase-generated and domain TypeScript types
+|-- src-tauri/
+|   |-- src/lib.rs               # Tauri setup and native commands
+|   |-- tauri.conf.json          # Desktop window, bundle, and updater config
+|   `-- capabilities/default.json
+|-- docs/                        # Project documentation
+|-- scripts/reset-config.sh      # Local runtime config reset helper
+|-- .github/workflows/           # Release automation
+`-- install.sh                   # macOS release installer
 ```
 
-## Architecture
+## Runtime Model
 
-### Main Components
+Ops does not ship with a local business database. The desktop renderer resolves a Supabase connection in this order:
 
-- React/TanStack UI routes own the operator-facing workflows.
-- Supabase owns authentication, data storage, row-level security, and RPC functions.
-- Tauri owns the native desktop shell and runtime configuration storage.
-- Repository helpers in `src/lib/db` centralize Supabase queries and mutations.
+1. One-time bootstrap payload consumed by the Tauri command `consume_supabase_bootstrap_payload`.
+2. Saved runtime connection persisted through Tauri Store under `supabase.runtime.connection`.
+3. Development-only Vite environment fallback from `.env.local`.
 
-### Data Flow
+In a browser-only development session, runtime config falls back to localStorage under `ops.supabase.runtime.connection`. In production Tauri builds, environment fallback is disabled unless the app is running in development mode.
 
-Users authenticate through Supabase Auth. UI routes call repository helpers, repository helpers call Supabase tables or RPC functions, and database-side RLS/roles determine what the user may read or mutate. Installed desktop builds can load Supabase connection settings from runtime config instead of relying only on build-time Vite environment variables.
+## Application Routes
 
-### Key Design Choices
+| Route | Purpose |
+| --- | --- |
+| `/` | Redirects to onboarding, login, or analytics depending on runtime config and session state. |
+| `/onboarding` | Runtime Supabase connection setup and first administrator bootstrap. |
+| `/login` | Supabase Auth email/password sign-in. |
+| `/analytics` | RPC-backed dashboard for sales, payments, checkout, inventory, products, and operations. |
+| `/tables/$table` | Schema-driven CRUD console for configured Supabase tables. |
+| `/products` | Redirects to `/tables/products`. |
+| `/orders` | Redirects to `/tables/orders`. |
+| `/inventory` | Redirects to `/tables/inventory_levels`. |
+| `/settings` | Runtime connection, local settings, identity context, and app update checks. |
 
-- No local database stores business state.
-- Critical operations such as inventory reservation, sale finalization, and refunds are designed to run through transactional Supabase RPC functions.
-- Roles are enforced in the database so API-level access is still constrained.
-- The Tauri shell is intentionally thin and does not own business rules.
+## Prerequisites
 
-## Technical Highlights
+- Node.js 20 or newer.
+- pnpm.
+- Rust toolchain compatible with Tauri 2.
+- Tauri system dependencies for your operating system.
+- A Supabase project with the tables and RPC functions described by `src/types/database.ts`.
 
-- Combines a native desktop packaging layer with hosted Supabase business rules.
-- Uses RLS and RPC to keep permissions and transactional behavior close to the data.
-- Keeps runtime connection settings available for installed desktop usage.
-- Separates UI routing, data repositories, and native shell responsibilities.
+The Supabase schema itself is not stored in this checkout. `src/types/database.ts` is the local TypeScript contract used by the app, but migrations and seed/reset scripts are not present here.
 
-## Current Status
+## Installation
 
-This is the active Ops desktop app inside the DOST/Ops workspace.
+```bash
+pnpm install
+```
+
+Optional development fallback config can be created from `.env.example`:
+
+```bash
+cp .env.example .env.local
+```
+
+`.env.local` supports:
+
+```text
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY=
+```
+
+Use only publishable/default Supabase keys in client-side configuration. Do not place service-role keys in this app.
+
+## Local Development
+
+The package scripts define:
+
+```bash
+pnpm dev:web
+pnpm dev
+```
+
+- `pnpm dev:web` starts the renderer only on port `3000`.
+- `pnpm dev` starts Tauri development and uses `npm run dev:web` as its configured frontend command in `src-tauri/tauri.conf.json`.
+
+This documentation update intentionally did not run development, build, or preview commands.
+
+## Available Scripts
+
+| Script | Purpose |
+| --- | --- |
+| `pnpm install` | Install Node dependencies. |
+| `pnpm dev:web` | Start the Vite/TanStack renderer development server. |
+| `pnpm dev` | Start the Tauri desktop app in development mode. |
+| `pnpm build` | Build the renderer into `.output/public`. |
+| `pnpm preview` | Preview the built renderer. |
+| `pnpm test` | Run Vitest tests. |
+| `pnpm lint` | Run ESLint. |
+| `pnpm format` | Run the configured Prettier CLI. The package script does not pass a target path. |
+| `pnpm check` | Runs `prettier --write .` and `eslint --fix`; this command mutates files. |
+
+## Testing
+
+Tests live next to TypeScript modules and use Vitest. Current coverage focuses on:
+
+- Runtime Supabase config resolution and persistence.
+- Supabase client cache/reset behavior.
+- Schema registry coverage for all 31 table contracts.
+- Hidden join route redirects.
+- Table CRUD payload normalization, archive behavior, and lookup labels.
+- Console read RPC fallback behavior.
+- Console join RPC payload normalization.
+- CSV helpers used by the data table export.
+
+Run tests with:
+
+```bash
+pnpm test
+```
+
+## Build and Release
+
+The renderer build script is:
+
+```bash
+pnpm build
+```
+
+Tauri packaging is configured in `src-tauri/tauri.conf.json`. The GitHub Actions workflow `.github/workflows/release-macos.yml` builds macOS bundles for:
+
+- `aarch64-apple-darwin` on `macos-14`
+- `x86_64-apple-darwin` on `macos-13`
+
+The workflow uploads `.zip`, `.app.tar.gz`, `.app.tar.gz.sig`, and `latest.json` release assets. The Tauri updater endpoint points to:
+
+```text
+https://github.com/polterware/ops/releases/latest/download/latest.json
+```
+
+See `docs/deployment.md` for release details and current unknowns.
+
+## Documentation
+
+- `docs/getting-started.md`: local setup and runtime configuration.
+- `docs/architecture.md`: technical architecture and data flow.
+- `docs/database.md`: Supabase data contract and schema-driven UI model.
+- `docs/api.md`: internal Supabase and Tauri command contracts.
+- `docs/deployment.md`: release and updater workflow.
+- `docs/troubleshooting.md`: common setup and runtime issues.
+- `SECURITY.md`: project-specific security considerations.
 
 ## Known Limitations
 
-- Source checkout usage requires valid Supabase environment variables.
-- Installed desktop apps need runtime connection settings or an imported bootstrap payload.
-- Tauri may preserve app data between uninstall/reinstall; stale runtime config can require a config reset.
-- Desktop build failures usually come from missing Rust or Tauri system dependencies.
+- The Supabase schema, migrations, and seed/reset workflow are not present in this checkout.
+- RLS policies are assumed by the frontend and type contract, but policy SQL cannot be reviewed from this repository alone.
+- The app stores publishable Supabase runtime connection data locally for desktop usage.
+- `src-tauri/tauri.conf.json` currently sets `app.security.csp` to `null`.
+- Tauri app data can survive reinstall/uninstall and may need manual reset with `scripts/reset-config.sh`.
+- Signing/notarization details are not fully documented in the current codebase.
 
 ## License
 
-This project is licensed under the [GNU General Public License v3.0 (GPL-3.0)](LICENSE).
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
